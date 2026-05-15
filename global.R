@@ -36,6 +36,7 @@ col <- list(
 # ═══════════════════════════════════════════════════════════════════════════════
 app_css <- paste0("
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
 :root {
   --bg: ", col$bg, ";
@@ -383,12 +384,17 @@ sci_badge <- function(text, color = col$accent) {
   )
 }
 
-# Insight box
-insight_box <- function(title, text, color = col$accent, icon = "\U0001f4a1") {
+# Insight box  (icon = nome FA, es. "lightbulb", "bolt", "check-circle")
+insight_box <- function(title, text, color = col$accent, icon = "lightbulb") {
   tags$div(
     class = "insight-box",
     style = paste0("background: linear-gradient(135deg, ", color, "0d, ", col$card, "); border-color:", color, ";"),
-    tags$h4(style = paste0("font-size:15px; font-weight:700; color:", color, "; margin:0 0 10px;"), paste(icon, title)),
+    tags$h4(
+      style = paste0("font-size:15px; font-weight:700; color:", color, "; margin:0 0 10px;"),
+      tags$i(class = paste0("fas fa-", icon), `aria-hidden` = "true"),
+      " ",
+      title
+    ),
     tags$p(style = "font-size:13px; color:var(--dim); line-height:1.7; margin:0;", HTML(text))
   )
 }
