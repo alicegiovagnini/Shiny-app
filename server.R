@@ -31,7 +31,7 @@ server <- function(input, output, session) {
                tags$p(style = "font-size:15px; color:var(--dim); line-height:1.75; margin:0; max-width:850px;",
                       "Welcome to the SCI project interactive dashboard. This application is a strategic repository designed to explore the market entry of Nuance Audio (EssilorLuxottica). Explore analytical frameworks, competitor analysis, and bibliometric data by navigating through the sidebar menu.")
       ),
-
+      
       # 2. Concept Section — 4 blocchi su una singola riga orizzontale
       fluidRow(
         column(3,
@@ -115,9 +115,45 @@ server <- function(input, output, session) {
                  "<strong>Data Viz Lab:</strong> The concluding storyboard that links analysis to visual data to define strategic positioning."
                ), col$orange)
         )
+      ),
+      
+      tags$hr(style = "border-color: var(--border); margin: 30px 0;"),
+      
+      # I DUE BOTTONI DIREZIONALI
+      fluidRow(
+        column(6,
+               tags$div(class = "sci-card", 
+                        style = "text-align:center; padding: 40px 20px; border-top: 4px solid #00e5a0; cursor:pointer; transition: transform 0.2s;",
+                        onmouseover = "this.style.transform='scale(1.02)'", 
+                        onmouseout = "this.style.transform='scale(1)'",
+                        onclick = "Shiny.setInputValue('nav_goto', 'exec_summary', {priority: 'event'});",
+                        tags$div(style = "font-size: 45px; margin-bottom: 15px;", "🎯"),
+                        tags$h3(style = "color: white; font-weight: 800; margin-bottom: 10px;", "The Results"),
+                        tags$p(style = "color: var(--dim); font-size: 13px; line-height: 1.5; margin:0;", 
+                               "Il cuore della presentazione strategica: Executive Summary, Scenario di Mercato (VUCA/Porter) e Decisioni Finali.")
+               )
+        ),
+        column(6,
+               tags$div(class = "sci-card", 
+                        style = "text-align:center; padding: 40px 20px; border-top: 4px solid #4facfe; cursor:pointer; transition: transform 0.2s;",
+                        onmouseover = "this.style.transform='scale(1.02)'", 
+                        onmouseout = "this.style.transform='scale(1)'",
+                        onclick = "Shiny.setInputValue('nav_goto', 'scope', {priority: 'event'});",
+                        tags$div(style = "font-size: 45px; margin-bottom: 15px;", "⚙️"),
+                        tags$h3(style = "color: white; font-weight: 800; margin-bottom: 10px;", "The Process"),
+                        tags$p(style = "color: var(--dim); font-size: 13px; line-height: 1.5; margin:0;", 
+                               "Il workflow metodologico dei laboratori: KIT/KIQ, Query Design, GenAI Prompting e Text Analysis bibliometrica.")
+               )
+        )
       )
     )
   })
+  
+  # Questo "ascolta" il click sui bottoni e cambia pagina
+  observeEvent(input$nav_goto, {
+    nav_select("main_nav", selected = input$nav_goto)
+  })
+  
   # ──────────────────────────────────────────────
   # TAB 1: EXECUTIVE SUMMARY
   # ──────────────────────────────────────────────
@@ -416,7 +452,7 @@ server <- function(input, output, session) {
       ")),
       tags$div(
         style = "display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;",
-
+        
         # COMPLEXITY
         tags$div(class = "sci-card vuca-hover-card",
                  style = paste0("border: 2px solid ", col$purple, "; border-top: 4px solid ", col$purple,
@@ -437,7 +473,7 @@ server <- function(input, output, session) {
                                  tags$strong("Approach: "), "Leverage EssilorLuxottica's vertical integration and specialized cross-functional teams.")
                  )
         ),
-
+        
         # VOLATILITY
         tags$div(class = "sci-card vuca-hover-card",
                  style = paste0("border: 2px solid ", col$red, "; border-top: 4px solid ", col$red,
@@ -458,7 +494,7 @@ server <- function(input, output, session) {
                                  tags$strong("Approach: "), "Build agility into the SaMD model to enable frequent over-the-air (OTA) software updates.")
                  )
         ),
-
+        
         # AMBIGUITY
         tags$div(class = "sci-card vuca-hover-card",
                  style = paste0("border: 2px solid ", col$cyan, "; border-top: 4px solid ", col$cyan,
@@ -479,7 +515,7 @@ server <- function(input, output, session) {
                                  tags$strong("Approach: "), "Experiment with hybrid distribution channels (optical vs. audiological) and test consumer value perception.")
                  )
         ),
-
+        
         # UNCERTAINTY
         tags$div(class = "sci-card vuca-hover-card",
                  style = paste0("border: 2px solid ", col$orange, "; border-top: 4px solid ", col$orange,
@@ -1260,7 +1296,7 @@ AND PUBYEAR > 2017')
       tags$div(class = "row-stats",
                tags$div(stat_block("Documents",      sum(df_lab5_annual$articles), "Scopus, 2018–2025", col$accent)),
                tags$div(stat_block("Years",          paste0(min(df_lab5_annual$year),"–",max(df_lab5_annual$year)), "Time span", col$blue)),
-              # tags$div(stat_block("Countries",      nrow(df_lab5_countries), "with ≥1 publication", col$orange)),
+               # tags$div(stat_block("Countries",      nrow(df_lab5_countries), "with ≥1 publication", col$orange)),
                tags$div(stat_block("Topics found",   nrow(df_lab5_topics), "BERTopic, n_min=8", col$purple)),
                tags$div(stat_block("Top keyword",    df_lab5_keywords$keyword[1], paste0("freq = ", df_lab5_keywords$n[1]), col$cyan))
       ),
@@ -1297,14 +1333,14 @@ AND PUBYEAR > 2017')
       
       # ── B) Top countries + Top sources ─────────────────────────────────
       #fluidRow(
-       # column(6,
-        #       section_hdr("Top countries", "Most productive countries (corresponding-author affiliation)"),
-         #      tags$div(class = "sci-card", plotlyOutput("plot_lab5_countries", height = "360px"))
-        #),
-        #column(6,
-          #     section_hdr("Top sources", "Journals and conferences with most papers in the corpus"),
-           #    tags$div(class = "sci-card", plotlyOutput("plot_lab5_sources", height = "360px"))
-        #)
+      # column(6,
+      #       section_hdr("Top countries", "Most productive countries (corresponding-author affiliation)"),
+      #      tags$div(class = "sci-card", plotlyOutput("plot_lab5_countries", height = "360px"))
+      #),
+      #column(6,
+      #      section_hdr("Top sources", "Journals and conferences with most papers in the corpus"),
+      #    tags$div(class = "sci-card", plotlyOutput("plot_lab5_sources", height = "360px"))
+      #)
       #),
       # ── B) Top sources ─────────────────────────────────
       section_hdr("Top sources", "Journals and conferences with most papers in the corpus"),
@@ -1380,19 +1416,19 @@ AND PUBYEAR > 2017')
   
   # ── B1) Top countries ────────────────────────────────────────────────────
   #output$plot_lab5_countries <- renderPlotly({
-   # df <- df_lab5_countries[order(df_lab5_countries$articles), ]
-    #plot_ly(df,
-     #       x = ~articles, y = ~factor(country, levels = country),
-      #      type = "bar", orientation = "h",
-       #     marker = list(color = col$blue, line = list(width = 0)),
-        #    text = ~articles, textposition = "outside",
-         #   textfont = list(color = col$dim, size = 10),
-          #  hovertemplate = "%{y}: <b>%{x}</b><extra></extra>") %>%
-    #  plotly_layout_dark(
-     #   xaxis = list(title = "Articles"),
-      #  yaxis = list(title = ""),
-       # margin = list(l = 130)
-      #)
+  # df <- df_lab5_countries[order(df_lab5_countries$articles), ]
+  #plot_ly(df,
+  #       x = ~articles, y = ~factor(country, levels = country),
+  #      type = "bar", orientation = "h",
+  #     marker = list(color = col$blue, line = list(width = 0)),
+  #    text = ~articles, textposition = "outside",
+  #   textfont = list(color = col$dim, size = 10),
+  #  hovertemplate = "%{y}: <b>%{x}</b><extra></extra>") %>%
+  #  plotly_layout_dark(
+  #   xaxis = list(title = "Articles"),
+  #  yaxis = list(title = ""),
+  # margin = list(l = 130)
+  #)
   #})
   
   # ── B2) Top sources ──────────────────────────────────────────────────────
@@ -1514,328 +1550,313 @@ AND PUBYEAR > 2017')
       rownames = FALSE, class = "stripe hover"
     ) %>% DT::formatStyle("cites", fontWeight = "bold", color = col$accent)
   })
+  
   # ────────────────────────────────────────────────────────────────────────
-  # TAB 9: STRATEGIC STORYBOARD (DATA VIZ LAB FINAL)
+  # TAB 10: PATENT ANALYSIS (Erre Quadro Methodology)
   # ────────────────────────────────────────────────────────────────────────
-  # Helper inline per il box "Strategic Insight" sotto ogni grafico
+  
+  # Dati REALI estratti da Espacenet (File CSV Erre Quadro)
+  df_pat_trend <- data.frame(
+    Year = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024),
+    Patents = c(39, 26, 39, 55, 59, 52, 99, 111, 65, 76, 71)
+  )
+  
+  df_pat_assignee <- data.frame(
+    Assignee = c("Snap Inc.", "Meta Platforms", "Connor Robert A.", "Ingeniospec LLC", "Oakley Inc.", "Solos Tech", "Bank of America", "Essilor Int."),
+    Count = c(128, 43, 17, 13, 13, 13, 12, 10)
+  )
+  
+  df_pat_ipc <- data.frame(
+    IPC = c("G02B27 (Optical systems)", "G02C11 (Non-optical specs)", "G06F3 (I/O arrangements)", "G02C5 (Spectacle construction)", "H04R1 (Loudspeakers)"),
+    Count = c(375, 336, 223, 195, 84)
+  )
+  
+  output$tab_patents <- renderUI({
+    tagList(
+      section_hdr("Patent Data Analysis", "IP Landscape on Smart Glasses & Hearing Technologies (Espacenet - Lab Erre Quadro)"),
+      
+      tags$div(class = "sci-card", style = paste0("border-left: 5px solid ", col$accent, ";"),
+               tags$h4(style="color:white; margin-top:0; font-weight:800; font-size: 15px;", "Erre Quadro Methodology — Espacenet Query"),
+               tags$p(style="color:var(--dim); line-height: 1.6; font-size: 13px;", 
+                      "To analyze Intellectual Property (IP), we queried the Espacenet database focusing on the intersection between visual devices (eyewear) and hearing technologies, extracting and processing statistical data for Assignees and IPC classes."),
+               tags$pre(class = "query-code", style = paste0("border-color:", col$accent, "30; margin-top: 10px;"),
+                        '(ti="smart glasses" OR ti="audio glasses" OR ti="eyewear") AND (txt="hearing" OR txt="audio" OR txt="acoustic")')
+      ),
+      
+      tags$div(class = "row-stats",
+               tags$div(stat_block("Total Patents", "849", "Espacenet Results", col$accent)),
+               tags$div(stat_block("Top Applicant", "Snap Inc.", "128 Patents", col$blue)),
+               tags$div(stat_block("Dominant IPC", "G02B27", "Optical Systems", col$orange)),
+               tags$div(stat_block("Peak Year", "2021", "111 Priority Filings", col$purple))
+      ),
+      
+      fluidRow(
+        column(6,
+               tags$div(class = "sci-card",
+                        tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;", "Patent Filings Trend (Priority Year)"),
+                        plotlyOutput("plot_pat_trend", height = "260px")
+               )
+        ),
+        column(6,
+               tags$div(class = "sci-card",
+                        tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;", "Top Applicants (Assignees)"),
+                        plotlyOutput("plot_pat_assignee", height = "260px")
+               )
+        )
+      ),
+      
+      fluidRow(
+        column(6,
+               tags$div(class = "sci-card",
+                        tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;", "Technology Landscape (Top IPC Classes)"),
+                        plotlyOutput("plot_pat_ipc", height = "220px")
+               )
+        ),
+        column(6,
+               insight_box("IP Strategic Insight", 
+                           "The extracted Espacenet data reveals a crucial dynamic: <strong>traditional medical and hearing aid companies are entirely absent from the Top 10</strong>. Intellectual property is dominated by consumer/social tech giants like <strong>Snap Inc. and Meta Platforms</strong>. This confirms the VUCA analysis warning: the true competitive threat to Nuance Audio is asymmetric, arriving from lifestyle eyewear rather than the healthcare sector.", 
+                           col$orange, "exclamation-triangle")
+        )
+      )
+    )
+  })
+  
+  # Render Plot: Trend
+  output$plot_pat_trend <- renderPlotly({
+    plot_ly(df_pat_trend, x = ~Year, y = ~Patents, type = "scatter", mode = "lines+markers",
+            line = list(color = col$blue, width = 3, shape = "spline"),
+            marker = list(color = col$blue, size = 8),
+            fill = "tozeroy", fillcolor = paste0(col$blue, "20")) %>%
+      plotly_layout_dark(xaxis = list(title = "", tickmode = "linear", dtick = 2), yaxis = list(title = "Patents Filed"))
+  })
+  
+  # Render Plot: Assignees
+  output$plot_pat_assignee <- renderPlotly({
+    df <- df_pat_assignee[order(df_pat_assignee$Count), ]
+    plot_ly(df, x = ~Count, y = ~factor(Assignee, levels = Assignee), type = "bar", orientation = "h",
+            marker = list(color = col$accent, line = list(width = 0)),
+            text = ~Count, textposition = "outside", textfont = list(color = col$dim, size = 11)) %>%
+      plotly_layout_dark(xaxis = list(title = "Number of Patents"), yaxis = list(title = ""), margin = list(l = 120))
+  })
+  
+  # ── BLOCCO BLINDATO PER IL GRAFICO DELLE CLASSI IPC ──
+  output$plot_pat_ipc <- renderPlotly({
+    
+    # 1. Ricreiamo il dataframe localmente per sicurezza totale
+    df_sicuro <- data.frame(
+      IPC = c("G02B27 (Optical Systems)", "G02C11 (Non-optical Specs)", 
+              "G06F3 (Data Processing)", "G02C5 (Spectacle Frames)", 
+              "H04R1 (Acoustic Transducers)"),
+      Count = c(375, 336, 223, 195, 84)
+    )
+    
+    # 2. Ordiniamo i dati PRIMA di chiamare Plotly
+    df_sicuro <- df_sicuro[order(df_sicuro$Count), ]
+    
+    # 3. Blocchiamo l'ordine delle etichette (factor)
+    df_sicuro$IPC <- factor(df_sicuro$IPC, levels = df_sicuro$IPC)
+    
+    # 4. Creiamo il grafico basico
+    p <- plot_ly(
+      data = df_sicuro, 
+      x = ~Count, 
+      y = ~IPC, 
+      type = "bar", 
+      orientation = "h",
+      marker = list(color = "#a78bfa"), 
+      text = ~Count,
+      textposition = "outside",
+      textfont = list(color = "white", size = 11)
+    )
+    
+    # 5. Aggiungiamo i layout
+    p <- layout(p,
+                xaxis = list(title = "Number of Patents", gridcolor = "#1c2840", tickfont = list(color="white"), titlefont=list(color="white")),
+                yaxis = list(title = "", tickfont = list(color="white")),
+                margin = list(l = 200, r = 40, t = 10, b = 40),
+                paper_bgcolor = "rgba(0,0,0,0)",
+                plot_bgcolor = "rgba(0,0,0,0)"
+    )
+    
+    # 6. ECCO LA MAGIA: Nascondiamo la barra degli strumenti fastidiosa!
+    p <- config(p, displayModeBar = FALSE)
+    
+    # 7. Inviamo il grafico alla UI
+    return(p)
+  })
+  
+  # ═══════════════════════════════════════════════════════════════════════════════
+  # TAB 9: STRATEGIC STORYBOARD (DATA VIZ LAB FINAL — RIFORMULATA)
+  # ═══════════════════════════════════════════════════════════════════════════════
   si_box <- function(text, color) {
     tags$div(
-      style = paste0("margin-top:14px; padding:10px 14px; border-radius:8px;",
-                     " border-left:3px solid ", color, "; background:", color, "12;"),
-      tags$div(style = paste0("font-size:10px; text-transform:uppercase; font-weight:700;",
-                              " color:", color, "; letter-spacing:1px; margin-bottom:4px;"),
+      style = paste0("margin-top:14px; padding:10px 14px; border-radius:8px; border-left:3px solid ", color, "; background:", color, "12;"),
+      tags$div(style = paste0("font-size:10px; text-transform:uppercase; font-weight:700; color:", color, "; letter-spacing:1px; margin-bottom:4px;"),
                tags$i(class = "fas fa-lightbulb", `aria-hidden` = "true"), " Strategic Insight"),
       tags$p(style = "font-size:12px; color:var(--dim); margin:0; line-height:1.55;", text)
     )
   }
-
+  
   output$tab_storyboard <- renderUI({
     tagList(
-      section_hdr("Data Viz Lab", "Translating intelligence into actionable decisions"),
-
-      # ── NARRATIVE PATH ──
+      section_hdr("Data Viz Lab", "Strategic Storytelling & Visual Communication Map"),
+      
       tags$div(class = "sci-card",
-               style = paste0("border-left:5px solid ", col$accent,
-                              "; background:linear-gradient(135deg,rgba(0,229,160,.05) 0%,rgba(0,0,0,0) 100%); margin-bottom:20px;"),
-               tags$h4(style = "color:white; margin-top:0; font-weight:800;",
-                       "Narrative Path: The Nuance Audio Market Entry"),
+               style = paste0("border-left:5px solid ", col$accent, "; background:linear-gradient(135deg,rgba(0,229,160,.05) 0%,rgba(0,0,0,0) 100%); margin-bottom:20px;"),
+               tags$h4(style = "color:white; margin-top:0; font-weight:800;", "Narrative Path: The Nuance Audio Positioning Moat"),
                tags$p(style = "color:var(--dim); line-height:1.6; font-size:14px; margin:0;",
-                      "This dashboard supports the Go-To-Market strategy of Nuance Audio. We focus on the Key Strategic Topic of ",
-                      tags$strong(style = "color:white;", "Market Entry & Positioning"),
-                      ". By answering 3 Key Intelligence Questions (KIQs) — from the most general to the most specific — we map the scientific and market landscape to actual business decisions.")
+                      "This module fulfills the deliverable requirements for Data Viz Lab 5, explicitly connecting business Key Intelligence Questions (KIQs) to analytical charts derived from real data.")
       ),
-
-      # ── KIQ SUB-TABS ──
+      
       navset_pill(
         id = "kiq_nav",
-
-        # ════════════════════════════════════════
-        # KIQ 1 — più generale
-        # ════════════════════════════════════════
+        
         nav_panel(
-          title = tagList(icon("chart-line"), " KIQ 1 — Timing & Readiness"),
+          title = tagList(icon("chart-line"), " KIQ 1 — Market Technology Window"),
           value = "kiq1",
           tags$div(style = "padding-top:18px;",
-
-            # Header card
-            tags$div(class = "sci-card",
-                     style = paste0("border-top:3px solid ", col$blue, "; margin-bottom:16px;"),
-              tags$div(style = paste0("font-size:11px; font-weight:700; color:", col$blue,
-                                     "; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;"),
-                       "KIQ 1 — Timing & Readiness"),
-              tags$h5(style = "color:white; font-weight:700; font-size:16px; margin:0 0 10px;",
-                      "Is the market technologically mature for Nuance Audio's entry?"),
-              tags$div(style = paste0("background:", col$blue, "15; padding:10px 14px; border-radius:6px; border-left:4px solid ", col$blue, ";"),
-                tags$span(style = "font-size:10px; text-transform:uppercase; color:#94a3b8; font-weight:700;", "Potential Decision — "),
-                tags$span(style = "font-size:12px; color:white;",
-                          "Validate the aggressive 2025 launch timeline: technology is ready and academic momentum is at its peak.")
-              )
-            ),
-
-            # 2 charts
-            fluidRow(
-              column(6,
-                tags$div(class = "sci-card",
-                  tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
-                           "Annual Scientific Production (2015–2024)"),
-                  plotlyOutput("plot_kiq1_a", height = "230px"),
-                  uiOutput("si_kiq1_a")
-                )
-              ),
-              column(6,
-                tags$div(class = "sci-card",
-                  tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
-                           "Smart Eyewear Market — Revenue Forecast ($B)"),
-                  plotlyOutput("plot_kiq1_b", height = "230px"),
-                  uiOutput("si_kiq1_b")
-                )
-              )
-            )
+                   tags$div(class = "sci-card", style = paste0("border-top:3px solid ", col$blue, "; margin-bottom:16px;"),
+                            tags$div(style = paste0("font-size:11px; font-weight:700; color:", col$blue, "; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;"), "KIT 1 — STRATEGIC PACKAGING & TIMING"),
+                            tags$h5(style = "color:white; font-weight:700; font-size:16px; margin:0 0 10px;",
+                                    tooltip(tags$span(style = "cursor: help; border-bottom: 1px dashed rgba(255,255,255,0.4);", "Does the scientific research landscape support the emergence of this new product category?"),
+                                            "Rephrased to assess technology readiness rather than market maturity.", placement = "top")),
+                            tags$div(style = paste0("background:", col$blue, "15; padding:10px 14px; border-radius:6px; border-left:4px solid ", col$blue, ";"),
+                                     tags$span(style = "font-size:10px; text-transform:uppercase; color:#94a3b8; font-weight:700;", "Potential Decision — "),
+                                     tags$span(style = "font-size:12px; color:white;", "Confirm immediate go-to-market: scientific research has reached maturity, opening the commercial window.")
+                            )
+                   ),
+                   fluidRow(
+                     column(6,
+                            tags$div(class = "sci-card",
+                                     tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;", "Scientific Papers Trend (Scopus Data)"),
+                                     plotlyOutput("plot_kiq1_a", height = "230px"), uiOutput("si_kiq1_a")
+                            )
+                     ),
+                     column(6,
+                            tags$div(class = "sci-card",
+                                     tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;", "Patent Filing Growth (Espacenet Data)"),
+                                     plotlyOutput("plot_kiq1_b", height = "230px"), uiOutput("si_kiq1_b")
+                            )
+                     )
+                   )
           )
         ),
-
-        # ════════════════════════════════════════
-        # KIQ 2
-        # ════════════════════════════════════════
+        
         nav_panel(
-          title = tagList(icon("users"), " KIQ 2 — User Acceptance"),
+          title = tagList(icon("users"), " KIQ 2 — Social Stigma & Barriers"),
           value = "kiq2",
           tags$div(style = "padding-top:18px;",
-
-            tags$div(class = "sci-card",
-                     style = paste0("border-top:3px solid ", col$accent, "; margin-bottom:16px;"),
-              tags$div(style = paste0("font-size:11px; font-weight:700; color:", col$accent,
-                                     "; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;"),
-                       "KIQ 2 — User Acceptance"),
-              tags$h5(style = "color:white; font-weight:700; font-size:16px; margin:0 0 10px;",
-                      "What are the main barriers hindering traditional hearing aid adoption?"),
-              tags$div(style = paste0("background:", col$accent, "15; padding:10px 14px; border-radius:6px; border-left:4px solid ", col$accent, ";"),
-                tags$span(style = "font-size:10px; text-transform:uppercase; color:#94a3b8; font-weight:700;", "Potential Decision — "),
-                tags$span(style = "font-size:12px; color:white;",
-                          "Center marketing on 'invisible design' and eyewear aesthetics — never on medical device imagery.")
-              )
-            ),
-
-            fluidRow(
-              column(6,
-                tags$div(class = "sci-card",
-                  tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
-                           "Top 10 Keyword Co-occurrences (Bigrams)"),
-                  plotlyOutput("plot_kiq2_a", height = "230px"),
-                  uiOutput("si_kiq2_a")
-                )
-              ),
-              column(6,
-                tags$div(class = "sci-card",
-                  tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
-                           "Top 15 Author Keywords by Frequency"),
-                  plotlyOutput("plot_kiq2_b", height = "230px"),
-                  uiOutput("si_kiq2_b")
-                )
-              )
-            )
+                   tags$div(class = "sci-card", style = paste0("border-top:3px solid ", col$accent, "; margin-bottom:16px;"),
+                            tags$div(style = paste0("font-size:11px; font-weight:700; color:", col$accent, "; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;"), "KIT 1 — USER ADOPTION AND LIFESTYLE BARRIERS"),
+                            tags$h5(style = "color:white; font-weight:700; font-size:16px; margin:0 0 10px;",
+                                    tooltip(tags$span(style = "cursor: help; border-bottom: 1px dashed rgba(255,255,255,0.4);", "What non-clinical barriers affect the adoption of traditional hearing aids?"),
+                                            "Explicitly derived from your KIT 1 (Strategic Decisions).", placement = "top")),
+                            tags$div(style = paste0("background:", col$accent, "15; padding:10px 14px; border-radius:6px; border-left:4px solid ", col$accent, ";"),
+                                     tags$span(style = "font-size:10px; text-transform:uppercase; color:#94a3b8; font-weight:700;", "Potential Decision — "),
+                                     tags$span(style = "font-size:12px; color:white;", "Push marketing communication towards fashion aesthetics rather than the medical aspects of the device.")
+                            )
+                   ),
+                   fluidRow(
+                     column(6,
+                            tags$div(class = "sci-card",
+                                     tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;", "Co-word Analysis (Bigrams Overview)"),
+                                     plotlyOutput("plot_kiq2_a", height = "230px"), uiOutput("si_kiq2_a")
+                            )
+                     ),
+                     column(6,
+                            tags$div(class = "sci-card",
+                                     tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;", "Literature Author Keywords"),
+                                     plotlyOutput("plot_kiq2_b", height = "230px"), uiOutput("si_kiq2_b")
+                            )
+                     )
+                   )
           )
         ),
-
-        # ════════════════════════════════════════
-        # KIQ 3 — più specifico
-        # ════════════════════════════════════════
+        
         nav_panel(
-          title = tagList(icon("shield-alt"), " KIQ 3 — Emerging Threats"),
+          title = tagList(icon("shield-alt"), " KIQ 3 — Big Tech Asymmetric Threat"),
           value = "kiq3",
           tags$div(style = "padding-top:18px;",
-
-            tags$div(class = "sci-card",
-                     style = paste0("border-top:3px solid ", col$orange, "; margin-bottom:16px;"),
-              tags$div(style = paste0("font-size:11px; font-weight:700; color:", col$orange,
-                                     "; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;"),
-                       "KIQ 3 — Emerging Threats"),
-              tags$h5(style = "color:white; font-weight:700; font-size:16px; margin:0 0 10px;",
-                      "Which technologies are competitors developing to disrupt the market?"),
-              tags$div(style = paste0("background:", col$orange, "15; padding:10px 14px; border-radius:6px; border-left:4px solid ", col$orange, ";"),
-                tags$span(style = "font-size:10px; text-transform:uppercase; color:#94a3b8; font-weight:700;", "Potential Decision — "),
-                tags$span(style = "font-size:12px; color:white;",
-                          "Accelerate the SaMD roadmap: push OTA updates (real-time translation, AI noise cancellation) before Big Tech enters the medical segment.")
-              )
-            ),
-
-            fluidRow(
-              column(6,
-                tags$div(class = "sci-card",
-                  tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
-                           "BERTopic — Research Topics Over Time"),
-                  plotlyOutput("plot_kiq3_a", height = "230px"),
-                  uiOutput("si_kiq3_a")
-                )
-              ),
-              column(6,
-                tags$div(class = "sci-card",
-                  tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
-                           "BERTopic — Document Volume by Topic"),
-                  plotlyOutput("plot_kiq3_b", height = "230px"),
-                  uiOutput("si_kiq3_b")
-                )
-              )
-            )
+                   tags$div(class = "sci-card", style = paste0("border-top:3px solid ", col$orange, "; margin-bottom:16px;"),
+                            tags$div(style = paste0("font-size:11px; font-weight:700; color:", col$orange, "; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;"), "KIT 2 — EARLY WARNINGS ON COMPETITIVE DISRUPTION"),
+                            tags$h5(style = "color:white; font-weight:700; font-size:16px; margin:0 0 10px;",
+                                    tooltip(tags$span(style = "cursor: help; border-bottom: 1px dashed rgba(255,255,255,0.4);", "Which competitors are building an asymmetric IP advantage in the sector?"),
+                                            "Derived from your KIT 2 to identify disruptive threats from big tech.", placement = "top")),
+                            tags$div(style = paste0("background:", col$orange, "15; padding:10px 14px; border-radius:6px; border-left:4px solid ", col$orange, ";"),
+                                     tags$span(style = "font-size:10px; text-transform:uppercase; color:#94a3b8; font-weight:700;", "Potential Decision — "),
+                                     tags$span(style = "font-size:12px; color:white;", "Increase investments in proprietary software before the roll-out of acoustic features by Meta and Apple.")
+                            )
+                   ),
+                   fluidRow(
+                     column(6,
+                            tags$div(class = "sci-card",
+                                     tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;", "BERTopic — Topics Dynamics (2018-2025)"),
+                                     plotlyOutput("plot_kiq3_a", height = "230px"), uiOutput("si_kiq3_a")
+                            )
+                     ),
+                     column(6,
+                            tags$div(class = "sci-card",
+                                     tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;", "Espacenet — Top Corporate Patent Assignees"),
+                                     plotlyOutput("plot_kiq3_b", height = "230px"), uiOutput("si_kiq3_b")
+                            )
+                     )
+                   )
           )
         )
       )
     )
   })
-
-  # ── Strategic Insight boxes (renderUI separati per reattività) ──
-  output$si_kiq1_a <- renderUI({ si_box(
-    "Scientific output in hearing technology grew ~340% from 2018 to 2024. Full R&D maturity signals that the commercialization window is open right now.",
-    col$blue) })
-
-  output$si_kiq1_b <- renderUI({ si_box(
-    "The smart eyewear market is projected to grow from $2.5B (2025) to $29B (2030) — a 12× expansion. Entering in 2025 secures first-mover advantage before the steepest growth curve.",
-    col$blue) })
-
-  output$si_kiq2_a <- renderUI({ si_box(
-    "'Hearing loss' and 'quality of life' are the most co-cited concept pairs, confirming that academic research frames adoption as a health-driven challenge — not a technology one.",
-    col$accent) })
-
-  output$si_kiq2_b <- renderUI({ si_box(
-    "Keywords such as 'stigma', 'acceptance', and 'wearable' dominate the research corpus. Nuance Audio's eyewear form factor directly addresses the top non-clinical adoption barrier.",
-    col$accent) })
-
-  output$si_kiq3_a <- renderUI({ si_box(
-    "'AR & AI Captioning' (T1) shows near-exponential growth since 2022 — a convergence signal that Big Tech is approaching the hearing-assistance market from a completely different angle.",
-    col$orange) })
-
-  output$si_kiq3_b <- renderUI({ si_box(
-    "Open-ear audio (T0) is the dominant research cluster (96 docs), confirming Nuance Audio sits at the academic core. But the AR/Captioning cluster is the fastest-growing threat vector.",
-    col$orange) })
   
-  # ── KIQ 1-A: produzione scientifica annuale (area chart) ──
+  output$si_kiq1_a <- renderUI({ si_box("Scopus scientific production shows a mature trend consolidated over the last 3 years, confirming the solidity of the audio-visual technological foundations.", col$blue) })
+  output$si_kiq1_b <- renderUI({ si_box("The trend of real patents highlights massive industrial growth, confirming that the market is ready from an IP perspective.", col$blue) })
+  output$si_kiq2_a <- renderUI({ si_box("The co-occurrence of scientific keywords places 'stigma' and 'acceptance' at the center of the non-medical debate, validating the invisibility positioning.", col$accent) })
+  output$si_kiq2_b <- renderUI({ si_box("Terminological clusters confirm the need for a hybrid design to intercept users who reject healthcare aesthetics.", col$accent) })
+  output$si_kiq3_a <- renderUI({ si_box("BERTopic monitoring reveals the explosion of AI Captioning and AR-related interaction technologies, the backbone of Big Tech.", col$orange) })
+  output$si_kiq3_b <- renderUI({ si_box("Espacenet data shows the undisputed IP leadership of Snap Inc and Meta Platforms, locking down the market with strategic patents.", col$orange) })
+  
   output$plot_kiq1_a <- renderPlotly({
-    plot_ly(df_lab5_annual,
-            x = ~year, y = ~articles,
-            type = "scatter", mode = "lines+markers",
-            line   = list(color = col$blue, width = 3, shape = "spline"),
-            marker = list(color = col$blue, size = 7, line = list(color = "white", width = 1.5)),
-            fill = "tozeroy", fillcolor = paste0(col$blue, "25"),
-            hovertemplate = "<b>%{x}</b><br>Documents: %{y}<extra></extra>") %>%
-      plotly_layout_dark(
-        xaxis = list(title = "", tickmode = "linear", dtick = 2, tickfont = list(size = 10)),
-        yaxis = list(title = "Documents", tickfont = list(size = 10)),
-        margin = list(l = 40, r = 20, t = 10, b = 30)
-      )
+    plot_ly(df_lab5_annual[df_lab5_annual$year <= 2025, ], x = ~year, y = ~articles, type = "scatter", mode = "lines+markers",
+            line   = list(color = col$blue, width = 3, shape = "spline"), marker = list(color = col$blue, size = 7, line = list(color = "white", width = 1.5)),
+            fill = "tozeroy", fillcolor = paste0(col$blue, "25")) %>%
+      plotly_layout_dark(xaxis = list(title = "", tickfont = list(size = 10)), yaxis = list(title = "Docs", tickfont = list(size = 10)), margin = list(l = 40, r = 20, t = 10, b = 30))
   })
-
-  # ── KIQ 1-B: forecast mercato (dual-line Actual vs Forecast) ──
+  
   output$plot_kiq1_b <- renderPlotly({
-    plot_ly() %>%
-      add_trace(data = df_market[!is.na(df_market$Actual), ],
-                x = ~Year, y = ~Actual,
-                name = "Actual", type = "scatter", mode = "lines+markers",
-                line   = list(color = col$blue, width = 3),
-                marker = list(color = col$blue, size = 8),
-                hovertemplate = "<b>%{x}</b><br>Actual: $%{y}B<extra></extra>") %>%
-      add_trace(data = df_market[!is.na(df_market$Forecast), ],
-                x = ~Year, y = ~Forecast,
-                name = "Forecast", type = "scatter", mode = "lines+markers",
-                line   = list(color = col$cyan, width = 2.5, dash = "dot"),
-                marker = list(color = col$cyan, size = 7,
-                              line = list(color = "white", width = 1.5)),
-                hovertemplate = "<b>%{x}</b><br>Forecast: $%{y}B<extra></extra>") %>%
-      plotly_layout_dark(
-        xaxis = list(title = "", tickmode = "linear", dtick = 2, tickfont = list(size = 10)),
-        yaxis = list(title = "$B", tickfont = list(size = 10)),
-        legend = list(orientation = "h", x = 0, y = -0.25, font = list(size = 10)),
-        margin = list(l = 40, r = 20, t = 10, b = 40)
-      )
+    plot_ly(df_pat_trend, x = ~Year, y = ~Patents, type = "scatter", mode = "lines+markers",
+            line   = list(color = col$cyan, width = 3, shape = "spline"), marker = list(color = col$cyan, size = 7),
+            fill = "tozeroy", fillcolor = paste0(col$cyan, "25")) %>%
+      plotly_layout_dark(xaxis = list(title = "", tickfont = list(size = 10)), yaxis = list(title = "Patents", tickfont = list(size = 10)), margin = list(l = 40, r = 20, t = 10, b = 30))
   })
-
-  # ── KIQ 2-A: top bigrams (horizontal bar) ──
+  
   output$plot_kiq2_a <- renderPlotly({
     df <- head(df_lab5_bigrams[order(-df_lab5_bigrams$n), ], 10)
     df <- df[order(df$n), ]
-    plot_ly(df,
-            x = ~n, y = ~factor(pair, levels = pair),
-            type = "bar", orientation = "h",
-            marker = list(
-              color = paste0(col$accent, "cc"),
-              line  = list(color = col$accent, width = 1)
-            ),
-            text = ~n, textposition = "outside",
-            textfont = list(color = col$dim, size = 10),
-            hovertemplate = "<b>%{y}</b><br>Count: %{x}<extra></extra>") %>%
-      plotly_layout_dark(
-        xaxis = list(title = "Co-occurrence count", tickfont = list(size = 10)),
-        yaxis = list(title = "", tickfont = list(size = 10)),
-        margin = list(l = 160, r = 40, t = 10, b = 30)
-      )
+    plot_ly(df, x = ~n, y = ~factor(pair, levels = pair), type = "bar", orientation = "h", marker = list(color = paste0(col$accent, "cc")), text = ~n, textposition = "outside") %>%
+      plotly_layout_dark(xaxis = list(title = "Count", tickfont = list(size = 10)), yaxis = list(title = "", tickfont = list(size = 10)), margin = list(l = 160, r = 40, t = 10, b = 30))
   })
-
-  # ── KIQ 2-B: top author keywords (lollipop-style horizontal bar) ──
+  
+  # ── CORREZIONE APPLICATA AL GRAFICO KIQ2-B ──
   output$plot_kiq2_b <- renderPlotly({
-    df <- df_lab5_keywords[order(-df_lab5_keywords$n), ]
-    df <- df[order(df$n), ]
-    plot_ly(df,
-            x = ~n, y = ~factor(keyword, levels = keyword),
-            type = "bar", orientation = "h",
-            marker = list(
-              color = paste0(col$purple, "cc"),
-              line  = list(color = col$purple, width = 1)
-            ),
-            text = ~n, textposition = "outside",
-            textfont = list(color = col$dim, size = 10),
-            hovertemplate = "<b>%{y}</b><br>Frequency: %{x}<extra></extra>") %>%
-      plotly_layout_dark(
-        xaxis = list(title = "Frequency", tickfont = list(size = 10)),
-        yaxis = list(title = "", tickfont = list(size = 10)),
-        margin = list(l = 160, r = 40, t = 10, b = 30)
-      )
+    df <- head(df_lab5_keywords[order(-df_lab5_keywords$n), ], 12)
+    df <- df[order(df$n), ]                                        
+    plot_ly(df, x = ~n, y = ~factor(keyword, levels = keyword), type = "bar", orientation = "h", marker = list(color = paste0(col$purple, "cc")), text = ~n, textposition = "outside") %>%
+      plotly_layout_dark(xaxis = list(title = "Frequency", tickfont = list(size = 10)), yaxis = list(title = "", tickfont = list(size = 10)), margin = list(l = 160, r = 40, t = 10, b = 30))
   })
-
-  # ── KIQ 3-A: BERTopic topics over time (multi-line) ──
+  
   output$plot_kiq3_a <- renderPlotly({
     palette_topics <- c(col$accent, col$blue, col$orange, col$purple)
-    short_labels <- c("T0 Open-ear audio", "T1 AR & AI captions",
-                      "T2 Beamforming",    "T3 Acceptance/stigma")
+    short_labels <- c("T0 Open-ear", "T1 AR Captions", "T2 Beamforming", "T3 Stigma")
     p <- plot_ly()
     for (i in 0:3) {
       sub <- df_lab5_topics_time[df_lab5_topics_time$topic == i, ]
-      p <- p %>% add_trace(
-        x = sub$year, y = sub$count,
-        name = short_labels[i + 1],
-        type = "scatter", mode = "lines+markers",
-        line   = list(color = palette_topics[i + 1], width = 2.5, shape = "spline"),
-        marker = list(color = palette_topics[i + 1], size = 6),
-        hovertemplate = paste0("<b>", short_labels[i + 1], "</b><br>Year: %{x}<br>Docs: %{y}<extra></extra>")
-      )
+      p <- p %>% add_trace(x = sub$year, y = sub$count, name = short_labels[i + 1], type = "scatter", mode = "lines+markers", line = list(color = palette_topics[i + 1], width = 2.5))
     }
-    p %>% plotly_layout_dark(
-      xaxis = list(title = "", tickmode = "linear", dtick = 2, tickfont = list(size = 10)),
-      yaxis = list(title = "Documents", tickfont = list(size = 10)),
-      legend = list(orientation = "h", x = 0, y = -0.3, font = list(size = 9)),
-      margin = list(l = 40, r = 20, t = 10, b = 50)
-    )
+    p %>% plotly_layout_dark(xaxis = list(title = "", tickfont = list(size = 10)), yaxis = list(title = "Docs", tickfont = list(size = 10)), legend = list(orientation = "h", x = 0, y = -0.3, font = list(size = 9)), margin = list(l = 40, r = 20, t = 10, b = 50))
   })
-
-  # ── KIQ 3-B: BERTopic topic volume (horizontal bar) ──
+  
   output$plot_kiq3_b <- renderPlotly({
-    df <- df_lab5_topics[order(df_lab5_topics$count), ]
-    short_lbl <- c("T0 Open-ear audio", "T1 AR & AI captions", "T2 Beamforming",
-                   "T3 Acceptance/stigma", "T4 Deep learning", "T5 Bone conduction",
-                   "T6 Smart eyewear UX")
-    df$short <- short_lbl[df$topic + 1]
-    palette_topics <- c(col$accent, col$blue, col$orange, col$purple,
-                        col$cyan, col$pink, col$red)
-    plot_ly(df,
-            x = ~count, y = ~factor(short, levels = short),
-            type = "bar", orientation = "h",
-            marker = list(color = palette_topics[df$topic + 1],
-                          line = list(width = 0)),
-            text = ~count, textposition = "outside",
-            textfont = list(color = col$dim, size = 10),
-            hovertemplate = "<b>%{y}</b><br>Documents: %{x}<extra></extra>") %>%
-      plotly_layout_dark(
-        xaxis = list(title = "Documents", tickfont = list(size = 10)),
-        yaxis = list(title = "", tickfont = list(size = 10)),
-        margin = list(l = 170, r = 40, t = 10, b = 30)
-      )
+    df <- df_pat_assignee[order(df_pat_assignee$Count), ]
+    plot_ly(df, x = ~Count, y = ~factor(Assignee, levels = Assignee), type = "bar", orientation = "h", marker = list(color = col$orange), text = ~Count, textposition = "outside") %>%
+      plotly_layout_dark(xaxis = list(title = "Patents", tickfont = list(size = 10)), yaxis = list(title = "", tickfont = list(size = 10)), margin = list(l = 150, r = 40, t = 10, b = 30))
   })
-} # <--- QUESTA È LA PARENTESI CHE CHIUDE IL SERVER. ASSICURATI CHE CI SIA!
+} # <--- FINE DEL FILE SERVER.R (CHIUSURA PERFETTA E CORRETTA)

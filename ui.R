@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# UI
+# UI — AGGIORNATA CON DATA VIZ E BREVETTI REAL
 # ═══════════════════════════════════════════════════════════════════════════════
 
 ui <- page_fillable(
@@ -36,19 +36,17 @@ ui <- page_fillable(
         id = "main_nav",
         well = FALSE,
         widths = c(12, 12),
-        nav_panel(title = "Introduction & Guide", value = "intro", icon = icon("book-open")),
-        #nav_panel(title = "Executive Summary",   value = "overview",    icon = icon("chart-pie")),
+        nav_panel(title = "Home (README)",        value = "intro",       icon = icon("home")),
         nav_panel(title = "Porter's Five Forces", value = "porter",      icon = icon("shield-alt")),
         nav_panel(title = "VUCA Analysis",        value = "vuca",        icon = icon("compass")),
-        #nav_panel(title = "Market Intelligence",  value = "market",      icon = icon("chart-line")),
-        #nav_panel(title = "Competitive Map",      value = "competitors", icon = icon("chess-knight")),
         nav_panel(title = "Scope & KITs/KIQs",    value = "scope",       icon = icon("crosshairs")),
         nav_panel(title = "Query Design",         value = "queries",     icon = icon("search")),
         nav_panel(title = "GenAI for CI",         value = "genai",       icon = icon("robot")),
         nav_panel(title = "Text Analysis",        value = "textanalysis", icon = icon("file-lines")),
         
-        # AGGIUNTO: Il bottone nel menu laterale per la nuova Tab
-        nav_panel(title = "Data Viz Lab",         value = "storyboard",   icon = icon("chalkboard-user"))
+        # AGGIUNTI PER GLI ULTIMI LABORATORI
+        nav_panel(title = "Patent Analysis",      value = "patents",      icon = icon("certificate")),
+        nav_panel(title = "Data Viz Lab",         value = "storyboard",   icon = icon("chart-pie"))
       ),
       tags$div(
         style = "position:absolute; bottom:16px; left:16px; right:16px;",
@@ -60,7 +58,6 @@ ui <- page_fillable(
             HTML("SCI — A.Y. 2025/2026<br>Prof. Irene Spada<br>University of Pisa")
           )
         ),
-        # Nomi del team separati da una linea sottile
         tags$div(
           style = "font-size:10px; color:var(--dim); line-height:1.5; border-top:1px solid var(--border); padding-top:8px;",
           HTML("<strong>Project Team:</strong><br>Filippo Del Rosso,<br>Riccardo Diprima,<br>Alice Giovagnini")
@@ -72,18 +69,16 @@ ui <- page_fillable(
     tags$div(style = "max-width:1100px; margin:0 auto; padding: 0 12px;",
              navset_hidden(
                id = "main_content",
-               nav_panel(title = "", value = "intro",       uiOutput("tab_intro")),
-               #nav_panel(title = "", value = "overview",    uiOutput("tab_overview")),
-               nav_panel(title = "", value = "porter",      uiOutput("tab_porter")),
-               nav_panel(title = "", value = "vuca",        uiOutput("tab_vuca")),
-               #nav_panel(title = "", value = "market",      uiOutput("tab_market")),
-               #nav_panel(title = "", value = "competitors", uiOutput("tab_competitors")),
-               nav_panel(title = "", value = "scope",       uiOutput("tab_scope")),
-               nav_panel(title = "", value = "queries",     uiOutput("tab_queries")),
-               nav_panel(title = "", value = "genai",       uiOutput("tab_genai")),
+               nav_panel(title = "", value = "intro",        uiOutput("tab_intro")),
+               nav_panel(title = "", value = "porter",       uiOutput("tab_porter")),
+               nav_panel(title = "", value = "vuca",         uiOutput("tab_vuca")),
+               nav_panel(title = "", value = "scope",        uiOutput("tab_scope")),
+               nav_panel(title = "", value = "queries",      uiOutput("tab_queries")),
+               nav_panel(title = "", value = "genai",        uiOutput("tab_genai")),
                nav_panel(title = "", value = "textanalysis", uiOutput("tab_textanalysis")),
                
-               # AGGIUNTO: Il collegamento all'output generato dal Server
+               # AGGIUNTI PER GLI ULTIMI LABORATORI
+               nav_panel(title = "", value = "patents",      uiOutput("tab_patents")),
                nav_panel(title = "", value = "storyboard",   uiOutput("tab_storyboard"))
              )
     )
