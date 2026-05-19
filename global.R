@@ -55,6 +55,9 @@ body, .bslib-page-fill {
   background: var(--bg) !important;
   color: var(--text) !important;
   font-family: 'Outfit', sans-serif !important;
+  
+  min-width: 1200px !important; 
+  overflow-x: auto !important;
 }
 
 /* ── Navigation ── */
@@ -88,11 +91,12 @@ body, .bslib-page-fill {
   border-radius: 14px;
   padding: 24px;
   margin-bottom: 18px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
 }
 .sci-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  transform: translateY(-2px);
+  border-color: rgba(0,229,160,0.22);
+  box-shadow: 0 0 0 1px rgba(0,229,160,0.12), 0 10px 32px rgba(0,0,0,0.28);
 }
 
 /* ── Stat Blocks ── */
@@ -104,6 +108,12 @@ body, .bslib-page-fill {
   text-align: center;
   position: relative;
   overflow: hidden;
+  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+}
+.stat-block:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0,229,160,0.22);
+  box-shadow: 0 0 0 1px rgba(0,229,160,0.12), 0 8px 24px rgba(0,0,0,0.25);
 }
 .stat-block::before {
   content: '';
@@ -156,6 +166,90 @@ body, .bslib-page-fill {
   font-weight: 700;
   letter-spacing: 0.5px;
 }
+/* ── Sidebar bloccata ── */
+.bslib-sidebar-toggle,
+[data-bslib-sidebar-toggle] {
+  display: none !important;
+}
+
+.bslib-sidebar-resize-handle {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* ── Folder Nav ── */
+.nav-custom-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 14px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dim);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  margin-bottom: 2px;
+  user-select: none;
+}
+.nav-custom-link:hover { background: rgba(0,229,160,0.06); color: var(--accent); }
+.nav-custom-link.active {
+  background: rgba(0,229,160,0.12);
+  color: var(--accent);
+  font-weight: 700;
+  border-color: rgba(0,229,160,0.25);
+  box-shadow: 0 0 14px rgba(0,229,160,0.07);
+}
+
+.nav-folder-hdr {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.18s;
+  margin: 4px 0 2px;
+  user-select: none;
+}
+.nav-folder-hdr:hover { background: rgba(255,255,255,0.03); }
+
+.nav-folder-children { overflow: hidden; }
+
+.nav-btn-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--dim);
+  cursor: pointer;
+  transition: all 0.18s;
+  margin: 1px 0 1px 6px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.015);
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-btn-item:hover {
+  background: rgba(255,255,255,0.045);
+  color: var(--text);
+  transform: translateX(2px);
+}
+.nav-btn-item.active {
+  font-weight: 600;
+  color: white;
+  background: rgba(255,255,255,0.06);
+}
 
 /* ── Hero Banner ── */
 .hero-banner {
@@ -182,6 +276,11 @@ body, .bslib-page-fill {
   padding: 24px;
   border-left: 4px solid;
   margin-bottom: 18px;
+  transition: transform 0.22s, box-shadow 0.22s;
+}
+.insight-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.25);
 }
 
 /* ── Code Block ── */
@@ -193,6 +292,39 @@ body, .bslib-page-fill {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   color: var(--accent);
+  line-height: 1.7;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+/* ── Hover universale su tutti i contenitori card-like ── */
+.query-code-light,
+.rumsfeld-cell,
+.porter-box {
+  cursor: default;
+}
+.query-code-light:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  transition: transform 0.22s, box-shadow 0.22s;
+}
+
+/* code tags inside pastel insight-boxes */
+.insight-box code {
+  color: inherit;
+  font-weight: 700;
+  background: transparent;
+  font-size: 0.9em;
+}
+
+.query-code-light {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #1e293b;
   line-height: 1.7;
   overflow-x: auto;
   white-space: pre-wrap;
@@ -245,7 +377,11 @@ table.dataTable tbody tr:hover { background: var(--card2) !important; }
   text-align: center;
   background: var(--card);
 }
-.vuca-btn:hover, .kit-btn:hover { transform: translateY(-2px); }
+.vuca-btn:hover, .kit-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0,229,160,0.35);
+  box-shadow: 0 0 0 1px rgba(0,229,160,0.15), 0 8px 24px rgba(0,0,0,0.2);
+}
 .vuca-btn.active { border-color: var(--accent); background: rgba(0,229,160,0.06); }
 .kit-btn.active { border-color: var(--accent); background: rgba(0,229,160,0.06); }
 
@@ -258,7 +394,7 @@ table.dataTable tbody tr:hover { background: var(--card2) !important; }
 .js-plotly-plot .plotly .main-svg { background: transparent !important; }
 
 /* ── Tab Content Padding ── */
-.tab-content > .tab-pane { padding: 8px 0; }
+.tab-content > .tab-pane { padding: 0; }
 
 /* ── Responsive columns ── */
 .row-stats { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; }
@@ -267,18 +403,17 @@ table.dataTable tbody tr:hover { background: var(--card2) !important; }
 /* Stile per il Diagramma di Porter */
 .porter-grid {
   display: grid;
-  /* Sostituito 1fr con minmax(0, 1fr) per forzare le 3 colonne ad essere di larghezza identica */
-  grid-template-columns: minmax(0, 1fr) 55px minmax(0, 1fr) 55px minmax(0, 1fr);
-  grid-template-rows: 210px 50px 210px 50px 210px;
-  gap: 10px;
-  margin: 20px 0;
+  grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr) 44px minmax(0, 1fr);
+  grid-template-rows: 148px 28px 148px 28px 148px;
+  gap: 8px;
+  margin: 10px 0 0;
 }
 
 .porter-box {
-  background: transparent;
-  border: 2px solid var(--border);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
-  padding: 16px;
+  padding: 12px 10px;
   text-align: center;
   width: 100%;
   height: 100%;
@@ -286,27 +421,70 @@ table.dataTable tbody tr:hover { background: var(--card2) !important; }
   flex-direction: column;
   justify-content: center;
   box-sizing: border-box;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+}
+.porter-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
 }
 
 .porter-box h5 {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 800;
-  color: #080c14; 
-  margin-bottom: 8px;
-  text-decoration: none; 
+  color: #0f1724;
+  margin: 0 0 4px;
+  line-height: 1.25;
 }
 
 .porter-box p {
-  font-size: 12px;
-  color: #334155; 
+  font-size: 10.5px;
+  color: #475569;
   line-height: 1.4;
   margin: 0;
 }
 
-.status-u {
-  text-decoration: underline;
+.porter-icon {
+  font-size: 20px;
+  margin-bottom: 6px;
 }
+
+.porter-level {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  margin-bottom: 5px;
+}
+
+.porter-level {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  margin-bottom: 8px;
+}
+
+.porter-actors {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 9px;
+}
+
+.porter-actor {
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+  letter-spacing: 0.2px;
+}
+
+.status-u { text-decoration: underline; }
 
 .porter-arrow {
   font-size: 38px;
@@ -350,20 +528,81 @@ table.dataTable tbody tr:hover { background: var(--card2) !important; }
   object-fit: contain;
   opacity: 0.9;
 }
+
+/* ── Rumsfeld Matrix ── */
+.rumsfeld-cell {
+  background: #fdfdfd;
+  border: 2px dashed #94a3b8;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.22s, box-shadow 0.22s;
+  cursor: default;
+}
+.rumsfeld-cell:hover {
+  border-color: #475569;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+}
+.rumsfeld-cell-header {
+  padding: 15px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.rumsfeld-cell-icon {
+  font-size: 17px;
+  color: #556378;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.rumsfeld-drop {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+  padding: 0 15px;
+}
+.rumsfeld-cell:hover .rumsfeld-drop {
+  max-height: 500px;
+  padding: 0 15px 16px;
+}
+
+/* ── Sidebar bloccata ── */
+.bslib-sidebar-toggle,
+[data-bslib-sidebar-toggle],
+.collapse-toggle,
+button.sidebar-toggle { display: none !important; }
+
+.sidebar-resize-handle,
+.bslib-sidebar .resize-handle { display: none !important; pointer-events: none !important; }
 ")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # HELPER FUNCTIONS
 # ═══════════════════════════════════════════════════════════════════════════════
 
+# ── Pastel palette lookup ──────────────────────────────────────────────────────
+.pastel <- list(
+  "#00e5a0" = list(bg = "#d1fae5", text = "#065f46"),
+  "#4facfe" = list(bg = "#dbeafe", text = "#1e3a8a"),
+  "#ff9f43" = list(bg = "#ffedd5", text = "#9a3412"),
+  "#a78bfa" = list(bg = "#ede9fe", text = "#4c1d95"),
+  "#ff5757" = list(bg = "#fee2e2", text = "#7f1d1d"),
+  "#22d3ee" = list(bg = "#cffafe", text = "#164e63"),
+  "#f472b6" = list(bg = "#fce7f3", text = "#831843"),
+  "#eab308" = list(bg = "#fef9c3", text = "#713f12")
+)
+pastel_bg   <- function(color) if (color %in% names(.pastel)) .pastel[[color]]$bg   else "#f8fafc"
+pastel_text <- function(color) if (color %in% names(.pastel)) .pastel[[color]]$text else "#334155"
+
 # Stat block HTML
 stat_block <- function(label, value, sub = NULL, color = col$accent) {
+  bg  <- pastel_bg(color)
+  txt <- pastel_text(color)
   tags$div(
     class = "stat-block",
-    style = paste0("border-top: 3px solid ", color, ";"),
-    tags$div(class = "stat-label", label),
+    style = paste0("border-top:3px solid ", color, "; background:", bg, ";"),
+    tags$div(class = "stat-label", style = paste0("color:", txt, "99;"), label),
     tags$div(class = "stat-value", style = paste0("color:", color, ";"), value),
-    if (!is.null(sub)) tags$div(class = "stat-sub", sub)
+    if (!is.null(sub)) tags$div(class = "stat-sub", style = paste0("color:", txt, ";"), sub)
   )
 }
 
@@ -384,37 +623,53 @@ sci_badge <- function(text, color = col$accent) {
   )
 }
 
-# Insight box  (icon = nome FA, es. "lightbulb", "bolt", "check-circle")
+# Insight box
 insight_box <- function(title, text, color = col$accent, icon = "lightbulb") {
+  bg  <- pastel_bg(color)
+  txt <- pastel_text(color)
   tags$div(
     class = "insight-box",
-    style = paste0("background: linear-gradient(135deg, ", color, "0d, ", col$card, "); border-color:", color, ";"),
+    style = paste0("background:", bg, "; border-color:", color, ";"),
     tags$h4(
       style = paste0("font-size:15px; font-weight:700; color:", color, "; margin:0 0 10px;"),
-      tags$i(class = paste0("fas fa-", icon), `aria-hidden` = "true"),
-      " ",
-      title
+      tags$i(class = paste0("fas fa-", icon), `aria-hidden` = "true"), " ", title
     ),
-    tags$p(style = "font-size:13px; color:var(--dim); line-height:1.7; margin:0;", HTML(text))
+    tags$p(style = paste0("font-size:13px; color:", txt, "; line-height:1.7; margin:0;"), HTML(text))
   )
 }
 
 # Info card with bullet points
 info_card <- function(title, items, color = col$accent) {
+  bg  <- pastel_bg(color)
+  txt <- pastel_text(color)
   tags$div(
     class = "sci-card",
-    style = paste0("border-left: 4px solid ", color, ";"),
-    tags$h4(style = "font-size:15px; font-weight:700; color:white; margin:0 0 14px;", title),
+    style = paste0("border-left:4px solid ", color, "; background:", bg, ";"),
+    tags$h4(style = paste0("font-size:15px; font-weight:700; color:", txt, "; margin:0 0 14px;"), title),
     tags$div(
       lapply(items, function(item) {
         tags$div(
           style = "display:flex; gap:10px; align-items:flex-start; margin-bottom:10px;",
-          tags$span(style = paste0("display:inline-block; width:7px; height:7px; border-radius:50%; background:", color, "; margin-top:6px; flex-shrink:0; box-shadow:0 0 6px ", color, "60;")),
-          tags$span(style = "font-size:13px; color:var(--dim); line-height:1.55;", HTML(item))
+          tags$span(style = paste0("display:inline-block; width:7px; height:7px; border-radius:50%; background:", color, "; margin-top:6px; flex-shrink:0;")),
+          tags$span(style = paste0("font-size:13px; color:", txt, "; line-height:1.55;"), HTML(item))
         )
       })
     )
   )
+}
+
+# Query syntax highlighter
+hl_query <- function(txt) {
+  txt <- gsub("&",  "&amp;",  txt, fixed = TRUE)
+  txt <- gsub("<",  "&lt;",   txt, fixed = TRUE)
+  txt <- gsub(">",  "&gt;",   txt, fixed = TRUE)
+  txt <- gsub("AND NOT", "\x01ANDNOT\x01", txt, fixed = TRUE)
+  txt <- gsub("\\bAND\\b",  "<span style='color:#d97706;font-weight:800;'>AND</span>",  txt, perl = TRUE)
+  txt <- gsub("\\bOR\\b",   "<span style='color:#2563eb;font-weight:800;'>OR</span>",   txt, perl = TRUE)
+  txt <- gsub("\x01ANDNOT\x01", "<span style='color:#dc2626;font-weight:800;'>AND NOT</span>", txt, fixed = TRUE)
+  txt <- gsub("TITLE-ABS-KEY", "<span style='color:#7c3aed;font-weight:700;'>TITLE-ABS-KEY</span>", txt, fixed = TRUE)
+  txt <- gsub("PUBYEAR", "<span style='color:#7c3aed;font-weight:700;'>PUBYEAR</span>", txt, fixed = TRUE)
+  HTML(txt)
 }
 
 # Common plotly layout settings

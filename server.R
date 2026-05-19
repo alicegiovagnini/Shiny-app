@@ -8,86 +8,241 @@ server <- function(input, output, session) {
   observeEvent(input$main_nav, {
     nav_select("main_content", selected = input$main_nav)
   })
+
+  # ── Navigazione custom ad albero (fissa, sempre aperta) ──
+  output$custom_nav <- renderUI({
+    cur <- if (is.null(input$main_nav)) "intro" else input$main_nav
+
+    btn_item <- function(value, label, fa_icon, color) {
+      is_active <- cur == value
+      tags$div(
+        class = paste("nav-btn-item", if (is_active) "active" else ""),
+        style = paste0("border-left:2px solid ", if (is_active) color else "var(--border)", ";"),
+        onclick = paste0("Shiny.setInputValue('main_nav','", value, "',{priority:'event'});"),
+        tags$i(
+          class = paste0("fas fa-", fa_icon),
+          style = paste0("font-size:11px; width:14px; flex-shrink:0; color:",
+                         if (is_active) color else "var(--muted)", ";")
+        ),
+        tags$span(label)
+      )
+    }
+
+    folder_hdr <- function(color, fa_icon, label) {
+      tags$div(
+        class = "nav-folder-hdr",
+        style = paste0("color:", color, ";"),
+        tags$i(class = paste0("fas fa-", fa_icon), style = "font-size:11px; opacity:0.85;"),
+        tags$span(label)
+      )
+    }
+
+    tagList(
+      tags$div(
+        class = paste("nav-custom-link", if (cur == "intro") "active" else ""),
+        style = if (cur == "intro") "background:rgba(255,255,255,0.09); border-color:rgba(255,255,255,0.2); color:white;" else "",
+        onclick = "Shiny.setInputValue('main_nav','intro',{priority:'event'});",
+        tags$i(class = "fas fa-house", style = "font-size:12px; width:15px;"),
+        "Home"
+      ),
+
+      tags$div(style = "height:1px; background:var(--border); margin:4px 2px;"),
+
+      folder_hdr(col$blue, "route", "The Process"),
+      tags$div(
+        class = "nav-folder-children",
+        style = "margin-bottom:4px;",
+        btn_item("scope",       "Scope & KITs/KIQs", "crosshairs",       col$blue),
+        btn_item("queries",     "Query Design",       "magnifying-glass", col$blue),
+        btn_item("genai",       "GenAI for CI",       "robot",            col$blue),
+        btn_item("textanalysis","Text Analysis",      "file-lines",       col$blue),
+        btn_item("patents",     "Patent Analysis",    "certificate",      col$blue)
+      ),
+
+      tags$div(style = "height:1px; background:var(--border); margin:4px 2px;"),
+
+      folder_hdr(col$accent, "chart-line", "The Results"),
+      tags$div(
+        class = "nav-folder-children",
+        btn_item("porter",     "Porter's Five Forces", "shield-halved", col$accent),
+        btn_item("vuca",       "VUCA Analysis",        "compass",       col$accent),
+        btn_item("storyboard", "Data Visualization",          "chart-pie",     col$accent)
+      )
+    )
+  })
+
   # ──────────────────────────────────────────────
   # TAB 0: INTRODUCTION AND GUIDE (README)
   # ──────────────────────────────────────────────
   output$tab_intro <- renderUI({
     tagList(
-      # 1. Welcome Hero Banner
+      # 1. Welcome Hero Banner — split layout
       tags$div(class = "hero-banner",
-               tags$div(style = "display:flex; align-items:center; gap:18px; margin-bottom:20px;",
-                        tags$img(
-                          src = "porter/loghi/logo_nuance.png",
-                          style = "height:52px; width:auto; filter:invert(1) brightness(1.8);",
-                          alt = "Nuance Audio"
-                        ),
-                        tags$div(
-                          tags$div(style = "font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--accent); font-weight:700; margin-bottom:2px;", "EssilorLuxottica"),
-                          tags$div(style = "font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); font-weight:500;", "Strategic & Competitive Intelligence")
-                        )
-               ),
-               tags$h1(style = "font-size:32px; font-weight:900; color:white; margin:0 0 10px; letter-spacing:-0.7px;",
-                       "Competitive Intelligence: Nuance Audio"),
-               tags$p(style = "font-size:15px; color:var(--dim); line-height:1.75; margin:0; max-width:850px;",
-                      "Welcome to the SCI project interactive dashboard. This application is a strategic repository designed to explore the market entry of Nuance Audio (EssilorLuxottica). Explore analytical frameworks, competitor analysis, and bibliometric data by navigating through the sidebar menu.")
+        style = "padding:16px 22px; margin-bottom:10px; overflow:hidden; cursor:default; transition:transform 0.22s, box-shadow 0.22s;",
+        onmouseover = "this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 36px rgba(0,0,0,0.35)';",
+        onmouseout  = "this.style.transform=''; this.style.boxShadow='';",
+        tags$div(style = "display:flex; align-items:center; gap:24px;",
+
+          # LEFT — branding + tagline (45%)
+          tags$div(style = "flex:0 0 45%; min-width:0;",
+            tags$div(
+              style = "display:flex; align-items:center; gap:8px; margin-bottom:14px; flex-wrap:wrap;",
+              tags$img(src = "porter/loghi/logo_nuance.png",
+                       style = "height:24px; filter:invert(1) brightness(1.8);"),
+              tags$span(style = "font-size:9px; color:var(--accent); font-weight:700; letter-spacing:2px; text-transform:uppercase;",
+                        "EssilorLuxottica"),
+              tags$span(style = "color:var(--border); font-size:12px;", "·"),
+              tags$span(style = "font-size:9px; color:var(--muted); font-weight:500; letter-spacing:1.5px; text-transform:uppercase;",
+                        "Strategic & Competitive Intelligence")
+            ),
+            tags$div(
+              style = paste0("font-size:20px; font-weight:900; line-height:1.25; margin-bottom:8px;",
+                             " background:linear-gradient(90deg, white 0%, ", col$accent, " 100%);",
+                             " -webkit-background-clip:text; -webkit-text-fill-color:transparent;",
+                             " background-clip:text;"),
+              "The new invisible acoustic solution"
+            ),
+            tags$p(
+              style = "font-size:11.5px; color:var(--dim); margin:0; line-height:1.55;",
+              HTML("A Strategic & Competitive Intelligence project on EssilorLuxottica's Nuance Audio.<br>The first FDA-cleared hearing glasses.")
+            )
+          ),
+
+          # RIGHT — due immagini uguali affiancate (55%)
+          tags$div(
+            style = "flex:0 0 55%; display:grid; grid-template-columns:1fr 1fr; gap:8px; height:115px;",
+            tags$img(src = "hero_lifestyle.png",
+                     style = paste0("width:100%; height:115px; object-fit:cover; object-position:top;",
+                                    " border-radius:12px; border:1px solid var(--border);",
+                                    " box-shadow:0 4px 20px rgba(0,0,0,0.4);")),
+            tags$img(src = "hero_business.png",
+                     style = paste0("width:100%; height:115px; object-fit:cover; object-position:top;",
+                                    " border-radius:12px; border:1px solid ", col$accent, "40;",
+                                    " box-shadow:0 4px 20px rgba(0,0,0,0.4);"))
+          )
+        )
       ),
+
+      # domanda sopra i 4 card
+      tags$div(
+        style = "text-align:center; margin-bottom:10px; display:flex; align-items:center; gap:12px;",
+        tags$div(style = paste0("flex:1; height:1px; background:linear-gradient(to right, transparent, ", col$accent, "60);")),
+        tags$span(
+          style = "font-size:12px; font-weight:700; color:var(--dim); letter-spacing:1px; text-transform:uppercase; white-space:nowrap;",
+          "What sets Nuance Audio apart?"
+        ),
+        tags$div(style = paste0("flex:1; height:1px; background:linear-gradient(to left, transparent, ", col$accent, "60);"))
+      ),
+
+      # 2. Concept Section — CSS grid, 4 colonne uguale altezza
+      local({
+        hover_in  <- paste0(
+          "this.style.transform='translateY(-3px)';",
+          "this.style.borderColor='rgba(0,229,160,0.28)';",
+          "this.style.boxShadow='0 0 0 1px rgba(0,229,160,0.12),0 14px 36px rgba(0,0,0,0.4)';"
+        )
+        hover_out <- "this.style.transform='';this.style.borderColor='';this.style.boxShadow='';"
+
+        fcard <- function(media, title, text, is_video = FALSE) {
+          tags$div(
+            style = paste0(
+              "border-radius:14px; overflow:hidden;",
+              "border:1px solid var(--border); background:var(--card);",
+              "transition:transform 0.22s, box-shadow 0.22s, border-color 0.22s;",
+              "display:flex; flex-direction:column;"
+            ),
+            onmouseover = hover_in, onmouseout = hover_out,
+            tags$div(
+              style = "height:175px; overflow:hidden; background:#0a1020; flex-shrink:0;",
+              if (is_video)
+                tags$video(src = media, type = "video/mp4",
+                           autoplay = NA, loop = NA, muted = NA, playsinline = NA,
+                           style = "width:100%; height:100%; object-fit:cover; display:block;")
+              else
+                tags$img(src = media,
+                         style = "width:100%; height:100%; object-fit:cover; display:block;")
+            ),
+            tags$div(
+              style = "padding:10px 14px 12px; flex:1;",
+              tags$h3(style = "color:white; font-weight:800; font-size:13px; margin:0 0 4px; line-height:1.3;", title),
+              tags$p(style = "color:var(--dim); font-size:11px; line-height:1.5; margin:0;", text)
+            )
+          )
+        }
+
+        tags$div(
+          style = "display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:14px;",
+          fcard("intro_invisible.jpg",
+            "Invisible and comfortable",
+            "Lightweight eyewear with open-ear acoustic solutions integrated into the frames. No bulky earbuds, no visible technology."),
+          fcard("intro_sight.jpg",
+            "Sight and hearing in one solution",
+            "Why choose between sight support and hearing support? Nuance Audio glasses do both, breaking down social stigma."),
+          fcard("intro_app.png",
+            "Easy to use",
+            "Start using them easily with the Nuance Audio App and video tutorials that will guide you step by step. You won't need an expert."),
+          fcard("intro_transitions.mp4",
+            "Adaptable, for all-day wear",
+            "Our non-prescription glasses feature Transitions® technology, with lenses that adapt to light to ensure clear and effortless vision.",
+            is_video = TRUE)
+        )
+      }),
       
-      # 2. Concept Section — 4 blocchi su una singola riga orizzontale
+      # 3. The Process + The Results (Process prima)
       fluidRow(
-        column(3,
-               tags$div(class = "sci-card", style = "height: 100%;",
-                        tags$div(style = "margin-bottom: 14px; text-align: center;",
-                                 tags$img(src = "intro_invisible.jpg",
-                                          style = "max-width: 100%; height: 160px; object-fit: cover; border-radius: 8px;")
-                        ),
-                        tags$h3(style = "color: white; font-weight: 800; font-size: 16px; margin-bottom: 10px; text-align: center;",
-                                "Invisible and comfortable"),
-                        tags$p(style = "color: var(--dim); font-size: 13px; line-height: 1.6; margin:0; text-align: center;",
-                               "Lightweight eyewear with open-ear acoustic solutions integrated into the frames. No bulky earbuds, no visible technology.")
+        column(6,
+               tags$div(
+                 class = "sci-card",
+                 style = paste0(
+                   "text-align:center; padding:12px 16px;",
+                   "border-top:3px solid ", col$blue, ";",
+                   "cursor:pointer; transition:all 0.25s; margin-bottom:0;",
+                   "background:", pastel_bg(col$blue), ";"
+                 ),
+                 onmouseover = paste0("this.style.transform='translateY(-3px)'; this.style.boxShadow='0 10px 28px rgba(79,172,254,0.18)';"),
+                 onmouseout  = "this.style.transform=''; this.style.boxShadow='';",
+                 onclick = "Shiny.setInputValue('nav_goto', 'scope', {priority: 'event'});",
+                 tags$div(
+                   style = paste0("display:inline-flex; align-items:center; justify-content:center;",
+                                  "width:40px; height:40px; border-radius:12px;",
+                                  "background:rgba(79,172,254,0.18); border:1px solid rgba(79,172,254,0.35); margin-bottom:7px;"),
+                   tags$i(class = "fas fa-route", style = paste0("font-size:18px; color:", col$blue, ";"))
+                 ),
+                 tags$div(style = paste0("font-size:9px; letter-spacing:2px; text-transform:uppercase; color:", col$blue, "; font-weight:700; margin-bottom:4px;"), "Methodology"),
+                 tags$h3(style = paste0("color:", pastel_text(col$blue), "; font-weight:800; font-size:15px; margin-bottom:5px;"), "The Process"),
+                 tags$p(style = paste0("color:", pastel_text(col$blue), "aa; font-size:11.5px; line-height:1.5; margin:0;"),
+                        "Il workflow metodologico dei laboratori: KIT/KIQ, Query Design, GenAI Prompting e Text Analysis bibliometrica.")
                )
         ),
-        column(3,
-               tags$div(class = "sci-card", style = "height: 100%;",
-                        tags$div(style = "margin-bottom: 14px; text-align: center;",
-                                 tags$img(src = "intro_sight.jpg",
-                                          style = "max-width: 100%; height: 160px; object-fit: cover; border-radius: 8px;")
-                        ),
-                        tags$h3(style = "color: white; font-weight: 800; font-size: 16px; margin-bottom: 10px; text-align: center;",
-                                "Sight and hearing in one solution"),
-                        tags$p(style = "color: var(--dim); font-size: 13px; line-height: 1.6; margin:0; text-align: center;",
-                               "Why choose between sight support and hearing support? Nuance Audio glasses do both, breaking down social stigma.")
-               )
-        ),
-        column(3,
-               tags$div(class = "sci-card", style = "height: 100%;",
-                        tags$div(style = "margin-bottom: 14px; text-align: center;",
-                                 tags$img(src = "intro_app.png",
-                                          style = "max-width: 100%; height: 160px; object-fit: cover; border-radius: 8px;")
-                        ),
-                        tags$h3(style = "color: white; font-weight: 800; font-size: 16px; margin-bottom: 10px; text-align: center;",
-                                "Easy to use"),
-                        tags$p(style = "color: var(--dim); font-size: 13px; line-height: 1.6; margin:0; text-align: center;",
-                               "Start using them easily with the Nuance Audio App and video tutorials that will guide you step by step. You won't need an expert.")
-               )
-        ),
-        column(3,
-               tags$div(class = "sci-card", style = "height: 100%;",
-                        tags$div(style = "margin-bottom: 14px; text-align: center;",
-                                 tags$video(src = "intro_transitions.mp4", type = "video/mp4",
-                                            autoplay = NA, loop = NA, muted = NA, playsinline = NA,
-                                            style = "max-width: 100%; height: 160px; object-fit: cover; border-radius: 8px;")
-                        ),
-                        tags$h3(style = "color: white; font-weight: 800; font-size: 16px; margin-bottom: 10px; text-align: center;",
-                                "Adaptable, for all-day wear"),
-                        tags$p(style = "color: var(--dim); font-size: 13px; line-height: 1.6; margin:0; text-align: center;",
-                               "Our non-prescription glasses feature Transitions® technology, with lenses that adapt to light to ensure clear and effortless vision.")
+        column(6,
+               tags$div(
+                 class = "sci-card",
+                 style = paste0(
+                   "text-align:center; padding:12px 16px;",
+                   "border-top:3px solid ", col$accent, ";",
+                   "cursor:pointer; transition:all 0.25s; margin-bottom:0;",
+                   "background:", pastel_bg(col$accent), ";"
+                 ),
+                 onmouseover = paste0("this.style.transform='translateY(-3px)'; this.style.boxShadow='0 10px 28px rgba(0,229,160,0.18)';"),
+                 onmouseout  = "this.style.transform=''; this.style.boxShadow='';",
+                 onclick = "Shiny.setInputValue('nav_goto', 'storyboard', {priority: 'event'});",
+                 tags$div(
+                   style = paste0("display:inline-flex; align-items:center; justify-content:center;",
+                                  "width:40px; height:40px; border-radius:12px;",
+                                  "background:rgba(0,229,160,0.18); border:1px solid rgba(0,229,160,0.35); margin-bottom:7px;"),
+                   tags$i(class = "fas fa-chart-line", style = paste0("font-size:18px; color:", col$accent, ";"))
+                 ),
+                 tags$div(style = paste0("font-size:9px; letter-spacing:2px; text-transform:uppercase; color:", col$accent, "; font-weight:700; margin-bottom:4px;"), "Outcome"),
+                 tags$h3(style = paste0("color:", pastel_text(col$accent), "; font-weight:800; font-size:15px; margin-bottom:5px;"), "The Results"),
+                 tags$p(style = paste0("color:", pastel_text(col$accent), "aa; font-size:11.5px; line-height:1.5; margin:0;"),
+                        "Il cuore della presentazione strategica: Executive Summary, Scenario di Mercato (VUCA/Porter) e Decisioni Finali.")
                )
         )
       ),
-      
-      tags$br(),
-      
-      # 3. Application Guide (README style)
+
+      tags$hr(style = "border-color:var(--border); margin:14px 0;"),
+
+      # 4. Application Guide (README style)
       section_hdr("Navigation Guide", "What you will find in the different sections of the Dashboard"),
       fluidRow(
         column(6,
@@ -112,38 +267,8 @@ server <- function(input, output, session) {
         ),
         column(6,
                info_card("4. Decision Synthesis", c(
-                 "<strong>Data Viz Lab:</strong> The concluding storyboard that links analysis to visual data to define strategic positioning."
+                 "<strong>Data Visualization:</strong> The concluding storyboard that links analysis to visual data to define strategic positioning."
                ), col$orange)
-        )
-      ),
-      
-      tags$hr(style = "border-color: var(--border); margin: 30px 0;"),
-      
-      # I DUE BOTTONI DIREZIONALI
-      fluidRow(
-        column(6,
-               tags$div(class = "sci-card", 
-                        style = "text-align:center; padding: 40px 20px; border-top: 4px solid #00e5a0; cursor:pointer; transition: transform 0.2s;",
-                        onmouseover = "this.style.transform='scale(1.02)'", 
-                        onmouseout = "this.style.transform='scale(1)'",
-                        onclick = "Shiny.setInputValue('nav_goto', 'exec_summary', {priority: 'event'});",
-                        tags$div(style = "font-size: 45px; margin-bottom: 15px;", "🎯"),
-                        tags$h3(style = "color: white; font-weight: 800; margin-bottom: 10px;", "The Results"),
-                        tags$p(style = "color: var(--dim); font-size: 13px; line-height: 1.5; margin:0;", 
-                               "Il cuore della presentazione strategica: Executive Summary, Scenario di Mercato (VUCA/Porter) e Decisioni Finali.")
-               )
-        ),
-        column(6,
-               tags$div(class = "sci-card", 
-                        style = "text-align:center; padding: 40px 20px; border-top: 4px solid #4facfe; cursor:pointer; transition: transform 0.2s;",
-                        onmouseover = "this.style.transform='scale(1.02)'", 
-                        onmouseout = "this.style.transform='scale(1)'",
-                        onclick = "Shiny.setInputValue('nav_goto', 'scope', {priority: 'event'});",
-                        tags$div(style = "font-size: 45px; margin-bottom: 15px;", "⚙️"),
-                        tags$h3(style = "color: white; font-weight: 800; margin-bottom: 10px;", "The Process"),
-                        tags$p(style = "color: var(--dim); font-size: 13px; line-height: 1.5; margin:0;", 
-                               "Il workflow metodologico dei laboratori: KIT/KIQ, Query Design, GenAI Prompting e Text Analysis bibliometrica.")
-               )
         )
       )
     )
@@ -151,7 +276,7 @@ server <- function(input, output, session) {
   
   # Questo "ascolta" il click sui bottoni e cambia pagina
   observeEvent(input$nav_goto, {
-    nav_select("main_nav", selected = input$nav_goto)
+    nav_select("main_content", selected = input$nav_goto)
   })
   
   # ──────────────────────────────────────────────
@@ -169,7 +294,7 @@ server <- function(input, output, session) {
                         )
                ),
                tags$p(style = "font-size:14px; color:var(--dim); line-height:1.75; margin:0; max-width:820px;", HTML(
-                 "Nuance Audio sits at the intersection of <strong style='color:white'>eyewear</strong>, <strong style='color:white'>hearing aids</strong>, and <strong style='color:white'>wearable technology</strong>. As the first FDA-cleared hearing glasses, it targets the <strong style='color:white'>1.5 billion</strong> people worldwide affected by hearing loss — where the adoption rate remains at only 17%. This app synthesizes market intelligence, competitive analysis, and strategic frameworks to support decision-making."
+                 "Nuance Audio sits at the intersection of <strong style='font-weight:800'>eyewear</strong>, <strong style='font-weight:800'>hearing aids</strong>, and <strong style='font-weight:800'>wearable technology</strong>. As the first FDA-cleared hearing glasses, it targets the <strong style='font-weight:800'>1.5 billion</strong> people worldwide affected by hearing loss — where the adoption rate remains at only 17%. This app synthesizes market intelligence, competitive analysis, and strategic frameworks to support decision-making."
                ))
       ),
       
@@ -190,16 +315,16 @@ server <- function(input, output, session) {
       fluidRow(
         column(6, info_card("Key Strengths", c(
           "First-mover in FDA-cleared hearing glasses (January 2025)",
-          "EssilorLuxottica distribution: <strong style='color:white'>18,000+ stores</strong> globally",
+          "EssilorLuxottica distribution: <strong style='font-weight:800'>18,000+ stores</strong> globally",
           "Price ~\u00bc of traditional hearing aids ($1,100 vs $4,000+)",
           "SaMD model enables OTA software updates",
           "Invisible design directly addresses stigma barrier"
         ), col$accent)),
         column(6, info_card("Key Risks", c(
-          "AirPods Pro 2 at <strong style='color:white'>$250</strong> with FDA-cleared hearing aid feature",
+          "AirPods Pro 2 at <strong style='font-weight:800'>$250</strong> with FDA-cleared hearing aid feature",
           "Meta could add hearing features to Ray-Ban Meta (same parent company)",
           "Chinese competitors (Cearvol, Elehear) at $250\u2013$400",
-          "Uncertain consumer adoption — <strong style='color:white'>83% coverage gap</strong> remains",
+          "Uncertain consumer adoption — <strong style='font-weight:800'>83% coverage gap</strong> remains",
           "Regulatory complexity across US, EU, and Asia-Pacific"
         ), col$red))
       )
@@ -229,108 +354,71 @@ server <- function(input, output, session) {
     tagList(
       section_hdr("Porter's Five Forces", "Strategic analysis of market competition and industry structure"),
       
-      tags$div(class = "sci-card",
-               tags$div(class = "porter-grid",
-                        
-                        # Riga 1: Nuovi Entrati
-                        tags$div(), tags$div(),
-                        tags$div(class = "porter-box", style = "border: 3px solid #bf5000; background: #fcd9b0; box-shadow: 0 0 14px rgba(191,80,0,0.35);",
-                                 tags$h5("Threat of New Entrants"),
-                                 tags$p(tags$strong(class="status-u", "Medium/High"), " high technological, multidisciplinary barrier and intellectual properties"), 
-                                 tags$div(
-                                   style = "display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 15px; margin-top: 15px;",
-                                   tags$img(src = "porter/entrants/new_entrants1.png", class = "thematic-img", style = "margin-top: 0; height: 45px;"),
-                                   tags$img(src = "porter/entrants/new_entrants2.png", class = "thematic-img", style = "margin-top: 0; height: 45px;"),
-                                   tags$img(src = "porter/entrants/new_entrants.png", class = "thematic-img", style = "margin-top: 0; height: 45px;")
-                                 )
-                        ),
-                        tags$div(), tags$div(),
-                        
-                        # Riga 2: Freccia giù
-                        tags$div(), tags$div(),
-                        tags$div(class = "porter-arrow", tags$i(class = "fas fa-arrow-down", `aria-hidden` = "true")),
-                        tags$div(), tags$div(),
-                        
-                        # Riga 3: Fornitori -> Rivalità <- Acquirenti
-                        tags$div(class = "porter-box", style = "border: 3px solid #bf5000; background: #fcd9b0; box-shadow: 0 0 14px rgba(191,80,0,0.35);",
-                                 tags$h5("Bargaining Power of Suppliers"),
-                                 tags$p(tags$strong(class="status-u", "Medium/High:"), " EssilorLuxottica has the full domain in the smartglasses market (pov: AudioNova)"), 
-                                 tags$div(
-                                   style = "display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 15px; margin-top: 15px;",
-                                   tags$img(src = "porter/suppliers/suppliers.png", class = "thematic-img", style = "margin-top: 0; height: 45px;"),
-                                   tags$img(src = "porter/suppliers/suppliers1.png", class = "thematic-img", style = "margin-top: 0; height: 45px;"),
-                                   tags$img(src = "porter/suppliers/suppliers2.png", class = "thematic-img", style = "margin-top: 0; height: 45px;")
-                                   
-                                 )
-                        ),
-                        tags$div(class = "porter-arrow", tags$i(class = "fas fa-arrow-right", `aria-hidden` = "true")),
-                        tags$div(class = "porter-box", style = "border: 3px solid #d97000; background: #fdebc0; box-shadow: 0 0 14px rgba(217,112,0,0.35);",
-                                 tags$h5("Competitive Rivalry"),
-                                 tags$p(tags$strong(class="status-u", "Medium:"), " most potential users have never used a hearing aid, so they have no loyalty to any brand."), 
-                                 # Contenitore dei loghi
-                                 tags$div(
-                                   style = "display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px;",
-                                   
-                                   # Prima riga: Apple e Meta
-                                   tags$div(
-                                     style = "display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 15px;",
-                                     tags$img(src = "porter/loghi/logo_apple.svg", alt = "Apple", style = "height: 25px;"),
-                                     tags$img(src = "porter/loghi/logo_meta.png", alt = "Meta", style = "height: 25px;")
-                                   ),
-                                   
-                                   # Seconda riga: Sonova e Amplifon
-                                   tags$div(
-                                     style = "display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 15px;",
-                                     tags$img(src = "porter/loghi/logo_sonova.png", alt = "Sonava", style = "height: 25px;"),
-                                     tags$img(src = "porter/loghi/logo_amplifon.png", alt = "Amplifon", style = "height: 25px;")
-                                   )
-                                 )
-                        ),
-                        tags$div(class = "porter-arrow", tags$i(class = "fas fa-arrow-left", `aria-hidden` = "true")),
-                        tags$div(class = "porter-box", style = "border: 3px solid #c8a000; background: #fdf0a0; box-shadow: 0 0 14px rgba(200,160,0,0.35);",
-                                 tags$h5("Bargaining Power of Buyers"),
-                                 tags$p(tags$strong(class="status-u", "Low/Medium:"), " target high-end. The absence of comparable alternatives reduces their price sensitivity."), 
-                                 tags$div(
-                                   style = "display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 15px; margin-top: 15px;",
-                                   tags$img(src = "porter/buyers/buyers.png", class = "thematic-img", style = "margin-top: 0; height: 45px;" ),
-                                   tags$img(src = "porter/buyers/buyers1.png", class = "thematic-img", style = "margin-top: 0; height: 45px;" )
-                                 )
-                        ),
-                        
-                        # Riga 4: Freccia su
-                        tags$div(), tags$div(),
-                        tags$div(class = "porter-arrow", tags$i(class = "fas fa-arrow-up", `aria-hidden` = "true")),
-                        tags$div(), tags$div(),
-                        
-                        # Riga 5: Sostituti
-                        tags$div(), tags$div(),
-                        tags$div(class = "porter-box", style = "border: 3px solid #e82020; background: #fcd0d0; box-shadow: 0 0 14px rgba(232,32,32,0.35);",
-                                 tags$h5("Threat of Substitutes"),
-                                 tags$p(tags$strong(class="status-u", "High:"), " existence of alternative solutions such as the combined use of traditional eyeglasses and medical hearing aids"), 
-                                 tags$div(
-                                   style = "display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 15px; margin-top: 15px;",
-                                   tags$img(src = "porter/substitutes/substitutes.png", class = "thematic-img", style = "margin-top: 0; height: 45px;"),
-                                   tags$img(src = "porter/substitutes/substitutes1.png", class = "thematic-img", style = "margin-top: 0; height: 15px;"),
-                                   tags$img(src = "porter/substitutes/substitutes2.png", class = "thematic-img", style = "margin-top: 0; height: 45px;")
-                                 )
-                        ),
-                        tags$div(), tags$div()
-               )
-      ),
+      local({
+        arr <- "font-size:24px; color:#94a3b8; display:flex; align-items:center; justify-content:center;"
+
+        pbox <- function(title, level, color, icon_name, description) {
+          tags$div(
+            class = "porter-box",
+            style = paste0("border-top:3px solid ", color, ";"),
+            tags$div(class = "porter-icon",
+                     style = paste0("color:", color, ";"),
+                     tags$i(class = paste0("fas fa-", icon_name))),
+            tags$h5(title),
+            tags$div(class = "porter-level",
+                     style = paste0("background:", color, "20; color:", color, "; border:1px solid ", color, "50;"),
+                     level),
+            tags$p(description)
+          )
+        }
+
+        tags$div(
+          style = "margin-bottom:18px;",
+          tags$div(class = "porter-grid",
+
+            tags$div(), tags$div(),
+            pbox("Threat of New Entrants", "MEDIUM / HIGH", col$orange, "door-open",
+                 "High R&D, FDA/CE barriers, IP moats. OTC deregulation (2022) partially lowers the bar."),
+            tags$div(), tags$div(),
+
+            tags$div(), tags$div(),
+            tags$div(style = arr, tags$i(class = "fas fa-arrow-down")),
+            tags$div(), tags$div(),
+
+            pbox("Bargaining Power of Suppliers", "MEDIUM / HIGH", col$orange, "industry",
+                 "Few MEMS & chipset vendors, but EssilorLuxottica's scale and vertical integration offset dependency."),
+            tags$div(style = arr, tags$i(class = "fas fa-arrow-right")),
+            pbox("Competitive Rivalry", "MEDIUM", "#d97706", "chess",
+                 "No established brand loyalty. Competition on design, AI features, price, and optical distribution."),
+            tags$div(style = arr, tags$i(class = "fas fa-arrow-left")),
+            pbox("Bargaining Power of Buyers", "LOW / MEDIUM", "#16a34a", "users",
+                 "High-end niche, few comparable bundles. OTC market still early; price sensitivity rising."),
+
+            tags$div(), tags$div(),
+            tags$div(style = arr, tags$i(class = "fas fa-arrow-up")),
+            tags$div(), tags$div(),
+
+            tags$div(), tags$div(),
+            pbox("Threat of Substitutes", "HIGH", col$red, "shuffle",
+                 "AirPods Pro 2 (~$250, FDA-cleared), traditional HA + glasses combo, OTC aids, captioning glasses."),
+            tags$div(), tags$div()
+          )
+        )
+      }),
       
       section_hdr("Threat of Substitutes", "Comparison by threat level, price range, and performance"),
       tags$div(class = "sci-card", DTOutput("table_subs")),
       
       insight_box(
         "Key Strategic Insight",
-        "The main substitution risk comes from products addressing hearing loss through entirely different form factors, especially <strong style='color:white'>AirPods Pro 2 at ~$250</strong> leveraging Apple's massive installed base. Nuance Audio's competitive moat lies in its unique combination of <strong style='color:white'>medical certification + invisible design + optical distribution network</strong> — a bundle no substitute currently replicates.",
+        "The main substitution risk comes from products addressing hearing loss through entirely different form factors, especially <strong style='font-weight:800'>AirPods Pro 2 at ~$250</strong> leveraging Apple's massive installed base. Nuance Audio's competitive moat lies in its unique combination of <strong style='font-weight:800'>medical certification + invisible design + optical distribution network</strong> — a bundle no substitute currently replicates.",
         col$orange, "bolt"
       ),
       
       section_hdr("Force Details"),
       info_card("Threat of New Entrants — MEDIUM-HIGH", c(
-        "<strong style='color:white'>Barriers:</strong> High R&D + FDA/CE clearance, IP & beamforming know-how, EssilorLuxottica's 18K retail network",
-        "<strong style='color:white'>Enablers:</strong> FDA OTC deregulation (2022), tech giants with massive R&D, Chinese OTC brands at lower prices"
+        "<strong style='font-weight:800'>Barriers:</strong> High R&D + FDA/CE clearance, IP & beamforming know-how, EssilorLuxottica's 18K retail network",
+        "<strong style='font-weight:800'>Enablers:</strong> FDA OTC deregulation (2022), tech giants with massive R&D, Chinese OTC brands at lower prices"
       ), col$orange),
       info_card("Bargaining Power of Buyers — MEDIUM-HIGH", c(
         "Large potential market: ~1.25B people with mild-moderate hearing loss globally",
@@ -338,8 +426,8 @@ server <- function(input, output, session) {
         "Low switching costs: OTC devices don't require audiologist recalibration"
       ), col$orange),
       info_card("Bargaining Power of Suppliers — MEDIUM", c(
-        "<strong style='color:white'>Increasing:</strong> Specialized MEMS microphones, audio chipsets from limited suppliers",
-        "<strong style='color:white'>Decreasing:</strong> EssilorLuxottica's vertical integration (\u20AC25B+ revenue), acquired Nuance Hearing IP (2023)"
+        "<strong style='font-weight:800'>Increasing:</strong> Specialized MEMS microphones, audio chipsets from limited suppliers",
+        "<strong style='font-weight:800'>Decreasing:</strong> EssilorLuxottica's vertical integration (\u20AC25B+ revenue), acquired Nuance Hearing IP (2023)"
       ), col$accent),
       info_card("Competitive Rivalry — MEDIUM-HIGH", c(
         "Direct: Sonova (Phonak), Demant (Oticon), WS Audiology, Cearvol (Lyra)",
@@ -583,25 +671,36 @@ server <- function(input, output, session) {
       # --- 4. STRATEGIC RECOMMENDATIONS ---
       section_hdr("Strategic Recommendations", "Turning VUCA challenges into competitive moats"),
       fluidRow(
-        column(4, tags$div(class = "sci-card", style = paste0("border-top:3px solid ", col$accent, "; min-height:230px;"),
-                           tags$div(style = paste0("width:35px; height:35px; border-radius:8px; background:", col$accent, "12; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:", col$accent, "; margin-bottom:12px;"), "1"),
-                           tags$h4(style = "font-size:14px; font-weight:700; color:white; margin:0 0 8px;", "Integrated Ecosystem"),
-                           tags$p(style = "font-size:12px; color:var(--dim); line-height:1.6;", 
-                                  "Leverage the 18,000+ retail network to overcome access barriers. EssilorLuxottica's strength lies in vertical integration: frames + lenses + hearing technology in one purchase.")
+        column(4, tags$div(style = paste0(
+          "background:#d1fae5; border:1px solid ", col$accent, "50; border-top:3px solid ", col$accent, ";",
+          "border-radius:14px; padding:24px; margin-bottom:18px; min-height:230px;",
+          "transition:transform 0.22s, box-shadow 0.22s;"
+        ),
+          tags$div(style = paste0("width:35px; height:35px; border-radius:8px; background:", col$accent, "30; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#065f46; margin-bottom:12px;"), "1"),
+          tags$h4(style = "font-size:14px; font-weight:700; color:#065f46; margin:0 0 8px;", "Integrated Ecosystem"),
+          tags$p(style = "font-size:12px; color:#065f4699; line-height:1.6;",
+                 "Leverage the 18,000+ retail network to overcome access barriers. EssilorLuxottica's strength lies in vertical integration: frames + lenses + hearing technology in one purchase.")
         )),
-        column(4, tags$div(class = "sci-card", style = paste0("border-top:3px solid ", col$blue, "; min-height:230px;"),
-                           tags$div(style = paste0("width:35px; height:35px; border-radius:8px; background:", col$blue, "12; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:", col$blue, "; margin-bottom:12px;"), "2"),
-                           tags$h4(style = "font-size:14px; font-weight:700; color:white; margin:0 0 8px;", "Software & AI Flywheel"),
-                           tags$p(style = "font-size:12px; color:var(--dim); line-height:1.6;", 
-                                  "The SaMD model enables continuous OTA updates. Invest in AI-driven noise cancellation and real-time translation to distance the brand from low-cost Chinese competitors.")
+        column(4, tags$div(style = paste0(
+          "background:#dbeafe; border:1px solid ", col$blue, "50; border-top:3px solid ", col$blue, ";",
+          "border-radius:14px; padding:24px; margin-bottom:18px; min-height:230px;",
+          "transition:transform 0.22s, box-shadow 0.22s;"
+        ),
+          tags$div(style = paste0("width:35px; height:35px; border-radius:8px; background:", col$blue, "30; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#1e3a8a; margin-bottom:12px;"), "2"),
+          tags$h4(style = "font-size:14px; font-weight:700; color:#1e3a8a; margin:0 0 8px;", "Software & AI Flywheel"),
+          tags$p(style = "font-size:12px; color:#1e3a8a99; line-height:1.6;",
+                 "The SaMD model enables continuous OTA updates. Invest in AI-driven noise cancellation and real-time translation to distance the brand from low-cost Chinese competitors.")
         )),
-        column(4, tags$div(class = "sci-card", style = paste0("border-top:3px solid ", col$orange, "; min-height:230px;"),
-                           tags$div(style = paste0("width:35px; height:35px; border-radius:8px; background:", col$orange, "12; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:", col$orange, "; margin-bottom:12px;"), "3"),
-                           tags$h4(style = "font-size:14px; font-weight:700; color:white; margin:0 0 8px;", "Lifestyle Moats"),
-                           tags$p(style = "font-size:12px; color:var(--dim); line-height:1.6;", 
-                                  "83% of those in need avoid support due to 'stigma'. Nuance Audio must position itself as a fashion accessory, turning medical necessity into technological desire.")
-        )
-        )
+        column(4, tags$div(style = paste0(
+          "background:#ffedd5; border:1px solid ", col$orange, "50; border-top:3px solid ", col$orange, ";",
+          "border-radius:14px; padding:24px; margin-bottom:18px; min-height:230px;",
+          "transition:transform 0.22s, box-shadow 0.22s;"
+        ),
+          tags$div(style = paste0("width:35px; height:35px; border-radius:8px; background:", col$orange, "30; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#9a3412; margin-bottom:12px;"), "3"),
+          tags$h4(style = "font-size:14px; font-weight:700; color:#9a3412; margin:0 0 8px;", "Lifestyle Moats"),
+          tags$p(style = "font-size:12px; color:#9a341299; line-height:1.6;",
+                 "83% of those in need avoid support due to 'stigma'. Nuance Audio must position itself as a fashion accessory, turning medical necessity into technological desire.")
+        ))
       )
     )
   })
@@ -653,7 +752,7 @@ server <- function(input, output, session) {
       
       insight_box(
         "Data Divergence Warning",
-        "Market estimates vary significantly across sources due to different scope definitions (smart glasses vs. smart glass vs. AI smart glasses). CAGR ranges from <strong style='color:white'>12% to 24%</strong> and 2025 market size from <strong style='color:white'>$2.5B to $18.4B</strong>. Europe's position also varies (32\u201343% share). All quantitative data should be verified against primary sources.",
+        "Market estimates vary significantly across sources due to different scope definitions (smart glasses vs. smart glass vs. AI smart glasses). CAGR ranges from <strong style='font-weight:800'>12% to 24%</strong> and 2025 market size from <strong style='font-weight:800'>$2.5B to $18.4B</strong>. Europe's position also varies (32\u201343% share). All quantitative data should be verified against primary sources.",
         col$blue, "exclamation-triangle"
       )
     )
@@ -712,12 +811,15 @@ server <- function(input, output, session) {
           r <- df_rivalry[i,]
           tc <- switch(r$Type, Direct = col$red, Convergent = col$orange, Adjacent = col$blue, col$dim)
           column(6,
-                 tags$div(class = "sci-card", style = paste0("border-left:4px solid ", tc, ";"),
-                          tags$div(style = "display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;",
-                                   tags$span(style = "font-size:14px; font-weight:700; color:white;", r$Competitor),
-                                   sci_badge(r$Type, tc)
-                          ),
-                          tags$p(style = "font-size:12px; color:var(--dim); margin:0; line-height:1.55;", r$Description)
+                 tags$div(class = "sci-card", style = paste0(
+                   "border-left:4px solid ", tc, ";",
+                   "background:", pastel_bg(tc), ";"
+                 ),
+                 tags$div(style = "display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;",
+                          tags$span(style = paste0("font-size:14px; font-weight:700; color:", pastel_text(tc), ";"), r$Competitor),
+                          sci_badge(r$Type, tc)
+                 ),
+                 tags$p(style = paste0("font-size:12px; color:", pastel_text(tc), "cc; margin:0; line-height:1.55;"), r$Description)
                  )
           )
         })
@@ -748,6 +850,7 @@ server <- function(input, output, session) {
     # 1. Nuovi dati aggiornati con le giustificazioni SMART
     kit_data <- list(
       KIT1 = list(title = "Strategic Decisions & Actions", color = col$accent,
+                  pastel_hi = "#d1fae5", pastel_lo = "#ecfdf5", title_dark = "#065f46",
                   desc = "Nuance Audio's positioning and market penetration strategy in the OTC hearing glasses segment in the USA and Europe.",
                   kiqs = list(
                     list(type = "Polar", q = HTML("Is the OTC price of $1,200 competitive compared to the average of OTC hearing aids on the US market as of<br>Q2 2025?"),
@@ -761,6 +864,7 @@ server <- function(input, output, session) {
                          smart = list(S="defined target, defined variables", M="sentiment analysis, surveys", A="social data, reviews", R="adoption", T="6 months from launch"))
                   )),
       KIT2 = list(title = "Early Warnings", color = col$orange,
+                  pastel_hi = "#ffedd5", pastel_lo = "#fff7ed", title_dark = "#9a3412",
                   desc = "Emerging technological and competitive threats that could erode Nuance Audio's first-mover advantage over the next 12–24 months.",
                   kiqs = list(
                     list(type = "Polar", q = HTML("Has Apple filed patents related to hearing aid functionality integrated into eyewear devices in the last<br>24 months?"),
@@ -774,6 +878,7 @@ server <- function(input, output, session) {
                          smart = list(S="defined technologies, competitors", M="patents, papers, product announcements", A="public sources", R="technological disruption", T="by 2027", m_wide = TRUE))
                   )),
       KIT3 = list(title = "Key Players & Positioning", color = col$blue,
+                  pastel_hi = "#dbeafe", pastel_lo = "#eff6ff", title_dark = "#1e3a8a",
                   desc = "Map and positioning of key players in the hearing glasses / smart audio wearables ecosystem.",
                   kiqs = list(
                     list(type = "Polar", q = HTML("Have Sonova and Demant announced partnerships with eyewear companies to develop hearing glasses by<br>April 2026?"),
@@ -842,9 +947,9 @@ server <- function(input, output, session) {
           .post-it-r { background: #86efac; }
           .post-it-t { background: #f472b6; }
 
-          .smart-hline { position: relative; width: 100%; height: 2px; background-color: #e0e7ef; margin: 6px 0 3px 0; }
-          .smart-riser { position: absolute; left: 0; top: 0; width: 2px; height: 14px; background-color: #e0e7ef; }
-          .smart-label { font-size: 7px; font-weight: 700; color: #e0e7ef; text-transform: uppercase; letter-spacing: 0.3px; }
+          .smart-hline { position: relative; width: 100%; height: 2px; background-color: #94a3b8; margin: 6px 0 3px 0; }
+          .smart-riser { position: absolute; left: 0; top: 0; width: 2px; height: 14px; background-color: #94a3b8; }
+          .smart-label { font-size: 7px; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: 0.3px; }
         ")),
         
         tags$div(class = "smart-staircase",
@@ -895,43 +1000,71 @@ server <- function(input, output, session) {
           # Riga 1 (What we know...)
           tags$div(style = "text-align: right; font-weight: 800; font-size: 18px; color: #080c14; display: flex; align-items: center; justify-content: flex-end; padding-right: 15px;", "What we know..."),
           
-          # Quadrante 1
-          tags$div(
-            style = "background: #fdfdfd; border: 2px dashed #94a3b8; padding: 15px; border-radius: 8px; font-size: 13px; line-height: 1.6;",
-            tags$strong(style = "color: #0f1724; font-size: 14px;", "Q1: Known-Knowns"), 
-            tags$span(style = "color: #556378; font-size: 12px;", " (What we know we know)"),
-            tags$hr(style="margin:8px 0; border-color:#cbd5e1;"),
-            tags$p(style="margin:0; color:#334155;", "Nuance Audio is an EssilorLuxottica product born from the 2023 acquisition of Nuance Hearing (Israeli startup). It combines corrective eyewear and open-ear hearing amplification in a single OTC device for adults 18+ with mild-to-moderate hearing loss. Price: ~$1,200. FDA-approved (US) and CE-marked (EU). US launch: April 2025 via LensCrafters, Target Optical, Pearle Vision. EU launch: starting from Italy in Q1 2025, then France, Germany, UK. Direct competitors: Ray-Ban Meta, AirPods Pro 2 (hearing aid feature), Eargo, Jabra Enhance.")
+          # Quadrante 1 — Known-Knowns
+          tags$div(class = "rumsfeld-cell",
+            tags$div(class = "rumsfeld-cell-header",
+              tags$i(class = "fas fa-circle-check rumsfeld-cell-icon"),
+              tags$div(
+                tags$strong(style = "color:#0f1724; font-size:14px;", "Q1: Known-Knowns"),
+                tags$span(style = "color:#556378; font-size:11px; display:block; margin-top:2px;", "What we know we know")
+              )
+            ),
+            tags$div(class = "rumsfeld-drop",
+              tags$hr(style = "border:none; border-top:1px solid #cbd5e1; margin:0 0 10px;"),
+              tags$p(style = "margin:0; color:#334155; font-size:12.5px; line-height:1.6;",
+                "Nuance Audio is an EssilorLuxottica product born from the 2023 acquisition of Nuance Hearing (Israeli startup). It combines corrective eyewear and open-ear hearing amplification in a single OTC device for adults 18+ with mild-to-moderate hearing loss. Price: ~$1,200. FDA-approved (US) and CE-marked (EU). US launch: April 2025 via LensCrafters, Target Optical, Pearle Vision. EU launch: starting from Italy in Q1 2025, then France, Germany, UK. Direct competitors: Ray-Ban Meta, AirPods Pro 2 (hearing aid feature), Eargo, Jabra Enhance.")
+            )
           ),
-          
-          # Quadrante 3
-          tags$div(
-            style = "background: #fdfdfd; border: 2px dashed #94a3b8; padding: 15px; border-radius: 8px; font-size: 13px; line-height: 1.6;",
-            tags$strong(style = "color: #0f1724; font-size: 14px;", "Q3: Known-Unknowns"), 
-            tags$span(style = "color: #556378; font-size: 12px;", " (What we know we don't know)"),
-            tags$hr(style="margin:8px 0; border-color:#cbd5e1;"),
-            tags$p(style="margin:0; color:#334155;", "What will the actual adoption rate of Nuance Audio be vs. traditional hearing aids? How will traditional hearing aid manufacturers (Phonak, Oticon, Starkey) react to this disruption? What is the target consumer perception regarding the stigma of an 'invisible' hearing aid vs. a traditional one? How will the OTC regulatory framework evolve in Europe vs. the US? What is the actual clinical effectiveness compared to traditional hearing aids?")
+
+          # Quadrante 3 — Known-Unknowns
+          tags$div(class = "rumsfeld-cell",
+            tags$div(class = "rumsfeld-cell-header",
+              tags$i(class = "fas fa-magnifying-glass rumsfeld-cell-icon"),
+              tags$div(
+                tags$strong(style = "color:#0f1724; font-size:14px;", "Q3: Known-Unknowns"),
+                tags$span(style = "color:#556378; font-size:11px; display:block; margin-top:2px;", "What we know we don't know")
+              )
+            ),
+            tags$div(class = "rumsfeld-drop",
+              tags$hr(style = "border:none; border-top:1px solid #cbd5e1; margin:0 0 10px;"),
+              tags$p(style = "margin:0; color:#334155; font-size:12.5px; line-height:1.6;",
+                "What will the actual adoption rate of Nuance Audio be vs. traditional hearing aids? How will traditional hearing aid manufacturers (Phonak, Oticon, Starkey) react to this disruption? What is the target consumer perception regarding the stigma of an 'invisible' hearing aid vs. a traditional one? How will the OTC regulatory framework evolve in Europe vs. the US? What is the actual clinical effectiveness compared to traditional hearing aids?")
+            )
           ),
-          
+
           # Riga 2 (What we don't know...)
-          tags$div(style = "text-align: right; font-weight: 800; font-size: 18px; color: #080c14; display: flex; align-items: center; justify-content: flex-end; padding-right: 15px;", "What we don't know..."),
-          
-          # Quadrante 2
-          tags$div(
-            style = "background: #fdfdfd; border: 2px dashed #94a3b8; padding: 15px; border-radius: 8px; font-size: 13px; line-height: 1.6;",
-            tags$strong(style = "color: #0f1724; font-size: 14px;", "Q2: Unknown-Knowns"), 
-            tags$span(style = "color: #556378; font-size: 12px;", " (Latent knowledge)"),
-            tags$hr(style="margin:8px 0; border-color:#cbd5e1;"),
-            tags$p(style="margin:0; color:#334155;", "Literature identifies key wearable adoption factors (perceived usefulness, ease of use, stigma, comfort, price, privacy) per Kalantari 2017 and Koutromanos & Kazakou 2023, but these have not been specifically applied to Nuance Audio. The OTC hearing aid market was deregulated by the FDA in 2022, opening significant competitive space. EssilorLuxottica's dominant eyewear position (Ray-Ban, Oakley, LensCrafters) could provide enormous distribution advantages.")
+          tags$div(style = "text-align:right; font-weight:800; font-size:18px; color:#080c14; display:flex; align-items:center; justify-content:flex-end; padding-right:15px;", "What we don't know..."),
+
+          # Quadrante 2 — Unknown-Knowns
+          tags$div(class = "rumsfeld-cell",
+            tags$div(class = "rumsfeld-cell-header",
+              tags$i(class = "fas fa-eye-slash rumsfeld-cell-icon"),
+              tags$div(
+                tags$strong(style = "color:#0f1724; font-size:14px;", "Q2: Unknown-Knowns"),
+                tags$span(style = "color:#556378; font-size:11px; display:block; margin-top:2px;", "Latent knowledge")
+              )
+            ),
+            tags$div(class = "rumsfeld-drop",
+              tags$hr(style = "border:none; border-top:1px solid #cbd5e1; margin:0 0 10px;"),
+              tags$p(style = "margin:0; color:#334155; font-size:12.5px; line-height:1.6;",
+                "Literature identifies key wearable adoption factors (perceived usefulness, ease of use, stigma, comfort, price, privacy) per Kalantari 2017 and Koutromanos & Kazakou 2023, but these have not been specifically applied to Nuance Audio. The OTC hearing aid market was deregulated by the FDA in 2022, opening significant competitive space. EssilorLuxottica's dominant eyewear position (Ray-Ban, Oakley, LensCrafters) could provide enormous distribution advantages.")
+            )
           ),
-          
-          # Quadrante 4
-          tags$div(
-            style = "background: #fdfdfd; border: 2px dashed #94a3b8; padding: 15px; border-radius: 8px; font-size: 13px; line-height: 1.6;",
-            tags$strong(style = "color: #0f1724; font-size: 14px;", "Q4: Unknown-Unknowns"), 
-            tags$span(style = "color: #556378; font-size: 12px;", " (What we don't know we don't know)"),
-            tags$hr(style="margin:8px 0; border-color:#cbd5e1;"),
-            tags$p(style="margin:0; color:#334155;", "New technologies (e.g., advanced bone conduction, neural implants) could make the open-ear approach obsolete. An unexpected competitor (e.g., Apple, Google, Samsung) could enter the hearing glasses segment with stronger ecosystem integration. Potential long-term side effects of prolonged unmonitored open-ear amplification. Cultural shifts that fully normalize hearing aids, eliminating the competitive advantage of invisibility.")
+
+          # Quadrante 4 — Unknown-Unknowns
+          tags$div(class = "rumsfeld-cell",
+            tags$div(class = "rumsfeld-cell-header",
+              tags$i(class = "fas fa-circle-question rumsfeld-cell-icon"),
+              tags$div(
+                tags$strong(style = "color:#0f1724; font-size:14px;", "Q4: Unknown-Unknowns"),
+                tags$span(style = "color:#556378; font-size:11px; display:block; margin-top:2px;", "What we don't know we don't know")
+              )
+            ),
+            tags$div(class = "rumsfeld-drop",
+              tags$hr(style = "border:none; border-top:1px solid #cbd5e1; margin:0 0 10px;"),
+              tags$p(style = "margin:0; color:#334155; font-size:12.5px; line-height:1.6;",
+                "New technologies (e.g., advanced bone conduction, neural implants) could make the open-ear approach obsolete. An unexpected competitor (e.g., Apple, Google, Samsung) could enter the hearing glasses segment with stronger ecosystem integration. Potential long-term side effects of prolonged unmonitored open-ear amplification. Cultural shifts that fully normalize hearing aids, eliminating the competitive advantage of invisibility.")
+            )
           )
         )
       ),
@@ -953,122 +1086,229 @@ server <- function(input, output, session) {
                  is_active <- (kn == sel)
                  tags$div(
                    style = paste0(
-                     "flex:1; padding:14px 18px; border-radius:12px; cursor:pointer; border:2px solid ",
-                     if (is_active) paste0(kd$color, ";") else paste0(col$border, ";"),
-                     " background:", if (is_active) paste0(kd$color, "0d;") else paste0(col$card, ";")
+                     "flex:1; padding:14px 18px; border-radius:12px; cursor:pointer;",
+                     "border:2px solid ", if (is_active) kd$color else paste0(kd$color, "60"), ";",
+                     "background:", if (is_active) kd$pastel_hi else kd$pastel_lo, ";",
+                     "transition:all 0.2s;"
                    ),
                    onclick = paste0("Shiny.setInputValue('kit_click', '", kn, "', {priority:'event'});"),
-                   tags$div(style = paste0("font-size:11px; font-weight:700; color:", kd$color, "; letter-spacing:1px;"), gsub("KIT","KIT ", kn)),
-                   tags$div(style = "font-size:13px; font-weight:600; color:white; margin-top:4px;", kd$title)
+                   tags$div(style = paste0("font-size:11px; font-weight:700; color:", kd$color, "; letter-spacing:1px;"),
+                            gsub("KIT","KIT ", kn)),
+                   tags$div(style = paste0("font-size:13px; font-weight:600; color:", kd$title_dark, "; margin-top:4px;"),
+                            kd$title)
                  )
                })
       ),
       
       # KIQ content
-      tags$div(class = "sci-card", style = paste0("border-top:3px solid ", k$color, ";"),
-               tags$p(style = "font-size:13px; color:var(--dim); margin-bottom:20px; line-height:1.6;", k$desc),
-               tags$div(
-                 lapply(k$kiqs, function(kiq) {
+      tags$div(
+        lapply(k$kiqs, function(kiq) {
                    
-                   # Riquadro principale: ora è un contenitore orizzontale (display: flex)
-                   tags$div(style = paste0("background:", col$card2, "; border-radius:10px; padding:18px; border:1px solid ", col$border, "; margin-bottom:12px; display: flex; align-items: center; justify-content: space-between; gap: 20px;"),
-                            
-                            # --- COLONNA SINISTRA: Badge, Domanda, Indicatori ---
-                            tags$div(style = "flex: 1;", # 'flex: 1' permette a questa colonna di allargarsi e mandare il testo a capo
-                                     
-                                     # Riga dei Badge
+                   # Riquadro principale
+                   tags$div(style = paste0(
+                     "background:", k$pastel_lo, ";",
+                     "border-radius:10px; padding:18px;",
+                     "border:1px solid ", k$color, "40;",
+                     "margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:20px;"
+                   ),
+                            # --- COLONNA SINISTRA ---
+                            tags$div(style = "flex:1;",
                                      tags$div(style = "display:flex; gap:8px; margin-bottom:12px;",
                                               sci_badge(kiq$type, k$color),
-                                              sci_badge(kiq$analysis, col$text) # Assicurati di usare col$text o il colore che hai scelto
+                                              sci_badge(kiq$analysis, k$title_dark)
                                      ),
-                                     
-                                     # Testo della Domanda
-                                     tags$p(style = "font-size:13px; color:white; margin:0 0 8px; font-weight:500; line-height:1.55;", kiq$q),
-                                     
-                                     # Indicatori
-                                     tags$div(style = "font-size:11px; color:var(--muted);",
-                                              tags$strong(style = "color:var(--dim);", "Indicators: "), kiq$indicators
+                                     tags$p(style = paste0("font-size:13px; color:", k$title_dark, "; margin:0 0 8px; font-weight:600; line-height:1.55;"), kiq$q),
+                                     tags$div(style = paste0("font-size:11px; color:", k$title_dark, "99;"),
+                                              tags$strong(style = paste0("color:", k$title_dark, ";"), "Indicators: "), kiq$indicators
                                      )
                             ),
-                            
-                            # --- COLONNA DESTRA: Scalinata SMART ---
-                            tags$div(style = "flex-shrink: 0;",
-                                     smart_ui(kiq$smart$S, kiq$smart$M, kiq$smart$A, kiq$smart$R, kiq$smart$T, 
+                            # --- COLONNA DESTRA: SMART ---
+                            tags$div(style = "flex-shrink:0;",
+                                     smart_ui(kiq$smart$S, kiq$smart$M, kiq$smart$A, kiq$smart$R, kiq$smart$T,
                                               if(isTRUE(kiq$smart$m_wide)) "tooltip-m-wide" else "tooltip-m")
                             )
                    )
-                 })
-               )
+        })
       )
     )
   })
-  
+
   observeEvent(input$kit_click, { kit_sel(input$kit_click) })
   
   # ──────────────────────────────────────────────
   # TAB 7: QUERY DESIGN
   # ──────────────────────────────────────────────
   output$tab_queries <- renderUI({
+
     queries <- list(
       list(id = "Q1", title = "General Technological Landscape", scope = "Broad", color = col$accent,
+           pastel = "#d1fae5", dark = "#065f46",
            query = 'TITLE-ABS-KEY("smart glasses" OR "audio glasses" OR "hearing glasses")\nAND TITLE-ABS-KEY("wearable technology" OR "smart eyewear")',
            results = "Nuance Audio, Vue Lite 2, XanderGlasses, Ray-Ban Meta. Market data: $2.46B \u2192 $14.38B (CAGR 24.2%)"),
       list(id = "Q2", title = "Hearing & Assistive Technology", scope = "Narrow", color = col$blue,
+           pastel = "#dbeafe", dark = "#1e3a8a",
            query = 'TITLE-ABS-KEY("smart glasses" OR "hearing glasses" OR "audio glasses")\nAND TITLE-ABS-KEY("hearing aid" OR "augmented hearing" OR "bone conduction"\n  OR "assistive listening")',
            results = "Bone conduction solutions, InterHearing. Key insight: Nuance uses open-ear + beamforming (not bone conduction) \u2014 important differentiator"),
       list(id = "Q3", title = "Consumer Adoption", scope = "Strategic", color = col$purple,
+           pastel = "#ede9fe", dark = "#4c1d95",
            query = 'TITLE-ABS-KEY("smart glasses" OR "wearable technology")\nAND TITLE-ABS-KEY("consumer adoption" OR "technology acceptance"\n  OR "user experience")\nAND TITLE-ABS-KEY("eyewear" OR "hearing")',
            results = "IDC: Ray-Ban Meta 900K+ sales Q4 2024; 1.5B affected by hearing loss; design, comfort, usefulness as key TAM/UTAUT factors"),
       list(id = "Q4", title = "Market & Competition", scope = "Quantitative", color = col$orange,
+           pastel = "#ffedd5", dark = "#9a3412",
            query = 'TITLE-ABS-KEY("smart glasses" OR "smart eyewear" OR "audio glasses")\nAND TITLE-ABS-KEY("market" OR "competitive landscape"\n  OR "industry analysis")\nAND NOT TITLE-ABS-KEY("virtual reality headset" OR "VR headset")',
            results = "Audio >28% share; Meta 73\u201382% share; ASP declining $450 \u2192 $250 (2024\u20132028); 45M units by 2028"),
       list(id = "Q5", title = "Innovation & CES 2026", scope = "Competitor", color = col$red,
+           pastel = "#fee2e2", dark = "#7f1d1d",
            query = 'TITLE-ABS-KEY("hearing glasses" OR "audio glasses" OR "smart glasses")\nAND TITLE-ABS-KEY("digital transformation" OR "emerging technology"\n  OR "innovation")\nAND TITLE-ABS-KEY("eyewear" OR "hearing")',
            results = "CES 2026: Cearvol Lyra (NeuroFlow AI 2.0), Alango (zero-latency). Ray-Ban Meta 'Conversation Focus'. Nuance SNR improvement 4.4 dB")
     )
     
     tagList(
+      tags$script(HTML("
+        function showQuery(id) {
+          var ids = ['q1','q2','q3','q4','q5'];
+          ids.forEach(function(qid) {
+            var el = document.getElementById('query-detail-' + qid);
+            if (!el) return;
+            el.style.display = (qid === id) ? 'block' : 'none';
+          });
+        }
+        function hideQuery(id) {
+          var el = document.getElementById('query-detail-' + id);
+          if (el && !el.dataset.pinned) el.style.display = 'none';
+        }
+        function toggleQuery(id) {
+          var el = document.getElementById('query-detail-' + id);
+          if (!el) return;
+          if (el.dataset.pinned) {
+            el.dataset.pinned = '';
+            el.style.display = 'none';
+          } else {
+            el.dataset.pinned = '1';
+            showQuery(id);
+            el.scrollIntoView({behavior:'smooth', block:'nearest'});
+          }
+        }
+      ")),
+
       section_hdr("Query Design", "Systematic query design for Scopus and web search \u2014 from broad landscape to specific competitive intelligence"),
-      
-      # Query overview grid
-      tags$div(style = "display:flex; gap:10px; margin-bottom:24px;",
+
+      # Query overview grid \u2014 cliccabile
+      tags$div(style = "display:flex; gap:10px; margin-bottom:16px;",
                lapply(queries, function(q) {
-                 tags$div(style = paste0("flex:1; background:", col$card, "; border:1px solid ", q$color, "30; border-radius:12px; padding:16px; text-align:center; border-top:3px solid ", q$color, ";"),
-                          tags$div(style = paste0("font-size:22px; font-weight:800; color:", q$color, "; font-family:'JetBrains Mono',monospace;"), q$id),
-                          tags$div(style = "font-size:11px; color:white; font-weight:600; margin-top:4px;", q$title),
-                          tags$div(style = "margin-top:6px;", sci_badge(q$scope, q$color))
+                 tags$div(
+                   id = paste0("query-btn-", tolower(q$id)),
+                   style = paste0(
+                     "flex:1; background:", q$pastel, ";",
+                     "border:1px solid ", q$color, "50;",
+                     "border-radius:12px; padding:16px; text-align:center;",
+                     "border-top:3px solid ", q$color, ";",
+                     "cursor:pointer; transition:transform 0.18s, box-shadow 0.18s;"
+                   ),
+                   onmouseover = paste0("this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 18px rgba(0,0,0,0.14)'; showQuery('", tolower(q$id), "');"),
+                   onmouseout  = paste0("this.style.transform=''; this.style.boxShadow=''; hideQuery('", tolower(q$id), "');"),
+                   onclick = paste0("toggleQuery('", tolower(q$id), "');"),
+                   tags$div(style = paste0("font-size:22px; font-weight:800; color:", q$color, "; font-family:'JetBrains Mono',monospace;"), q$id),
+                   tags$div(style = paste0("font-size:11px; color:", q$dark, "; font-weight:600; margin-top:4px;"), q$title),
+                   tags$div(style = "margin-top:6px;", sci_badge(q$scope, q$color))
                  )
                })
       ),
-      
-      # Query details
+
+      # Query details (nascosti di default)
       lapply(queries, function(q) {
-        tags$div(class = "sci-card", style = paste0("border-left:4px solid ", q$color, ";"),
-                 tags$div(style = "display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;",
-                          tags$div(style = "display:flex; gap:10px; align-items:center;",
-                                   tags$span(style = paste0("font-size:18px; font-weight:800; color:", q$color, "; font-family:'JetBrains Mono',monospace;"), q$id),
-                                   tags$span(style = "font-size:14px; font-weight:600; color:white;", q$title)
-                          ),
-                          sci_badge(paste(q$scope, "\u2714"), q$color)
-                 ),
-                 tags$pre(class = "query-code", q$query),
-                 tags$div(style = "font-size:12px; color:var(--dim); line-height:1.65; margin-top:12px;",
-                          tags$strong(style = "color:var(--muted);", "Key Results: "), q$results
-                 )
+        tags$div(
+          id = paste0("query-detail-", tolower(q$id)),
+          style = paste0(
+            "display:none;",
+            "background:", q$pastel, ";",
+            "border:1px solid ", q$color, "40;",
+            "border-left:4px solid ", q$color, ";",
+            "border-radius:14px; padding:24px; margin-bottom:12px;",
+            "scroll-margin-top:12px;"
+          ),
+          tags$div(style = "display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;",
+                   tags$div(style = "display:flex; gap:10px; align-items:center;",
+                            tags$span(style = paste0("font-size:18px; font-weight:800; color:", q$color, "; font-family:'JetBrains Mono',monospace;"), q$id),
+                            tags$span(style = paste0("font-size:14px; font-weight:600; color:", q$dark, ";"), q$title)
+                   ),
+                   sci_badge(paste(q$scope, "\u2714"), q$color)
+          ),
+          tags$pre(class = "query-code-light", hl_query(q$query)),
+          tags$div(style = paste0("font-size:12px; color:", q$dark, "cc; line-height:1.65; margin-top:12px;"),
+                   tags$strong(style = paste0("color:", q$dark, ";"), "Key Results: "), q$results
+          )
         )
       }),
-      
-      # Recommended final query
-      tags$div(class = "sci-card", style = paste0("border:1px solid ", col$accent, "30;"),
-               tags$h4(style = paste0("font-size:14px; font-weight:700; color:", col$accent, "; margin:0 0 12px;"),
-                       tags$i(class = "fas fa-bookmark", `aria-hidden` = "true"), " Recommended Final Query for Scopus"),
-               tags$pre(class = "query-code", style = paste0("border-color:", col$accent, "30;"),
-                        'TITLE-ABS-KEY("smart glasses" OR "hearing glasses" OR "audio glasses"
-  OR "smart eyewear" OR "hearing aid glasses")
-AND TITLE-ABS-KEY("hearing" OR "audio" OR "assistive" OR "wearable")
-AND NOT TITLE-ABS-KEY("virtual reality headset")
-AND PUBYEAR > 2017')
-      )
+
+      # Recommended final query — layout strutturato compatto
+      local({
+        op_badge <- function(label, color) {
+          tags$div(
+            style = paste0(
+              "display:inline-flex; align-items:center; margin:3px 0;",
+              "font-size:9px; font-weight:800; letter-spacing:1px;",
+              "color:", color, "; font-family:'JetBrains Mono',monospace;"
+            ),
+            tags$i(class="fas fa-arrow-down", style=paste0("margin-right:5px; font-size:8px; color:", color, "70;")),
+            label
+          )
+        }
+
+        term_chip <- function(term, color) {
+          tags$span(
+            style = paste0(
+              "display:inline-block; padding:2px 8px; border-radius:20px; margin:2px 2px 2px 0;",
+              "font-size:10.5px; font-family:'JetBrains Mono',monospace;",
+              "background:", color, "15; color:", color, "; border:1px solid ", color, "35;"
+            ),
+            paste0('"', term, '"')
+          )
+        }
+
+        fn_label <- function(color) {
+          tags$span(
+            style = paste0(
+              "font-size:9px; font-weight:700; color:", color, "80;",
+              "font-family:'JetBrains Mono',monospace; margin-right:8px; letter-spacing:0.5px; flex-shrink:0;"
+            ),
+            "TITLE-ABS-KEY"
+          )
+        }
+
+        query_row <- function(terms, color) {
+          tags$div(
+            style = paste0(
+              "display:flex; align-items:center; flex-wrap:wrap;",
+              "background:", color, "0a; border:1px solid ", color, "22;",
+              "border-radius:8px; padding:6px 12px; margin:2px 0;"
+            ),
+            fn_label(color),
+            lapply(terms, function(t) term_chip(t, color))
+          )
+        }
+
+        tags$div(
+          style = "background:#ffffff; border:1px solid #e2e8f0; border-left:3px solid #334155; border-radius:14px; padding:16px 20px; margin-bottom:18px;",
+          tags$div(
+            style = "display:flex; align-items:center; gap:8px; margin-bottom:12px;",
+            tags$i(class="fas fa-bookmark", style="color:#334155; font-size:12px;"),
+            tags$span(style="font-size:13px; font-weight:700; color:#0f1724;",
+                      "Recommended Final Query for Scopus")
+          ),
+          query_row(c("smart glasses", "hearing glasses", "audio glasses", "smart eyewear", "hearing aid glasses"), "#334155"),
+          op_badge("AND", "#d97706"),
+          query_row(c("hearing", "audio", "assistive", "wearable"), "#334155"),
+          op_badge("AND NOT", "#dc2626"),
+          query_row(c("virtual reality headset"), "#334155"),
+          op_badge("AND", "#d97706"),
+          tags$div(
+            style = "display:inline-flex; align-items:center; gap:8px; background:#33415510; border:1px solid #33415530; border-radius:8px; padding:6px 12px; margin:2px 0;",
+            tags$span(style="font-size:9px; font-weight:700; color:#33415580; font-family:'JetBrains Mono',monospace; letter-spacing:0.5px;", "PUBYEAR"),
+            tags$span(style="font-size:12px; color:#334155; font-family:'JetBrains Mono',monospace; font-weight:700;", "> 2017")
+          )
+        )
+      })
     )
   })
   
@@ -1152,13 +1392,21 @@ AND PUBYEAR > 2017')
                )
       ),
       
-      # Visualizzazione del Prompt Finale (opzionale, molto figo)
-      tags$div(style = "margin-top:20px; margin-bottom:30px;",
-               tags$h5(style="font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:10px;", "Composite Prompt Preview"),
-               tags$div(class = "query-code", style="opacity:0.8; font-size:11px;",
-                        paste0("Act as a ", create_data$C$desc, " ", create_data$R$desc, " ", create_data$E$desc, " ", create_data$A$desc, " ", create_data$T$desc, " ", create_data$E2$desc))
+      # Visualizzazione del Prompt Finale
+      tags$div(
+        style = paste0(
+          "margin-top:20px; margin-bottom:30px; padding:16px 18px;",
+          "background:", pastel_bg(curr$color), ";",
+          "border:1px solid ", curr$color, "40; border-left:3px solid ", curr$color, ";",
+          "border-radius:14px; transition:transform 0.22s, box-shadow 0.22s;"
+        ),
+        onmouseover = "this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)';",
+        onmouseout  = "this.style.transform=''; this.style.boxShadow='';",
+        tags$div(style = paste0("font-size:10px; color:", curr$color, "; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-bottom:10px;"), "Composite Prompt Preview"),
+        tags$p(style = paste0("font-size:12px; color:", pastel_text(curr$color), "; line-height:1.65; margin:0; font-family:'JetBrains Mono',monospace;"),
+               paste0("Act as a ", create_data$C$desc, " ", create_data$R$desc, " ", create_data$E$desc, " ", create_data$A$desc, " ", create_data$T$desc, " ", create_data$E2$desc))
       ),
-      
+
       # Evaluation chart
       section_hdr("Output Quality Evaluation", "Rating GenAI output quality (max 5 stars)"),
       tags$div(class = "sci-card", plotlyOutput("plot_eval", height = "240px")),
@@ -1211,8 +1459,8 @@ AND PUBYEAR > 2017')
           "Adoption barriers: price, privacy, stigma (consistently identified)"
         ), col$accent)),
         column(6, info_card("Divergent Information", c(
-          "Market size 2025: <strong style='color:white'>$2.5B to $18.4B</strong> (depends on definition)",
-          "CAGR ranges from <strong style='color:white'>10% to 24%</strong> across sources",
+          "Market size 2025: <strong style='font-weight:800'>$2.5B to $18.4B</strong> (depends on definition)",
+          "CAGR ranges from <strong style='font-weight:800'>10% to 24%</strong> across sources",
           "Europe's share: 32% to 43% depending on source",
           "Long-term projections highly uncertain",
           "Nuance Audio's actual adoption rate remains unknown"
@@ -1222,7 +1470,7 @@ AND PUBYEAR > 2017')
       # CEO Recommendation
       insight_box(
         "CEO Recommendation",
-        "Use LLMs as an <strong style='color:white'>acceleration and support tool</strong> for strategic decisions, but <strong style='color:white'>never as a sole source</strong>. LLMs excel at initial landscape mapping (delivering in minutes what takes days manually), generating alternative scenarios, and identifying hidden assumptions. However, quantitative data must always be verified against primary sources. The primary risk is <strong style='color:#ff9f43'>overconfidence</strong>: LLMs present information authoritatively, masking genuine uncertainty. Recommendation: systematically integrate LLMs into the CI process within a framework of human validation, source triangulation, and critical review — <em>'AI is an accelerator, not a substitute for critical thinking.'</em>",
+        "Use LLMs as an <strong style='font-weight:800'>acceleration and support tool</strong> for strategic decisions, but <strong style='font-weight:800'>never as a sole source</strong>. LLMs excel at initial landscape mapping (delivering in minutes what takes days manually), generating alternative scenarios, and identifying hidden assumptions. However, quantitative data must always be verified against primary sources. The primary risk is <strong style='color:#ff9f43'>overconfidence</strong>: LLMs present information authoritatively, masking genuine uncertainty. Recommendation: systematically integrate LLMs into the CI process within a framework of human validation, source triangulation, and critical review — <em>'AI is an accelerator, not a substitute for critical thinking.'</em>",
         col$purple, "lightbulb"
       )
     )
@@ -1247,9 +1495,9 @@ AND PUBYEAR > 2017')
             ),
             text      = ~paste0(Score, " / 5"),
             # 3. Sostituiamo il nome del criterio con le stelline ingrandite e colorate
-            hovertext = ~paste0("<span style='font-size:20px; color:", col$orange, ";'>", star_ratings, "</span><br><br>", wrapped_comments),
+            hovertext = ~paste0("<span style='font-size:20px; color:#000000;'>", star_ratings, "</span><br><br>", wrapped_comments),
             hoverinfo = "text",
-            hoverlabel = list(align = "left"), 
+            hoverlabel = list(align = "left"),
             textposition = "outside",
             textfont = list(size = 12, color = "white")) %>%
       plotly_layout_dark(
@@ -1302,17 +1550,20 @@ AND PUBYEAR > 2017')
       ),
       
       # ── Methodology ────────────────────────────────────────────────────
-      tags$div(class = "sci-card",
-               tags$h4(style = "font-size:15px; font-weight:700; color:white; margin:0 0 14px;",
-                       "Methodology — Lab 5 (Text Analysis)"),
-               tags$div(class = "query-code",
-                        paste0(
+      tags$div(class = "sci-card", style = paste0(
+        "border-left:4px solid ", col$accent, ";",
+        "background:", pastel_bg(col$accent), ";"
+      ),
+      tags$h4(style = paste0("font-size:15px; font-weight:700; color:", pastel_text(col$accent), "; margin:0 0 14px;"),
+              "Methodology — Lab 5 (Text Analysis)"),
+               tags$pre(class = "query-code-light", style = "margin-bottom:14px;",
+                        hl_query(paste0(
                           'TITLE-ABS-KEY("smart glasses" OR "hearing glasses" OR "audio glasses"\n',
-                          '              OR "smart eyewear" OR "hearing aid glasses")\n',
+                          '  OR "smart eyewear" OR "hearing aid glasses")\n',
                           'AND TITLE-ABS-KEY("hearing" OR "audio" OR "assistive" OR "wearable")\n',
                           'AND NOT TITLE-ABS-KEY("virtual reality headset")\n',
                           'AND PUBYEAR > 2017'
-                        )),
+                        ))),
                tags$div(style = "display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-top:18px;",
                         insight_box("Part 1 — Bibliometric",
                                     "<code>bibliometrix::biblioAnalysis</code> for descriptive stats and <code>conceptualStructure</code> + <code>biblioNetwork</code> for co-word and collaboration networks.",
@@ -1575,13 +1826,16 @@ AND PUBYEAR > 2017')
     tagList(
       section_hdr("Patent Data Analysis", "IP Landscape on Smart Glasses & Hearing Technologies (Espacenet - Lab Erre Quadro)"),
       
-      tags$div(class = "sci-card", style = paste0("border-left: 5px solid ", col$accent, ";"),
-               tags$h4(style="color:white; margin-top:0; font-weight:800; font-size: 15px;", "Erre Quadro Methodology — Espacenet Query"),
-               tags$p(style="color:var(--dim); line-height: 1.6; font-size: 13px;", 
-                      "To analyze Intellectual Property (IP), we queried the Espacenet database focusing on the intersection between visual devices (eyewear) and hearing technologies, extracting and processing statistical data for Assignees and IPC classes."),
-               tags$pre(class = "query-code", style = paste0("border-color:", col$accent, "30; margin-top: 10px;"),
-                        '(ti="smart glasses" OR ti="audio glasses" OR ti="eyewear") AND (txt="hearing" OR txt="audio" OR txt="acoustic")')
+      tags$div(class = "sci-card", style = paste0(
+        "border-left:5px solid ", col$accent, ";",
+        "background:", pastel_bg(col$accent), ";"
       ),
+      tags$h4(style = paste0("color:", pastel_text(col$accent), "; margin-top:0; font-weight:800; font-size:15px;"), "Erre Quadro Methodology — Espacenet Query"),
+      tags$p(style = paste0("color:", pastel_text(col$accent), "cc; line-height:1.6; font-size:13px;"),
+             "To analyze Intellectual Property (IP), we queried the Espacenet database focusing on the intersection between visual devices (eyewear) and hearing technologies, extracting and processing statistical data for Assignees and IPC classes."),
+      tags$pre(class = "query-code-light", style = "margin-top:10px;",
+               hl_query('(ti="smart glasses" OR ti="audio glasses" OR ti="eyewear") AND (txt="hearing" OR txt="audio" OR txt="acoustic")')
+      )),
       
       tags$div(class = "row-stats",
                tags$div(stat_block("Total Patents", "849", "Espacenet Results", col$accent)),
@@ -1699,13 +1953,21 @@ AND PUBYEAR > 2017')
   
   output$tab_storyboard <- renderUI({
     tagList(
-      section_hdr("Data Viz Lab", "Strategic Storytelling & Visual Communication Map"),
+      tags$style(HTML(paste0("
+        #kiq_nav .nav-item:nth-child(1) .nav-link         { color:", col$accent, " !important; }
+        #kiq_nav .nav-item:nth-child(1) .nav-link.active  { background:rgba(0,229,160,.12) !important; border-color:rgba(0,229,160,.25) !important; color:", col$accent, " !important; }
+        #kiq_nav .nav-item:nth-child(2) .nav-link         { color:", col$cyan, " !important; }
+        #kiq_nav .nav-item:nth-child(2) .nav-link.active  { background:rgba(34,211,238,.12) !important; border-color:rgba(34,211,238,.25) !important; color:", col$cyan, " !important; }
+        #kiq_nav .nav-item:nth-child(3) .nav-link         { color:", col$orange, " !important; }
+        #kiq_nav .nav-item:nth-child(3) .nav-link.active  { background:rgba(255,159,67,.12) !important; border-color:rgba(255,159,67,.25) !important; color:", col$orange, " !important; }
+      "))),
+      section_hdr("Data Visualization", "Strategic Storytelling & Visual Communication Map"),
       
       tags$div(class = "sci-card",
                style = paste0("border-left:5px solid ", col$accent, "; background:linear-gradient(135deg,rgba(0,229,160,.05) 0%,rgba(0,0,0,0) 100%); margin-bottom:20px;"),
                tags$h4(style = "color:white; margin-top:0; font-weight:800;", "Narrative Path: The Nuance Audio Positioning Moat"),
                tags$p(style = "color:var(--dim); line-height:1.6; font-size:14px; margin:0;",
-                      "This module fulfills the deliverable requirements for Data Viz Lab 5, explicitly connecting business Key Intelligence Questions (KIQs) to analytical charts derived from real data.")
+                      "This module fulfills the deliverable requirements for Data Visualization 5, explicitly connecting business Key Intelligence Questions (KIQs) to analytical charts derived from real data.")
       ),
       
       navset_pill(
@@ -1715,14 +1977,14 @@ AND PUBYEAR > 2017')
           title = tagList(icon("chart-line"), " KIQ 1 — Market Technology Window"),
           value = "kiq1",
           tags$div(style = "padding-top:18px;",
-                   tags$div(class = "sci-card", style = paste0("border-top:3px solid ", col$blue, "; margin-bottom:16px;"),
-                            tags$div(style = paste0("font-size:11px; font-weight:700; color:", col$blue, "; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;"), "KIT 1 — STRATEGIC PACKAGING & TIMING"),
-                            tags$h5(style = "color:white; font-weight:700; font-size:16px; margin:0 0 10px;",
-                                    tooltip(tags$span(style = "cursor: help; border-bottom: 1px dashed rgba(255,255,255,0.4);", "Does the scientific research landscape support the emergence of this new product category?"),
+                   tags$div(class = "sci-card", style = paste0("border-top:3px solid ", col$accent, "; background:", pastel_bg(col$accent), "; margin-bottom:16px;"),
+                            tags$div(style = paste0("font-size:11px; font-weight:700; color:", col$accent, "; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;"), "KIT 1 — STRATEGIC PACKAGING & TIMING"),
+                            tags$h5(style = paste0("color:", pastel_text(col$accent), "; font-weight:700; font-size:16px; margin:0 0 10px;"),
+                                    tooltip(tags$span(style = paste0("cursor:help; border-bottom:1px dashed ", pastel_text(col$accent), "60;"), "Does the scientific research landscape support the emergence of this new product category?"),
                                             "Rephrased to assess technology readiness rather than market maturity.", placement = "top")),
-                            tags$div(style = paste0("background:", col$blue, "15; padding:10px 14px; border-radius:6px; border-left:4px solid ", col$blue, ";"),
-                                     tags$span(style = "font-size:10px; text-transform:uppercase; color:#94a3b8; font-weight:700;", "Potential Decision — "),
-                                     tags$span(style = "font-size:12px; color:white;", "Confirm immediate go-to-market: scientific research has reached maturity, opening the commercial window.")
+                            tags$div(style = paste0("background:", col$accent, "15; padding:10px 14px; border-radius:6px; border-left:4px solid ", col$accent, ";"),
+                                     tags$span(style = paste0("font-size:10px; text-transform:uppercase; color:", pastel_text(col$accent), "80; font-weight:700;"), "Potential Decision — "),
+                                     tags$span(style = paste0("font-size:12px; color:", pastel_text(col$accent), ";"), "Confirm immediate go-to-market: scientific research has reached maturity, opening the commercial window.")
                             )
                    ),
                    fluidRow(
@@ -1746,14 +2008,14 @@ AND PUBYEAR > 2017')
           title = tagList(icon("users"), " KIQ 2 — Social Stigma & Barriers"),
           value = "kiq2",
           tags$div(style = "padding-top:18px;",
-                   tags$div(class = "sci-card", style = paste0("border-top:3px solid ", col$accent, "; margin-bottom:16px;"),
-                            tags$div(style = paste0("font-size:11px; font-weight:700; color:", col$accent, "; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;"), "KIT 1 — USER ADOPTION AND LIFESTYLE BARRIERS"),
-                            tags$h5(style = "color:white; font-weight:700; font-size:16px; margin:0 0 10px;",
-                                    tooltip(tags$span(style = "cursor: help; border-bottom: 1px dashed rgba(255,255,255,0.4);", "What non-clinical barriers affect the adoption of traditional hearing aids?"),
+                   tags$div(class = "sci-card", style = paste0("border-top:3px solid ", col$cyan, "; background:", pastel_bg(col$cyan), "; margin-bottom:16px;"),
+                            tags$div(style = paste0("font-size:11px; font-weight:700; color:", col$cyan, "; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;"), "KIT 1 — USER ADOPTION AND LIFESTYLE BARRIERS"),
+                            tags$h5(style = paste0("color:", pastel_text(col$cyan), "; font-weight:700; font-size:16px; margin:0 0 10px;"),
+                                    tooltip(tags$span(style = paste0("cursor:help; border-bottom:1px dashed ", pastel_text(col$cyan), "60;"), "What non-clinical barriers affect the adoption of traditional hearing aids?"),
                                             "Explicitly derived from your KIT 1 (Strategic Decisions).", placement = "top")),
-                            tags$div(style = paste0("background:", col$accent, "15; padding:10px 14px; border-radius:6px; border-left:4px solid ", col$accent, ";"),
-                                     tags$span(style = "font-size:10px; text-transform:uppercase; color:#94a3b8; font-weight:700;", "Potential Decision — "),
-                                     tags$span(style = "font-size:12px; color:white;", "Push marketing communication towards fashion aesthetics rather than the medical aspects of the device.")
+                            tags$div(style = paste0("background:", col$cyan, "15; padding:10px 14px; border-radius:6px; border-left:4px solid ", col$cyan, ";"),
+                                     tags$span(style = paste0("font-size:10px; text-transform:uppercase; color:", pastel_text(col$cyan), "80; font-weight:700;"), "Potential Decision — "),
+                                     tags$span(style = paste0("font-size:12px; color:", pastel_text(col$cyan), ";"), "Push marketing communication towards fashion aesthetics rather than the medical aspects of the device.")
                             )
                    ),
                    fluidRow(
@@ -1777,14 +2039,14 @@ AND PUBYEAR > 2017')
           title = tagList(icon("shield-alt"), " KIQ 3 — Big Tech Asymmetric Threat"),
           value = "kiq3",
           tags$div(style = "padding-top:18px;",
-                   tags$div(class = "sci-card", style = paste0("border-top:3px solid ", col$orange, "; margin-bottom:16px;"),
+                   tags$div(class = "sci-card", style = paste0("border-top:3px solid ", col$orange, "; background:", pastel_bg(col$orange), "; margin-bottom:16px;"),
                             tags$div(style = paste0("font-size:11px; font-weight:700; color:", col$orange, "; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;"), "KIT 2 — EARLY WARNINGS ON COMPETITIVE DISRUPTION"),
-                            tags$h5(style = "color:white; font-weight:700; font-size:16px; margin:0 0 10px;",
-                                    tooltip(tags$span(style = "cursor: help; border-bottom: 1px dashed rgba(255,255,255,0.4);", "Which competitors are building an asymmetric IP advantage in the sector?"),
+                            tags$h5(style = paste0("color:", pastel_text(col$orange), "; font-weight:700; font-size:16px; margin:0 0 10px;"),
+                                    tooltip(tags$span(style = paste0("cursor:help; border-bottom:1px dashed ", pastel_text(col$orange), "60;"), "Which competitors are building an asymmetric IP advantage in the sector?"),
                                             "Derived from your KIT 2 to identify disruptive threats from big tech.", placement = "top")),
                             tags$div(style = paste0("background:", col$orange, "15; padding:10px 14px; border-radius:6px; border-left:4px solid ", col$orange, ";"),
-                                     tags$span(style = "font-size:10px; text-transform:uppercase; color:#94a3b8; font-weight:700;", "Potential Decision — "),
-                                     tags$span(style = "font-size:12px; color:white;", "Increase investments in proprietary software before the roll-out of acoustic features by Meta and Apple.")
+                                     tags$span(style = paste0("font-size:10px; text-transform:uppercase; color:", pastel_text(col$orange), "80; font-weight:700;"), "Potential Decision — "),
+                                     tags$span(style = paste0("font-size:12px; color:", pastel_text(col$orange), ";"), "Increase investments in proprietary software before the roll-out of acoustic features by Meta and Apple.")
                             )
                    ),
                    fluidRow(
@@ -1807,10 +2069,10 @@ AND PUBYEAR > 2017')
     )
   })
   
-  output$si_kiq1_a <- renderUI({ si_box("Scopus scientific production shows a mature trend consolidated over the last 3 years, confirming the solidity of the audio-visual technological foundations.", col$blue) })
-  output$si_kiq1_b <- renderUI({ si_box("The trend of real patents highlights massive industrial growth, confirming that the market is ready from an IP perspective.", col$blue) })
-  output$si_kiq2_a <- renderUI({ si_box("The co-occurrence of scientific keywords places 'stigma' and 'acceptance' at the center of the non-medical debate, validating the invisibility positioning.", col$accent) })
-  output$si_kiq2_b <- renderUI({ si_box("Terminological clusters confirm the need for a hybrid design to intercept users who reject healthcare aesthetics.", col$accent) })
+  output$si_kiq1_a <- renderUI({ si_box("Scopus scientific production shows a mature trend consolidated over the last 3 years, confirming the solidity of the audio-visual technological foundations.", col$accent) })
+  output$si_kiq1_b <- renderUI({ si_box("The trend of real patents highlights massive industrial growth, confirming that the market is ready from an IP perspective.", col$accent) })
+  output$si_kiq2_a <- renderUI({ si_box("The co-occurrence of scientific keywords places 'stigma' and 'acceptance' at the center of the non-medical debate, validating the invisibility positioning.", col$cyan) })
+  output$si_kiq2_b <- renderUI({ si_box("Terminological clusters confirm the need for a hybrid design to intercept users who reject healthcare aesthetics.", col$cyan) })
   output$si_kiq3_a <- renderUI({ si_box("BERTopic monitoring reveals the explosion of AI Captioning and AR-related interaction technologies, the backbone of Big Tech.", col$orange) })
   output$si_kiq3_b <- renderUI({ si_box("Espacenet data shows the undisputed IP leadership of Snap Inc and Meta Platforms, locking down the market with strategic patents.", col$orange) })
   
