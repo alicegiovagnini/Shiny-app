@@ -9,6 +9,7 @@ library(echarts4r)
 library(DT)
 library(htmltools)
 library(shinyWidgets)
+library(openxlsx)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # COLOUR PALETTE & THEME
@@ -91,13 +92,31 @@ body, .bslib-page-fill {
   border-radius: 14px;
   padding: 24px;
   margin-bottom: 18px;
-  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s, background 0.22s;
 }
 .sci-card:hover {
   transform: translateY(-2px);
   border-color: rgba(0,229,160,0.22);
   box-shadow: 0 0 0 1px rgba(0,229,160,0.12), 0 10px 32px rgba(0,0,0,0.28);
 }
+
+/* ── Light theme per le card contenenti grafici o tabelle ── */
+.sci-card:has(.plotly),
+.sci-card:has(.echarts4r),
+.sci-card:has(.echarts4r-component),
+.sci-card:has(.dataTables_wrapper) {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+.sci-card:has(.plotly):hover,
+.sci-card:has(.echarts4r):hover,
+.sci-card:has(.echarts4r-component):hover,
+.sci-card:has(.dataTables_wrapper):hover {
+  transform: translateY(-4px);
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 14px 30px rgba(0,0,0,0.18);
+}
+
 
 /* ── Stat Blocks ── */
 .stat-block {
@@ -310,7 +329,8 @@ body, .bslib-page-fill {
 }
 
 /* code tags inside pastel insight-boxes */
-.insight-box code {
+.insight-box code,
+.methodology-banner code {
   color: inherit;
   font-weight: 700;
   background: transparent;
@@ -330,42 +350,49 @@ body, .bslib-page-fill {
   white-space: pre-wrap;
 }
 
-/* ── DataTable ── */
-.dataTables_wrapper { color: var(--dim) !important; }
-table.dataTable { color: var(--text) !important; border-collapse: collapse !important; }
+/* ── DataTable (light theme) ── */
+.dataTables_wrapper { color: #475569; }
+table.dataTable { color: #1e293b; border-collapse: collapse; }
 table.dataTable thead th {
-  background: var(--card2) !important;
-  color: var(--muted) !important;
-  font-size: 11px !important;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
-  border-bottom: 1px solid var(--border) !important;
-  padding: 12px 14px !important;
+  border-bottom: 1px solid #cbd5e1;
+  padding: 12px 14px;
 }
 table.dataTable tbody td {
-  border-bottom: 1px solid var(--border) !important;
-  padding: 11px 14px !important;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 11px 14px;
   font-size: 13px;
+  color: #1e293b;
 }
-table.dataTable tbody tr { background: transparent !important; }
-table.dataTable tbody tr:hover { background: var(--card2) !important; }
-.dataTables_info, .dataTables_length, .dataTables_filter { color: var(--muted) !important; font-size: 12px; }
+/* Sfondo righe (senza !important → formatStyle inline può sovrascrivere) */
+table.dataTable tbody tr,
+table.dataTable tbody tr > td { background-color: #ffffff; }
+table.dataTable.stripe tbody tr:nth-child(odd) > td,
+table.dataTable.display tbody tr:nth-child(odd) > td { background-color: #f8fafc; }
+table.dataTable.hover tbody tr:hover > td,
+table.dataTable.display tbody tr:hover > td { background-color: #e2e8f0; }
+
+.dataTables_info, .dataTables_length, .dataTables_filter { color: #475569; font-size: 12px; }
 .dataTables_filter input {
-  background: var(--card) !important;
-  border: 1px solid var(--border) !important;
-  color: var(--text) !important;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
   border-radius: 8px;
   padding: 4px 10px;
 }
 .dataTables_length select {
-  background: var(--card) !important;
-  border: 1px solid var(--border) !important;
-  color: var(--text) !important;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
   border-radius: 6px;
 }
-.paginate_button { color: var(--dim) !important; }
-.paginate_button.current { color: var(--accent) !important; font-weight: 700; }
+.paginate_button { color: #475569 !important; }
+.paginate_button.current { color: #00c98b !important; font-weight: 700; }
 
 /* ── VUCA / KIT interactive buttons ── */
 .vuca-btn, .kit-btn {
@@ -535,12 +562,26 @@ table.dataTable tbody tr:hover { background: var(--card2) !important; }
   border: 2px dashed #94a3b8;
   border-radius: 8px;
   overflow: hidden;
-  transition: border-color 0.22s, box-shadow 0.22s;
+  transition: border-color 0.22s, box-shadow 0.22s, transform 0.22s;
   cursor: default;
 }
 .rumsfeld-cell:hover {
   border-color: #475569;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+  transform: translateY(-4px);
+}
+
+/* ── Hover-lift su riquadri Scope & KITs/KIQs ── */
+.scope-statement-box,
+.kit-card,
+.kiq-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.scope-statement-box:hover,
+.kit-card:hover,
+.kiq-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.12);
 }
 .rumsfeld-cell-header {
   padding: 15px;
@@ -672,16 +713,20 @@ hl_query <- function(txt) {
   HTML(txt)
 }
 
-# Common plotly layout settings
+# Common plotly layout settings (light panel theme)
 plotly_layout_dark <- function(p, ...) {
   p %>% layout(
     paper_bgcolor = "transparent",
     plot_bgcolor  = "transparent",
-    font = list(family = "Outfit", color = col$dim, size = 12),
-    xaxis = list(gridcolor = col$border, zerolinecolor = col$border, tickfont = list(size = 11)),
-    yaxis = list(gridcolor = col$border, zerolinecolor = col$border, tickfont = list(size = 11)),
+    font = list(family = "Outfit", color = "#1e293b", size = 12),
+    xaxis = list(gridcolor = "#e2e8f0", zerolinecolor = "#cbd5e1",
+                 tickfont = list(size = 11, color = "#1e293b"),
+                 titlefont = list(color = "#1e293b")),
+    yaxis = list(gridcolor = "#e2e8f0", zerolinecolor = "#cbd5e1",
+                 tickfont = list(size = 11, color = "#1e293b"),
+                 titlefont = list(color = "#1e293b")),
     margin = list(l = 50, r = 20, t = 40, b = 40),
-    legend = list(font = list(size = 11, color = col$dim)),
+    legend = list(font = list(size = 11, color = "#1e293b")),
     ...
   ) %>% config(displayModeBar = FALSE)
 }
@@ -851,6 +896,77 @@ df_lab5_topics_time$count <- c(
 )
 df_lab5_topics_time$topic_label <- df_lab5_topics$label[df_lab5_topics_time$topic + 1]
 
+# ─── BERTopic — Derivati per Topic Map / Hierarchy / Heatmap / Top Words ─────
+# Replica delle visualizzazioni "canoniche" di BERTopic
+# (visualize_topics, visualize_hierarchy, visualize_heatmap, visualize_barchart)
+# partendo dai dati aggregati già in `df_lab5_topics` (no embeddings disponibili
+# in R: usiamo Jaccard sulle parole-chiave c-TF-IDF di ciascun topic).
+
+.lab5_topic_words_list <- strsplit(df_lab5_topics$top_words, ",\\s*")
+names(.lab5_topic_words_list) <- paste0("T", df_lab5_topics$topic)
+
+.lab5_all_words <- unique(unlist(.lab5_topic_words_list))
+.lab5_topic_word_mat <- sapply(.lab5_topic_words_list,
+                               function(ws) as.integer(.lab5_all_words %in% ws))
+rownames(.lab5_topic_word_mat) <- .lab5_all_words
+
+# Matrice di similarità Jaccard topic × topic
+.lab5_n_topics <- length(.lab5_topic_words_list)
+lab5_topic_jaccard <- matrix(0, .lab5_n_topics, .lab5_n_topics,
+                             dimnames = list(names(.lab5_topic_words_list),
+                                             names(.lab5_topic_words_list)))
+for (i in seq_len(.lab5_n_topics)) {
+  for (j in seq_len(.lab5_n_topics)) {
+    a <- .lab5_topic_word_mat[, i]; b <- .lab5_topic_word_mat[, j]
+    uni <- sum(a | b)
+    lab5_topic_jaccard[i, j] <- if (uni > 0) sum(a & b) / uni else 0
+  }
+}
+
+# Distanze + coordinate MDS 2D (intertopic distance map)
+.lab5_topic_dist <- as.dist(1 - lab5_topic_jaccard)
+.lab5_topic_mds  <- cmdscale(.lab5_topic_dist, k = 2)
+df_lab5_topics_map <- data.frame(
+  topic  = paste0("T", df_lab5_topics$topic),
+  label  = df_lab5_topics$label,
+  count  = df_lab5_topics$count,
+  kit    = df_lab5_topics$KIT_link,
+  top_words = df_lab5_topics$top_words,
+  x      = .lab5_topic_mds[, 1],
+  y      = .lab5_topic_mds[, 2],
+  stringsAsFactors = FALSE
+)
+
+# Long form della similarity per heatmap
+df_lab5_topics_sim <- expand.grid(
+  topic_a = rownames(lab5_topic_jaccard),
+  topic_b = colnames(lab5_topic_jaccard),
+  KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE
+)
+df_lab5_topics_sim$similarity <- mapply(function(a, b) lab5_topic_jaccard[a, b],
+                                        df_lab5_topics_sim$topic_a,
+                                        df_lab5_topics_sim$topic_b)
+
+# Top words per topic con pseudo-score c-TF-IDF (decrescente per rank)
+df_lab5_topics_words <- do.call(rbind, lapply(seq_along(.lab5_topic_words_list),
+  function(i) {
+    ws <- .lab5_topic_words_list[[i]]
+    data.frame(
+      topic       = paste0("T", df_lab5_topics$topic[i]),
+      topic_label = df_lab5_topics$label[i],
+      word        = ws,
+      rank        = seq_along(ws),
+      # score = 1.0 → 0.4 decrescente lineare (pseudo c-TF-IDF)
+      score       = round(1 - (seq_along(ws) - 1) * (0.6 / max(1, length(ws) - 1)), 3),
+      stringsAsFactors = FALSE
+    )
+  }))
+
+# Hierarchical clustering per dendrogramma
+lab5_topic_hclust <- hclust(.lab5_topic_dist, method = "average")
+lab5_topic_hclust$labels <- paste0("T", df_lab5_topics$topic, " — ",
+                                   df_lab5_topics$label)
+
 # ── Most cited papers ───────────────────────────────────────────────────────
 df_lab5_top_cited <- data.frame(
   title    = c(
@@ -870,4 +986,93 @@ df_lab5_top_cited <- data.frame(
   KIT      = c("KIT3","KIT3","KIT2","KIT2","KIT1","KIT2","KIT2","KIT1","KIT1","KIT2"),
   stringsAsFactors = FALSE
 )
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ERRE QUADRO LAB — Espacenet data on Smart Glasses
+# ═══════════════════════════════════════════════════════════════════════════════
+.eq_dir <- file.path("output", "erre_quadro")
+
+# Main query (top 500 of 10644 total)
+df_eq_main <- read.csv(file.path(.eq_dir, "espacenet_main_500.csv"),
+                       sep = ";", skip = 7, stringsAsFactors = FALSE,
+                       check.names = FALSE, quote = "\"", fill = TRUE)
+df_eq_main <- df_eq_main[df_eq_main$No != "" & !is.na(df_eq_main$No), ]
+# Country code from publication number prefix (US, EP, CN, KR, JP, …)
+df_eq_main$country <- substr(df_eq_main$`Publication number`, 1, 2)
+# Priority year
+df_eq_main$priority_year <- substr(df_eq_main$`Earliest priority`, 1, 4)
+
+# Holographic query (60 results)
+df_eq_holo <- read.csv(file.path(.eq_dir, "espacenet_holographic.csv"),
+                       sep = ";", skip = 7, stringsAsFactors = FALSE,
+                       check.names = FALSE, quote = "\"", fill = TRUE)
+df_eq_holo <- df_eq_holo[df_eq_holo$No != "" & !is.na(df_eq_holo$No), ]
+df_eq_holo$country <- substr(df_eq_holo$`Publication number`, 1, 2)
+df_eq_holo$priority_year <- substr(df_eq_holo$`Earliest priority`, 1, 4)
+
+# Statistics from Filters XLSX (aggregati su TUTTI i 10.644 patent)
+.eq_xlsx <- file.path(.eq_dir, "espacenet_filters.xlsx")
+df_eq_applicants     <- openxlsx::read.xlsx(.eq_xlsx, sheet = "Applicants")
+df_eq_inventors      <- openxlsx::read.xlsx(.eq_xlsx, sheet = "Inventors")
+df_eq_app_country    <- openxlsx::read.xlsx(.eq_xlsx, sheet = "Applicants - country")
+df_eq_inv_country    <- openxlsx::read.xlsx(.eq_xlsx, sheet = "Inventors - country")
+df_eq_ipc            <- openxlsx::read.xlsx(.eq_xlsx, sheet = "IPC main groups")
+df_eq_cpc            <- openxlsx::read.xlsx(.eq_xlsx, sheet = "CPC main groups")
+df_eq_cpc_offices    <- openxlsx::read.xlsx(.eq_xlsx, sheet = "CPC assigning offices")
+df_eq_priority_year  <- openxlsx::read.xlsx(.eq_xlsx, sheet = "Earliest priority date")
+df_eq_pub_year       <- openxlsx::read.xlsx(.eq_xlsx, sheet = "Earliest publication date (fam")
+df_eq_languages      <- openxlsx::read.xlsx(.eq_xlsx, sheet = "Languages (family)")
+
+# Standardize column names
+names(df_eq_applicants)    <- c("name", "count")
+names(df_eq_inventors)     <- c("name", "count")
+names(df_eq_app_country)   <- c("country", "count")
+names(df_eq_inv_country)   <- c("country", "count")
+names(df_eq_ipc)           <- c("ipc", "count")
+names(df_eq_cpc)           <- c("cpc", "count")
+names(df_eq_cpc_offices)   <- c("office", "count")
+names(df_eq_priority_year) <- c("year", "count")
+names(df_eq_pub_year)      <- c("year", "count")
+names(df_eq_languages)     <- c("lang", "count")
+
+df_eq_priority_year$year <- as.integer(df_eq_priority_year$year)
+df_eq_pub_year$year      <- as.integer(df_eq_pub_year$year)
+
+# IPC labels (human readable) — mapping per le top classi
+.ipc_labels <- c(
+  "G02B27" = "Optical systems / instruments",
+  "G06F3"  = "Input arrangements (I/O)",
+  "H04N5"  = "Pictorial TV details",
+  "G09G5"  = "Visual indicators control",
+  "G06T19" = "3D image manipulation",
+  "H04N13" = "Stereoscopic TV systems",
+  "G02B5"  = "Optical elements (lenses, prisms)",
+  "G09G3"  = "Display arrangements",
+  "G06F1"  = "Computer architecture details",
+  "G02F1"  = "Optical modulators",
+  "G02C11" = "Non-optical spectacles features",
+  "G06T7"  = "Image analysis",
+  "G02B6"  = "Light guides",
+  "G02C5"  = "Spectacle frames",
+  "G02B7"  = "Mounts/lens supports"
+)
+df_eq_ipc$label <- ifelse(df_eq_ipc$ipc %in% names(.ipc_labels),
+                          .ipc_labels[df_eq_ipc$ipc], "")
+
+# Country full names
+.country_names <- c(
+  US = "United States", JP = "Japan", KR = "South Korea", CN = "China",
+  TW = "Taiwan", DE = "Germany", IL = "Israel", GB = "United Kingdom",
+  SE = "Sweden", FR = "France", NL = "Netherlands", CA = "Canada",
+  FI = "Finland", LU = "Luxembourg", SG = "Singapore", AT = "Austria",
+  IN = "India", EP = "European Patent Office", CH = "Switzerland",
+  AU = "Australia", RU = "Russia", BE = "Belgium", DK = "Denmark",
+  IT = "Italy", ES = "Spain", NO = "Norway", IE = "Ireland"
+)
+df_eq_app_country$country_name <- ifelse(df_eq_app_country$country %in% names(.country_names),
+                                         .country_names[df_eq_app_country$country],
+                                         df_eq_app_country$country)
+df_eq_inv_country$country_name <- ifelse(df_eq_inv_country$country %in% names(.country_names),
+                                         .country_names[df_eq_inv_country$country],
+                                         df_eq_inv_country$country)
 

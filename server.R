@@ -56,7 +56,10 @@ server <- function(input, output, session) {
         btn_item("queries",     "Query Design",       "magnifying-glass", col$blue),
         btn_item("genai",       "GenAI for CI",       "robot",            col$blue),
         btn_item("textanalysis","Text Analysis",      "file-lines",       col$blue),
-        btn_item("patents",     "Patent Analysis",    "certificate",      col$blue)
+        btn_item("cowords",     "Co-word Networks",   "diagram-project",  col$blue),
+        btn_item("bertopicmaps","BERTopic Maps",      "sitemap",          col$blue),
+        btn_item("patents",     "Patent Analysis",    "certificate",      col$blue),
+        btn_item("errequadro",  "Erre Quadro Lab",    "flask",            col$blue)
       ),
 
       tags$div(style = "height:1px; background:var(--border); margin:4px 2px;"),
@@ -211,7 +214,7 @@ server <- function(input, output, session) {
                  tags$div(style = paste0("font-size:9px; letter-spacing:2px; text-transform:uppercase; color:", col$blue, "; font-weight:700; margin-bottom:4px;"), "Methodology"),
                  tags$h3(style = paste0("color:", pastel_text(col$blue), "; font-weight:800; font-size:15px; margin-bottom:5px;"), "The Process"),
                  tags$p(style = paste0("color:", pastel_text(col$blue), "aa; font-size:11.5px; line-height:1.5; margin:0;"),
-                        "Il workflow metodologico dei laboratori: KIT/KIQ, Query Design, GenAI Prompting e Text Analysis bibliometrica.")
+                        "The methodological workflow of the labs: KIT/KIQ, Query Design, GenAI Prompting, and Bibliometric Text Analysis.")
                )
         ),
         column(6,
@@ -235,7 +238,7 @@ server <- function(input, output, session) {
                  tags$div(style = paste0("font-size:9px; letter-spacing:2px; text-transform:uppercase; color:", col$accent, "; font-weight:700; margin-bottom:4px;"), "Outcome"),
                  tags$h3(style = paste0("color:", pastel_text(col$accent), "; font-weight:800; font-size:15px; margin-bottom:5px;"), "The Results"),
                  tags$p(style = paste0("color:", pastel_text(col$accent), "aa; font-size:11.5px; line-height:1.5; margin:0;"),
-                        "Il cuore della presentazione strategica: Executive Summary, Scenario di Mercato (VUCA/Porter) e Decisioni Finali.")
+                        "The core of the strategic presentation: Executive Summary, Market Scenario (VUCA/Porter) and Final Decisions.")
                )
         )
       ),
@@ -416,24 +419,29 @@ server <- function(input, output, session) {
       ),
       
       section_hdr("Force Details"),
-      info_card("Threat of New Entrants — MEDIUM-HIGH", c(
+      info_card("Threat of New Entrants — MEDIUM / HIGH", c(
         "<strong style='font-weight:800'>Barriers:</strong> High R&D + FDA/CE clearance, IP & beamforming know-how, EssilorLuxottica's 18K retail network",
         "<strong style='font-weight:800'>Enablers:</strong> FDA OTC deregulation (2022), tech giants with massive R&D, Chinese OTC brands at lower prices"
       ), col$orange),
-      info_card("Bargaining Power of Buyers — MEDIUM-HIGH", c(
-        "Large potential market: ~1.25B people with mild-moderate hearing loss globally",
-        "Price-sensitive market: $1,100 Nuance vs $250 AirPods Pro, many OTC alternatives",
-        "Low switching costs: OTC devices don't require audiologist recalibration"
+      info_card("Bargaining Power of Suppliers — MEDIUM / HIGH", c(
+        "<strong style='font-weight:800'>Increasing:</strong> Specialized MEMS microphones and audio chipsets sourced from a limited pool of vendors",
+        "<strong style='font-weight:800'>Decreasing:</strong> EssilorLuxottica's scale (\u20AC25B+ revenue) and vertical integration; Nuance Hearing IP acquisition (2023) reduces external dependency"
       ), col$orange),
-      info_card("Bargaining Power of Suppliers — MEDIUM", c(
-        "<strong style='font-weight:800'>Increasing:</strong> Specialized MEMS microphones, audio chipsets from limited suppliers",
-        "<strong style='font-weight:800'>Decreasing:</strong> EssilorLuxottica's vertical integration (\u20AC25B+ revenue), acquired Nuance Hearing IP (2023)"
+      info_card("Competitive Rivalry — MEDIUM", c(
+        "<strong style='font-weight:800'>No established brand loyalty</strong> in the emerging \"hearing glasses\" category — first-mover advantage still up for grabs",
+        "Competition plays out on <strong style='font-weight:800'>design, AI features, price, and optical distribution</strong> rather than clinical performance alone",
+        "Traditional HA incumbents (Sonova/Phonak, Demant/Oticon, WS Audiology) dominate clinical channels but have not yet entered the eyewear-hybrid segment"
+      ), col$orange),
+      info_card("Bargaining Power of Buyers — LOW / MEDIUM", c(
+        "<strong style='font-weight:800'>High-end niche</strong>: few comparable bundles combining corrective eyewear + hearing amplification in one device",
+        "<strong style='font-weight:800'>Optical distribution</strong> (LensCrafters, Pearle Vision) limits direct price-comparison shopping",
+        "<strong style='font-weight:800'>Pressure rising</strong>: early-stage OTC market and $250 AirPods Pro 2 alternative are increasing price sensitivity"
       ), col$accent),
-      info_card("Competitive Rivalry — MEDIUM-HIGH", c(
-        "Direct: Sonova (Phonak), Demant (Oticon), WS Audiology, Cearvol (Lyra)",
-        "Convergent: Apple AirPods Pro 2 (FDA-cleared, $250, massive user base)",
-        "Adjacent: Meta Ray-Ban Meta (same parent, could add hearing features)"
-      ), col$orange)
+      info_card("Threat of Substitutes — HIGH", c(
+        "<strong style='font-weight:800'>AirPods Pro 2</strong> (~$250, FDA-cleared hearing aid feature) leveraging Apple's massive installed base",
+        "<strong style='font-weight:800'>Traditional hearing aids + glasses combo</strong> ($1K–$6K) — superior audiological performance through clinical channels",
+        "<strong style='font-weight:800'>Discreet OTC aids</strong> and <strong style='font-weight:800'>captioning glasses</strong> address the same need with different form factors"
+      ), col$red)
     )
   })
   
@@ -443,12 +451,13 @@ server <- function(input, output, session) {
       e_radar(Score, max = 100, name = "Intensity") %>%
       e_radar_opts(shape = "circle",
                    splitArea = list(areaStyle = list(color = c("transparent"))),
-                   axisLine = list(lineStyle = list(color = col$border)),
-                   splitLine = list(lineStyle = list(color = col$border))) %>%
+                   axisLine  = list(lineStyle = list(color = "#cbd5e1")),
+                   splitLine = list(lineStyle = list(color = "#e2e8f0")),
+                   name = list(textStyle = list(color = "#1e293b", fontSize = 12))) %>%
       e_color(col$accent) %>%
       e_tooltip(trigger = "item") %>%
       e_legend(show = FALSE) %>%
-      e_theme_custom('{"backgroundColor":"transparent"}')
+      e_theme_custom('{"backgroundColor":"transparent","textStyle":{"color":"#1e293b"}}')
   })
   
   output$plot_porter_bar <- renderPlotly({
@@ -465,7 +474,19 @@ server <- function(input, output, session) {
   
   output$table_subs <- renderDT({
     datatable(df_subs, options = list(dom = "t", pageLength = 10, ordering = FALSE),
-              rownames = FALSE, class = "display")
+              rownames = FALSE, class = "display") %>%
+      formatStyle("Threat",
+                  target = "row",
+                  backgroundColor = styleEqual(
+                    c("HIGH", "MEDIUM", "LOW-MED"),
+                    c("#fee2e2", "#ffedd5", "#d1fae5")
+                  )) %>%
+      formatStyle("Threat",
+                  fontWeight = "bold",
+                  color = styleEqual(
+                    c("HIGH", "MEDIUM", "LOW-MED"),
+                    c(col$red, col$orange, col$accent)
+                  ))
   })
   
   # ──────────────────────────────────────────────
@@ -1071,6 +1092,7 @@ server <- function(input, output, session) {
       
       # 2. IL NUOVO SCOPE STATEMENT (Sfondo verdolino pastello)
       tags$div(
+        class = "scope-statement-box",
         style = "background-color: #e6f7ef; padding: 24px; border-radius: 12px; margin-bottom: 24px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05);",
         tags$h4(style = "font-size:16px; font-weight:800; color: #008f63; margin:0 0 10px; display:flex; align-items:center; gap:6px;", 
                 "Scope Statement"),
@@ -1085,6 +1107,7 @@ server <- function(input, output, session) {
                  kd <- kit_data[[kn]]
                  is_active <- (kn == sel)
                  tags$div(
+                   class = "kit-card",
                    style = paste0(
                      "flex:1; padding:14px 18px; border-radius:12px; cursor:pointer;",
                      "border:2px solid ", if (is_active) kd$color else paste0(kd$color, "60"), ";",
@@ -1105,7 +1128,8 @@ server <- function(input, output, session) {
         lapply(k$kiqs, function(kiq) {
                    
                    # Riquadro principale
-                   tags$div(style = paste0(
+                   tags$div(class = "kiq-card",
+                            style = paste0(
                      "background:", k$pastel_lo, ";",
                      "border-radius:10px; padding:18px;",
                      "border:1px solid ", k$color, "40;",
@@ -1315,9 +1339,8 @@ server <- function(input, output, session) {
   # ──────────────────────────────────────────────
   # TAB 8: GENAI FOR CI
   # ──────────────────────────────────────────────
-  create_sel <- reactiveVal("C")
   output$tab_genai <- renderUI({
-    
+
     # Dati dal tuo schema per Nuance Audio
     # Dati dal tuo schema per Nuance Audio (Translated to English)
     create_data <- list(
@@ -1346,64 +1369,83 @@ server <- function(input, output, session) {
                 desc = "List the 3-5 most relevant sources used.",
                 detail = "Bonus: Flag areas with contradictory data and suggest further investigation steps.")
     )
-    
-    sel_c <- create_sel()
-    # Gestione speciale per la seconda 'E' di Extras
-    curr <- if(sel_c == "E_ext") create_data$E2 else create_data[[sel_c]]
-    
+
+    # Helper: render one detail box (hidden by default; CSS reveals it on hover)
+    render_create_detail <- function(item, key) {
+      tags$div(
+        class = paste0("sci-card create-detail create-detail-", key),
+        style = paste0(
+          "border-top: 4px solid ", item$color, "; background:", item$pastel, ";",
+          "gap: 30px; align-items: center;"
+        ),
+        tags$div(style = paste0("font-size:100px; font-weight:900; color:", item$color, "50; line-height:1; flex-shrink:0;"), item$letter),
+        tags$div(style = "flex-grow:1;",
+                 tags$div(style = paste0("color:", item$color, "; font-weight:800; text-transform:uppercase; font-size:12px; letter-spacing:2px;"), item$label),
+                 tags$h3(style = paste0("margin: 5px 0 15px 0; color:", item$color, "; font-size:20px; font-weight:800;"), item$title),
+                 tags$p(style = "font-size:15px; color:#334155; line-height:1.6; font-weight:500;", item$desc),
+                 tags$div(style = "background: rgba(255,255,255,0.55); padding: 12px; border-radius: 8px; border-left: 3px solid rgba(0,0,0,0.12); margin-top:15px;",
+                          tags$p(style = "font-size:13px; color:#64748b; margin:0;", tags$i(item$detail))
+                 )
+        )
+      )
+    }
+
     tagList(
       section_hdr("GenAI for Competitive Intelligence", "Prompt engineering with the CREATE framework + evaluation of GenAI outputs across 3 source categories"),
-      
-      # --- SELETTORE INTERATTIVO (Stile Immagine 2) ---
-      tags$div(style = "display:flex; gap:10px; margin-bottom:25px;",
-               lapply(names(create_data), function(n) {
-                 item <- create_data[[n]]
-                 # ID speciale per la seconda E per non sovrapporsi
-                 click_id <- if(n == "E2") "E_ext" else n 
-                 is_active <- (sel_c == click_id)
-                 
-                 tags$div(
-                   class = "vuca-btn",
-                   style = paste0(
-                     "flex:1; padding:20px 10px; border-radius:12px; cursor:pointer; text-align:center; transition: all 0.3s; border: 3px solid ",
-                     if (is_active) item$color else "var(--border)", "; ",
-                     "background:", if (is_active) item$pastel else paste0(item$pastel, "80"), ";"
-                   ),
-                   onclick = paste0("Shiny.setInputValue('create_click', '", click_id, "', {priority:'event'});"),
-                   tags$div(style = paste0("font-size:32px; font-weight:900; color:", item$color, ";"), item$letter),
-                   tags$div(style = "font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#334155; margin-top:5px;", item$label)
-                 )
-               })
+
+      # CSS: i riquadri di dettaglio sono nascosti finché non si passa sopra
+      # con il mouse sul rispettivo bottone CREATE.
+      tags$style(HTML("
+        .create-section .create-detail { display: none; }
+        .create-section:has(.create-btn-C:hover)  .create-detail-C,
+        .create-section:has(.create-btn-R:hover)  .create-detail-R,
+        .create-section:has(.create-btn-E:hover)  .create-detail-E,
+        .create-section:has(.create-btn-A:hover)  .create-detail-A,
+        .create-section:has(.create-btn-T:hover)  .create-detail-T,
+        .create-section:has(.create-btn-E2:hover) .create-detail-E2 { display: flex; }
+        .create-btn { transition: all 0.25s ease; }
+        .create-btn:hover {
+          border-color: var(--btn-color) !important;
+          background: var(--btn-bg) !important;
+          transform: translateY(-3px);
+          box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+        }
+      ")),
+
+      tags$div(class = "create-section",
+        # --- SELETTORE CREATE ---
+        tags$div(style = "display:flex; gap:10px; margin-bottom:25px;",
+                 lapply(names(create_data), function(n) {
+                   item <- create_data[[n]]
+                   tags$div(
+                     class = paste0("vuca-btn create-btn create-btn-", n),
+                     style = paste0(
+                       "--btn-color:", item$color, "; --btn-bg:", item$pastel, ";",
+                       "flex:1; padding:20px 10px; border-radius:12px; cursor:pointer; text-align:center;",
+                       "border: 3px solid var(--border);",
+                       "background:", paste0(item$pastel, "80"), ";"
+                     ),
+                     tags$div(style = paste0("font-size:32px; font-weight:900; color:", item$color, ";"), item$letter),
+                     tags$div(style = "font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#334155; margin-top:5px;", item$label)
+                   )
+                 })
+        ),
+
+        # --- AREE DETTAGLIO (una per lettera, mostrate solo on hover) ---
+        lapply(names(create_data), function(n) render_create_detail(create_data[[n]], n))
       ),
-      
-      # --- AREA DETTAGLIO DINAMICA ---
-      tags$div(class = "sci-card", style = paste0("border-top: 4px solid ", curr$color, "; background:", curr$pastel, "; display: flex; gap: 30px; align-items: center;"),
-               # Lettera grande a sinistra
-               tags$div(style = paste0("font-size:100px; font-weight:900; color:", curr$color, "50; line-height:1; flex-shrink:0;"), curr$letter),
-               
-               # Testo a destra
-               tags$div(style = "flex-grow:1;",
-                        tags$div(style = paste0("color:", curr$color, "; font-weight:800; text-transform:uppercase; font-size:12px; letter-spacing:2px;"), curr$label),
-                        tags$h3(style = paste0("margin: 5px 0 15px 0; color:", curr$color, "; font-size:20px; font-weight:800;"), curr$title),
-                        tags$p(style = "font-size:15px; color:#334155; line-height:1.6; font-weight:500;", curr$desc),
-                        tags$div(style = "background: rgba(255,255,255,0.55); padding: 12px; border-radius: 8px; border-left: 3px solid rgba(0,0,0,0.12); margin-top:15px;",
-                                 tags$p(style = "font-size:13px; color:#64748b; margin:0;", tags$i(curr$detail))
-                        )
-               )
-      ),
-      
-      # Visualizzazione del Prompt Finale
+
+      # Visualizzazione del Prompt Finale (stile neutro)
       tags$div(
         style = paste0(
           "margin-top:20px; margin-bottom:30px; padding:16px 18px;",
-          "background:", pastel_bg(curr$color), ";",
-          "border:1px solid ", curr$color, "40; border-left:3px solid ", curr$color, ";",
+          "background:#f1f5f9; border:1px solid #cbd5e1; border-left:3px solid #64748b;",
           "border-radius:14px; transition:transform 0.22s, box-shadow 0.22s;"
         ),
         onmouseover = "this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)';",
         onmouseout  = "this.style.transform=''; this.style.boxShadow='';",
-        tags$div(style = paste0("font-size:10px; color:", curr$color, "; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-bottom:10px;"), "Composite Prompt Preview"),
-        tags$p(style = paste0("font-size:12px; color:", pastel_text(curr$color), "; line-height:1.65; margin:0; font-family:'JetBrains Mono',monospace;"),
+        tags$div(style = "font-size:10px; color:#475569; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-bottom:10px;", "Composite Prompt Preview"),
+        tags$p(style = "font-size:12px; color:#334155; line-height:1.65; margin:0; font-family:'JetBrains Mono',monospace;",
                paste0("Act as a ", create_data$C$desc, " ", create_data$R$desc, " ", create_data$E$desc, " ", create_data$A$desc, " ", create_data$T$desc, " ", create_data$E2$desc))
       ),
 
@@ -1475,7 +1517,6 @@ server <- function(input, output, session) {
       )
     )
   })
-  observeEvent(input$create_click, { create_sel(input$create_click) })
   output$plot_eval <- renderPlotly({
     
     # 1. Riduciamo la larghezza della tendina mandando a capo il commento
@@ -1499,28 +1540,28 @@ server <- function(input, output, session) {
             hoverinfo = "text",
             hoverlabel = list(align = "left"),
             textposition = "outside",
-            textfont = list(size = 12, color = "white")) %>%
+            textfont = list(size = 12, color = "#1e293b")) %>%
       plotly_layout_dark(
         # 4. Rendiamo l'asse X più visibile (linee, griglia e font)
         xaxis = list(
-          range = c(0, 5.8), 
-          title = list(text = "Score (out of 5)", font = list(color = "white", size = 13)), 
+          range = c(0, 5.8),
+          title = list(text = "Score (out of 5)", font = list(color = "#1e293b", size = 13)),
           dtick = 1,
-          showline = TRUE, linecolor = col$dim, linewidth = 2, # Linea asse marcata
-          gridcolor = col$muted, # Griglia più chiara
-          tickfont = list(color = "white", size = 12)
+          showline = TRUE, linecolor = "#475569", linewidth = 2, # Linea asse marcata
+          gridcolor = "#e2e8f0", # Griglia chiara
+          tickfont = list(color = "#1e293b", size = 12)
         ),
         # 5. Rendiamo l'asse Y più visibile
         yaxis = list(
-          title = list(text = "Criterion", standoff = 30, font = list(color = "white", size = 13)), 
-          categoryorder = "array", 
+          title = list(text = "Criterion", standoff = 30, font = list(color = "#1e293b", size = 13)),
+          categoryorder = "array",
           categoryarray = rev(df_eval$Criterion),
-          showline = TRUE, linecolor = col$dim, linewidth = 2, # Linea asse marcata
-          tickfont = list(color = "white", size = 12)
+          showline = TRUE, linecolor = "#475569", linewidth = 2, # Linea asse marcata
+          tickfont = list(color = "#1e293b", size = 12)
         )
-      ) %>% 
+      ) %>%
       layout(
-        dragmode = FALSE, 
+        dragmode = FALSE,
         margin = list(l = 280, r = 20, t = 40, b = 40)
       )
   })
@@ -1567,7 +1608,7 @@ server <- function(input, output, session) {
                tags$div(style = "display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-top:18px;",
                         insight_box("Part 1 — Bibliometric",
                                     "<code>bibliometrix::biblioAnalysis</code> for descriptive stats and <code>conceptualStructure</code> + <code>biblioNetwork</code> for co-word and collaboration networks.",
-                                    col$accent, "chart-bar"),
+                                    col$orange, "chart-bar"),
                         insight_box("Part 1 — Tidytext",
                                     "<code>tidytext::unnest_tokens</code> &amp; <code>bind_tf_idf</code> for occurrence and term importance; <code>widyr::pairwise_count</code> + <code>tidygraph</code>/<code>ggraph</code> for the co-occurrence network.",
                                     col$blue, "calculator"),
@@ -1607,7 +1648,7 @@ server <- function(input, output, session) {
       section_hdr("Co-occurrence — Top bigrams",
                   HTML("Most frequent two-word expressions in titles + abstracts (<code>widyr::pairwise_count</code>)")),
       tags$div(class = "sci-card", plotlyOutput("plot_lab5_bigrams", height = "480px")),
-      
+
       # ── E) BERTopic — Topic distribution ───────────────────────────────
       section_hdr("BERTopic — Topic distribution",
                   HTML("Documents per topic. Each topic is labelled with its <em>c-TF-IDF</em> top words and mapped onto the project's KIT.")),
@@ -1617,7 +1658,7 @@ server <- function(input, output, session) {
       section_hdr("Topics over time",
                   "Topic dynamics across 2018–2025: what is growing, what is plateauing"),
       tags$div(class = "sci-card", plotlyOutput("plot_lab5_topics_time", height = "420px")),
-      
+
       # ── G) Topic table + insights ──────────────────────────────────────
       section_hdr("Topic table & strategic reading",
                   HTML("Each row links one BERTopic cluster to the project KITs (Strategic decisions, Early warnings, Key players)")),
@@ -1777,7 +1818,138 @@ server <- function(input, output, session) {
       legend = list(orientation = "h", y = -0.25, font = list(size = 10))
     )
   })
-  
+
+  # ── F-bis) BERTopic canonical visualisations ───────────────────────────
+  # Replicano visualize_topics / visualize_barchart / visualize_heatmap /
+  # visualize_hierarchy del notebook BERTopic, partendo dalla matrice di
+  # similarità Jaccard tra topic (calcolata in global.R sui top_words).
+
+  # F1) Intertopic Distance Map (bubble scatter MDS)
+  output$plot_lab5_topics_map <- renderPlotly({
+    palette_topics <- c(col$accent, col$blue, col$orange,
+                        col$purple, col$cyan, col$pink, col$red)
+    df <- df_lab5_topics_map
+    df$color <- palette_topics[seq_len(nrow(df))]
+
+    plot_ly(df,
+            x = ~x, y = ~y,
+            type = "scatter", mode = "markers+text",
+            text = ~topic, textposition = "middle center",
+            textfont = list(color = "#0f1724", size = 12, family = "JetBrains Mono"),
+            marker = list(
+              size = ~count, sizemode = "area",
+              sizeref = 2 * max(df$count) / (55^2), sizemin = 14,
+              color = ~color, opacity = 0.78,
+              line = list(color = "#0f1724", width = 1.4)
+            ),
+            hovertemplate = paste0(
+              "<b>%{text}</b> — ", df$label,
+              "<br>Documents: ", df$count,
+              "<br>KIT: ", df$kit,
+              "<br><i>", df$top_words, "</i><extra></extra>"
+            )) %>%
+      plotly_layout_dark(
+        xaxis = list(title = "MDS dim 1", zeroline = TRUE,
+                     zerolinecolor = "#cbd5e1", zerolinewidth = 1),
+        yaxis = list(title = "MDS dim 2", zeroline = TRUE,
+                     zerolinecolor = "#cbd5e1", zerolinewidth = 1),
+        showlegend = FALSE,
+        margin = list(l = 50, r = 30, t = 20, b = 50)
+      )
+  })
+
+  # F2) Top words per topic (bar chart facetted)
+  output$plot_lab5_topics_words <- renderPlotly({
+    palette_topics <- c(col$accent, col$blue, col$orange,
+                        col$purple, col$cyan, col$pink, col$red)
+    topics <- unique(df_lab5_topics_words$topic)
+    n_t <- length(topics)
+    n_cols <- 3
+    n_rows <- ceiling(n_t / n_cols)
+
+    trunc_label <- function(s, max_len = 30) {
+      ifelse(nchar(s) > max_len, paste0(substr(s, 1, max_len - 1), "…"), s)
+    }
+
+    plots <- lapply(seq_along(topics), function(i) {
+      sub <- df_lab5_topics_words[df_lab5_topics_words$topic == topics[i], ]
+      sub <- sub[order(sub$rank, decreasing = TRUE), ]  # bar dal basso
+      plot_ly(sub,
+              x = ~score, y = ~factor(word, levels = sub$word),
+              type = "bar", orientation = "h",
+              marker = list(color = palette_topics[i], opacity = 0.9,
+                            line = list(color = "#0f1724", width = 0.4)),
+              text = ~sprintf("%.2f", score), textposition = "outside",
+              textfont = list(color = "#1e293b", size = 10),
+              hovertemplate = paste0("<b>", topics[i], "</b> — ", sub$topic_label[1],
+                                     "<br>%{y}: %{x:.2f}<extra></extra>"),
+              showlegend = FALSE) %>%
+        layout(
+          xaxis = list(title = "", range = c(0, 1.18),
+                       showgrid = FALSE, showticklabels = FALSE,
+                       zerolinecolor = "#cbd5e1"),
+          yaxis = list(title = "", tickfont = list(size = 10, color = "#1e293b"))
+        )
+    })
+
+    # Annotazioni di titolo: ancorate al dominio di ciascun subplot
+    # (xref = "x{i} domain", yref = "y{i} domain") così sono sempre sopra
+    # il rispettivo grafico, indipendentemente dai margini globali.
+    annot <- lapply(seq_along(topics), function(i) {
+      suffix <- if (i == 1) "" else as.character(i)
+      list(text = paste0("<b>", topics[i], "</b> — ",
+                         trunc_label(df_lab5_topics$label[i])),
+           x = 0.5, y = 1,
+           xref = paste0("x", suffix, " domain"),
+           yref = paste0("y", suffix, " domain"),
+           xanchor = "center", yanchor = "bottom",
+           yshift = 6,
+           showarrow = FALSE,
+           font = list(size = 11, color = "#1e293b", family = "Outfit"))
+    })
+
+    subplot(plots, nrows = n_rows,
+            margin = c(0.025, 0.025, 0.05, 0.05),
+            shareX = FALSE, shareY = FALSE) %>%
+      layout(paper_bgcolor = "transparent", plot_bgcolor = "transparent",
+             margin = list(l = 90, r = 40, t = 30, b = 10),
+             annotations = annot,
+             showlegend = FALSE) %>%
+      config(displayModeBar = FALSE)
+  })
+
+  # F3) Topic Similarity Heatmap
+  output$plot_lab5_topics_heatmap <- renderPlotly({
+    mat <- lab5_topic_jaccard
+    labels <- rownames(mat)
+    plot_ly(
+      x = labels, y = labels, z = mat,
+      type = "heatmap",
+      colorscale = list(c(0, "#f8fafc"), c(0.5, "#60a5fa"), c(1, "#1e3a8a")),
+      zmin = 0, zmax = max(mat),
+      hovertemplate = "Topic %{x} ↔ Topic %{y}<br>Jaccard: %{z:.2f}<extra></extra>",
+      colorbar = list(title = list(text = "Jaccard", font = list(color = "#1e293b")),
+                      tickfont = list(color = "#1e293b"))
+    ) %>%
+      plotly_layout_dark(
+        xaxis = list(title = "", side = "bottom",
+                     tickfont = list(color = "#1e293b", size = 11)),
+        yaxis = list(title = "", autorange = "reversed",
+                     tickfont = list(color = "#1e293b", size = 11)),
+        margin = list(l = 60, r = 30, t = 20, b = 50)
+      )
+  })
+
+  # F4) Topic Hierarchy Dendrogram (base R, renderPlot)
+  output$plot_lab5_topics_dendro <- renderPlot({
+    op <- par(mar = c(4, 1, 1, 26), bg = "#f1f5f9", cex = 0.95, family = "sans")
+    on.exit(par(op))
+    dend <- as.dendrogram(lab5_topic_hclust)
+    plot(dend, horiz = TRUE, axes = TRUE, xlab = "Distance (1 − Jaccard)",
+         edgePar = list(col = "#475569", lwd = 1.6),
+         nodePar = list(lab.col = "#0f1724", pch = NA))
+  }, bg = "#f1f5f9")
+
   # ── G) Topic table ───────────────────────────────────────────────────────
   output$table_lab5_topics <- DT::renderDT({
     df <- df_lab5_topics
@@ -1801,7 +1973,205 @@ server <- function(input, output, session) {
       rownames = FALSE, class = "stripe hover"
     ) %>% DT::formatStyle("cites", fontWeight = "bold", color = col$accent)
   })
-  
+
+  # ────────────────────────────────────────────────────────────────────────
+  # TAB 9-bis: CO-WORD NETWORKS (Bibliometrix on scopus_glasses)
+  # Replica integrale di bibliometrix::biblioAnalysis + conceptualStructure
+  # + biblioNetwork dal corpus scopus_glasses.csv. PNG renderizzati statici.
+  # ────────────────────────────────────────────────────────────────────────
+  output$tab_cowords <- renderUI({
+    tagList(
+      section_hdr(
+        "Co-word Networks — Conceptual Structure (Bibliometrix)",
+        HTML(paste0(
+          "Full replication of <code>bibliometrix::biblioAnalysis</code> + ",
+          "<code>conceptualStructure(field=\"DE\", method=\"MDS\", clust=5)</code> + ",
+          "<code>biblioNetwork(network=\"keywords\")</code> applied to the corpus ",
+          "<code>scopus_glasses.csv</code>. Two-level analysis: <strong>full corpus</strong> ",
+          "(smart-glasses literature) and <strong>AUDIO/Hearing sub-corpus</strong>, aligned with ",
+          "the Nuance Audio positioning."
+        ))
+      ),
+
+      # Methodology banner
+      tags$div(
+        class = "methodology-banner",
+        style = paste0(
+          "margin-bottom: 20px; padding: 18px 22px; border-radius: 14px;",
+          "background:", pastel_bg(col$purple), "; border-left:4px solid ", col$purple, ";"
+        ),
+        tags$div(style = paste0("font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:", col$purple, ";"),
+                 "Methodology"),
+        tags$p(style = paste0("font-size:13px; color:", pastel_text(col$purple), "; line-height:1.6; margin:6px 0 0;"),
+               HTML(paste0(
+                 "The reference script (<code>Bibliometric and Coword Analysis_Bibliometrix.R</code>) ",
+                 "performs: (1) <code>convert2df</code> to import the Scopus CSV, ",
+                 "(2) <code>biblioAnalysis</code> for descriptive statistics, ",
+                 "(3) <code>conceptualStructure</code> for the conceptual map via MDS on Author Keywords, ",
+                 "(4) <code>biblioNetwork</code> for the co-occurrence network."
+               )))
+      ),
+
+      # 1) Conceptual Structure Map — full corpus
+      section_hdr("Conceptual Structure Map — Full corpus (MDS)",
+                  HTML("Co-word analysis on <em>Author Keywords</em> via Multi-Dimensional Scaling. Unsupervised thematic clusters organizing the smart-glasses research landscape.")),
+      tags$div(class = "sci-card",
+               tags$img(src = "bibliometrix/05_conceptual_structure_MDS.png",
+                        style = "width:100%; height:auto; border-radius:10px; display:block;",
+                        alt = "Conceptual Structure MDS - full corpus")),
+
+      insight_box(
+        "Strategic Reading — Full MDS",
+        paste0(
+          "The <strong style='font-weight:800'>central blue cluster</strong> (smart-glasses, computer vision, wearable computing, AR, ",
+          "user experience) is the <em>technological core</em> where Nuance Audio is positioned: convergence between eyewear and wearable AI. ",
+          "The <strong style='font-weight:800'>upper green cluster</strong> (text-to-speech, object recognition, ultrasonic sensors, obstacle detection) ",
+          "covers <em>assistive</em> applications for visual impairment — a thematically adjacent narrative for an accessibility-first positioning. ",
+          "The <strong style='font-weight:800'>lower yellow cluster</strong> (IoT, IMU, signal processing, heart rate, affective computing) ",
+          "points toward the <em>medical-wearable</em> trajectory: KIT 2 (early warnings) must monitor this pole as big-tech may converge here. ",
+          "The <strong style='font-weight:800'>isolated pink AR/HMD cluster</strong> on the right shows that the literature treats AR-headsets as a separate category: ",
+          "Nuance Audio can claim a new 'hearing glasses' category without directly competing with AR/VR."
+        ),
+        col$blue, "diagram-project"
+      ),
+
+      # 2) Keyword co-occurrence network — full corpus
+      section_hdr("Keyword Co-occurrence Network — Full corpus",
+                  HTML("Output of <code>biblioNetwork(network=\"keywords\")</code>: co-occurrence clusters among Author Keywords. The stronger the link, the more frequent the co-occurrence.")),
+      tags$div(class = "sci-card",
+               tags$img(src = "bibliometrix/06_keyword_cooccurrence_network.png",
+                        style = "width:100%; height:auto; border-radius:10px; display:block;",
+                        alt = "Keyword co-occurrence network - full corpus")),
+
+      # 3) Conceptual Structure — AUDIO sub-corpus
+      section_hdr("Conceptual Structure Map — AUDIO/Hearing sub-corpus (MDS)",
+                  HTML("The same <code>conceptualStructure</code> applied to the subset filtered on hearing/audio/assistive: the exact niche in which Nuance Audio operates.")),
+      tags$div(class = "sci-card",
+               tags$img(src = "bibliometrix/09_conceptual_structure_AUDIO.png",
+                        style = "width:100%; height:auto; border-radius:10px; display:block;",
+                        alt = "Conceptual Structure MDS - AUDIO sub-corpus")),
+
+      insight_box(
+        "Strategic Reading — AUDIO MDS",
+        paste0(
+          "The AUDIO sub-corpus reveals much more vertical clusters: ",
+          "<strong style='font-weight:800'>purple</strong> (wearable technology + image processing + ultrasonic + object detection + visual impairment) ",
+          "= integrated assistive products, the <em>application context</em> of Nuance Audio. ",
+          "<strong style='font-weight:800'>green</strong> (TTS, OCR, YOLO) = AI/perception capabilities often paired with wearable devices. ",
+          "<strong style='font-weight:800'>red</strong> (esp32-cam, microcontroller, raspberry pi) = low-cost hardware prototyping (signal: R&amp;D barriers are lower than they appear). ",
+          "<strong style='font-weight:800'>teal</strong> (audio/visual prompting, dementia, transfer learning, indoor localization) = ",
+          "medical-cognitive applications in vulnerable populations — a concrete market trajectory for KIT 1."
+        ),
+        col$accent, "headphones"
+      ),
+
+      # 4) Keyword network — AUDIO
+      section_hdr("Keyword Co-occurrence Network — AUDIO/Hearing sub-corpus",
+                  HTML("<code>biblioNetwork</code> sul sub-corpus audio: due community ben separate rivelano sotto-conversazioni distinte nella stessa nicchia.")),
+      tags$div(class = "sci-card",
+               tags$img(src = "bibliometrix/08_keyword_network_AUDIO.png",
+                        style = "width:100%; height:auto; border-radius:10px; display:block;",
+                        alt = "Keyword co-occurrence network - audio")),
+
+      # 5) Pairwise network — AUDIO (widyr::pairwise_count)
+      section_hdr("Pairwise Co-occurrence Network — Abstract terms (AUDIO)",
+                  HTML("<code>widyr::pairwise_count</code> on significant abstract words from the AUDIO sub-corpus: semantic hubs such as \"audio—visually—impaired—real-time\" are the narrative hooks for Nuance Audio's positioning.")),
+      tags$div(class = "sci-card",
+               tags$img(src = "bibliometrix/11_pairwise_network_AUDIO.png",
+                        style = "width:100%; height:auto; border-radius:10px; display:block;",
+                        alt = "Pairwise word network - audio"))
+    )
+  })
+
+  # ────────────────────────────────────────────────────────────────────────
+  # TAB 9-ter: BERTOPIC MAPS (canonical BERTopic visualisations)
+  # Replica di visualize_topics, visualize_barchart, visualize_heatmap,
+  # visualize_hierarchy dal notebook Scientific_Paper_Analysis_with_BERTopic.
+  # ────────────────────────────────────────────────────────────────────────
+  output$tab_bertopicmaps <- renderUI({
+    tagList(
+      section_hdr(
+        "BERTopic — Topic Map, Words & Hierarchy",
+        HTML(paste0(
+          "Full replication of the canonical visualizations from the notebook ",
+          "<code>Scientific_Paper_Analysis_with_BERTopic.ipynb</code> ",
+          "(<code>visualize_topics</code>, <code>visualize_barchart</code>, ",
+          "<code>visualize_heatmap</code>, <code>visualize_hierarchy</code>) ",
+          "applied to the corpus <code>scopus_glasses.csv</code>."
+        ))
+      ),
+
+      # Methodology banner
+      tags$div(
+        class = "methodology-banner",
+        style = paste0(
+          "margin-bottom: 20px; padding: 18px 22px; border-radius: 14px;",
+          "background:", pastel_bg(col$cyan), "; border-left:4px solid ", col$cyan, ";"
+        ),
+        tags$div(style = paste0("font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:", col$cyan, ";"),
+                 "Methodology"),
+        tags$p(style = paste0("font-size:13px; color:", pastel_text(col$cyan), "; line-height:1.6; margin:6px 0 0;"),
+               HTML(paste0(
+                 "The notebook applies BERTopic (embeddings <code>all-MiniLM-L6-v2</code> → UMAP → HDBSCAN → c-TF-IDF) ",
+                 "and produces 4 canonical visualizations in addition to the topic table and temporal evolution ",
+                 "(already in the Text Analysis tab). These are replicated here in R/Plotly using the c-TF-IDF top-words of the 7 topics ",
+                 "identified in the corpus, using <strong>Jaccard similarity</strong> as a proxy for cosine similarity ",
+                 "between embeddings (the topic-topic similarity matrix underlies all 4 visualizations)."
+               )))
+      ),
+
+      # 1) Intertopic Distance Map
+      section_hdr("Intertopic Distance Map — MDS",
+                  HTML("Replica of <code>topic_model.visualize_topics()</code>: each bubble is a topic, size = number of documents, distance ≈ lexical dissimilarity (Jaccard on top-words).")),
+      tags$div(class = "sci-card", plotlyOutput("plot_lab5_topics_map", height = "440px")),
+
+      insight_box(
+        "Strategic Reading — Topic Map",
+        paste0(
+          "Topics <strong style='font-weight:800'>T0 (Open-ear audio)</strong>, ",
+          "<strong style='font-weight:800'>T2 (Hearing-aid + beamforming)</strong> and ",
+          "<strong style='font-weight:800'>T4 (Deep learning for speech)</strong> tend to cluster closely: ",
+          "they represent the <em>technological core</em> where Nuance Audio competes head-on (KIT 2). ",
+          "<strong style='font-weight:800'>T1 (AR + AI captioning)</strong> stands apart: it is the disruption vector ",
+          "driven by Meta/Apple — KIT 2 (early warnings). ",
+          "<strong style='font-weight:800'>T3 (acceptance/stigma)</strong> and <strong style='font-weight:800'>T6 (eyewear UX)</strong> ",
+          "define the <em>consumer adoption</em> landscape (KIT 1). ",
+          "<strong style='font-weight:800'>T5 (bone-conduction)</strong> is isolated: a marginal technological alternative, worth monitoring but not a priority."
+        ),
+        col$blue, "diagram-project"
+      ),
+
+      # 2) Top words per topic (c-TF-IDF style)
+      section_hdr("Top words per topic — c-TF-IDF",
+                  HTML("Replica of <code>topic_model.visualize_barchart()</code>: for each topic, the most distinctive words with their c-TF-IDF score (descending pseudo-score).")),
+      tags$div(class = "sci-card", plotlyOutput("plot_lab5_topics_words", height = "600px")),
+
+      # 3) Topic Similarity Heatmap
+      section_hdr("Topic Similarity Heatmap",
+                  HTML("Replica of <code>topic_model.visualize_heatmap()</code>: Jaccard similarity matrix between topics; higher values = semantically closer topics.")),
+      tags$div(class = "sci-card", plotlyOutput("plot_lab5_topics_heatmap", height = "420px")),
+
+      # 4) Topic Hierarchy Dendrogram
+      section_hdr("Topic Hierarchy Dendrogram",
+                  HTML("Replica of <code>topic_model.visualize_hierarchy()</code> / <code>get_topic_tree()</code>: hierarchical clustering (<em>average linkage</em>) on the 1−Jaccard distance.")),
+      tags$div(class = "sci-card", plotOutput("plot_lab5_topics_dendro", height = "420px")),
+
+      insight_box(
+        "Strategic Reading — Hierarchy",
+        paste0(
+          "The hierarchy confirms two macro-branches: ",
+          "<strong style='font-weight:800'>(1) hearing-tech core</strong> (T0, T2, T4) — this is Nuance Audio's product perimeter, ",
+          "where competition is vertical and patent-driven (KIT 2); ",
+          "<strong style='font-weight:800'>(2) consumer/AR layer</strong> (T1, T3, T6) — this is where the ",
+          "<em>category creation</em> of 'hearing glasses' and the go-to-market play out (KIT 1, KIT 3). ",
+          "The isolation of T5 (bone-conduction) suggests it is not currently a direct substitution threat, but ",
+          "an adjacent technological niche."
+        ),
+        col$purple, "sitemap"
+      )
+    )
+  })
+
   # ────────────────────────────────────────────────────────────────────────
   # TAB 10: PATENT ANALYSIS (Erre Quadro Methodology)
   # ────────────────────────────────────────────────────────────────────────
@@ -1920,13 +2290,13 @@ server <- function(input, output, session) {
       marker = list(color = "#a78bfa"), 
       text = ~Count,
       textposition = "outside",
-      textfont = list(color = "white", size = 11)
+      textfont = list(color = "#1e293b", size = 11)
     )
-    
+
     # 5. Aggiungiamo i layout
     p <- layout(p,
-                xaxis = list(title = "Number of Patents", gridcolor = "#1c2840", tickfont = list(color="white"), titlefont=list(color="white")),
-                yaxis = list(title = "", tickfont = list(color="white")),
+                xaxis = list(title = "Number of Patents", gridcolor = "#e2e8f0", tickfont = list(color="#1e293b"), titlefont=list(color="#1e293b")),
+                yaxis = list(title = "", tickfont = list(color="#1e293b")),
                 margin = list(l = 200, r = 40, t = 10, b = 40),
                 paper_bgcolor = "rgba(0,0,0,0)",
                 plot_bgcolor = "rgba(0,0,0,0)"
@@ -1938,10 +2308,588 @@ server <- function(input, output, session) {
     # 7. Inviamo il grafico alla UI
     return(p)
   })
-  
-  # ═══════════════════════════════════════════════════════════════════════════════
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # TAB 10-bis: ERRE QUADRO LAB — Smart Glasses Exercise (7 tasks)
+  # Replica esercizio "Smart Glasses Exercise" su Espacenet (10.644 patent totali)
+  # ════════════════════════════════════════════════════════════════════════════
+
+  # ── Render charts (T7) ────────────────────────────────────────────────────
+  output$plot_eq_priority_year <- renderPlotly({
+    df <- df_eq_priority_year[df_eq_priority_year$year >= 2000 &
+                              df_eq_priority_year$year <= 2025, ]
+    df <- df[order(df$year), ]
+    plot_ly(df, x = ~year, y = ~count, type = "bar",
+            marker = list(color = col$blue, opacity = 0.9,
+                          line = list(color = "#0f1724", width = 0.4)),
+            text = ~count, textposition = "outside",
+            textfont = list(color = "#1e293b", size = 10),
+            hovertemplate = "Priority %{x}: %{y} patents<extra></extra>") %>%
+      plotly_layout_dark(
+        xaxis = list(title = "Priority year", dtick = 2),
+        yaxis = list(title = "Patents (full dataset)"),
+        margin = list(l = 60, r = 30, t = 30, b = 40)
+      )
+  })
+
+  output$plot_eq_applicants <- renderPlotly({
+    df <- head(df_eq_applicants, 15)
+    df <- df[order(df$count), ]
+    plot_ly(df, x = ~count, y = ~factor(name, levels = name),
+            type = "bar", orientation = "h",
+            marker = list(color = col$accent, opacity = 0.92,
+                          line = list(color = "#0f1724", width = 0.4)),
+            text = ~count, textposition = "outside",
+            textfont = list(color = "#1e293b", size = 10),
+            hovertemplate = "%{y}<br>%{x} patents<extra></extra>") %>%
+      plotly_layout_dark(
+        xaxis = list(title = "Patents"),
+        yaxis = list(title = ""),
+        margin = list(l = 250, r = 50, t = 20, b = 40)
+      )
+  })
+
+  output$plot_eq_inventors <- renderPlotly({
+    df <- head(df_eq_inventors, 15)
+    df <- df[order(df$count), ]
+    plot_ly(df, x = ~count, y = ~factor(name, levels = name),
+            type = "bar", orientation = "h",
+            marker = list(color = col$purple, opacity = 0.92,
+                          line = list(color = "#0f1724", width = 0.4)),
+            text = ~count, textposition = "outside",
+            textfont = list(color = "#1e293b", size = 10),
+            hovertemplate = "%{y}<br>%{x} patents<extra></extra>") %>%
+      plotly_layout_dark(
+        xaxis = list(title = "Patents"),
+        yaxis = list(title = ""),
+        margin = list(l = 220, r = 50, t = 20, b = 40)
+      )
+  })
+
+  output$plot_eq_countries <- renderPlotly({
+    df <- head(df_eq_app_country, 15)
+    df <- df[order(df$count), ]
+    plot_ly(df, x = ~count, y = ~factor(country_name, levels = country_name),
+            type = "bar", orientation = "h",
+            marker = list(color = col$orange, opacity = 0.92,
+                          line = list(color = "#0f1724", width = 0.4)),
+            text = ~count, textposition = "outside",
+            textfont = list(color = "#1e293b", size = 10),
+            hovertemplate = "%{y}<br>%{x} patents<extra></extra>") %>%
+      plotly_layout_dark(
+        xaxis = list(title = "Patents"),
+        yaxis = list(title = ""),
+        margin = list(l = 170, r = 50, t = 20, b = 40)
+      )
+  })
+
+  output$plot_eq_ipc <- renderPlotly({
+    df <- head(df_eq_ipc, 15)
+    df$tag <- ifelse(df$label != "", paste0(df$ipc, " — ", df$label), df$ipc)
+    df <- df[order(df$count), ]
+    plot_ly(df, x = ~count, y = ~factor(tag, levels = tag),
+            type = "bar", orientation = "h",
+            marker = list(color = col$pink, opacity = 0.92,
+                          line = list(color = "#0f1724", width = 0.4)),
+            text = ~count, textposition = "outside",
+            textfont = list(color = "#1e293b", size = 10),
+            hovertemplate = "%{y}<br>%{x} patents<extra></extra>") %>%
+      plotly_layout_dark(
+        xaxis = list(title = "Patents"),
+        yaxis = list(title = ""),
+        margin = list(l = 280, r = 50, t = 20, b = 40)
+      )
+  })
+
+  # T5 — Holographic charts
+  output$plot_eq_holo_timeline <- renderPlotly({
+    df <- as.data.frame(table(df_eq_holo$priority_year), stringsAsFactors = FALSE)
+    names(df) <- c("year", "count")
+    df <- df[df$year != "" & !is.na(df$year), ]
+    df$year <- as.integer(df$year)
+    df <- df[order(df$year), ]
+    plot_ly(df, x = ~year, y = ~count, type = "bar",
+            marker = list(color = col$cyan, opacity = 0.92,
+                          line = list(color = "#0f1724", width = 0.4)),
+            text = ~count, textposition = "outside",
+            textfont = list(color = "#1e293b", size = 10),
+            hovertemplate = "%{x}: %{y} patents<extra></extra>") %>%
+      plotly_layout_dark(
+        xaxis = list(title = "Priority year", dtick = 2),
+        yaxis = list(title = "Patents"),
+        margin = list(l = 50, r = 30, t = 20, b = 40)
+      )
+  })
+
+  output$plot_eq_holo_countries <- renderPlotly({
+    df <- as.data.frame(table(df_eq_holo$country), stringsAsFactors = FALSE)
+    names(df) <- c("country", "count")
+    df <- df[order(df$count), ]
+    df$country_name <- ifelse(df$country %in% names(.country_names),
+                              .country_names[df$country], df$country)
+    plot_ly(df, x = ~count, y = ~factor(country_name, levels = country_name),
+            type = "bar", orientation = "h",
+            marker = list(color = col$cyan, opacity = 0.92,
+                          line = list(color = "#0f1724", width = 0.4)),
+            text = ~count, textposition = "outside",
+            textfont = list(color = "#1e293b", size = 10),
+            hovertemplate = "%{y}<br>%{x} patents<extra></extra>") %>%
+      plotly_layout_dark(
+        xaxis = list(title = "Patents (out of 60)"),
+        yaxis = list(title = ""),
+        margin = list(l = 160, r = 50, t = 20, b = 40)
+      )
+  })
+
+  # ── Tables ────────────────────────────────────────────────────────────────
+  output$table_eq_top20 <- DT::renderDT({
+    df <- head(df_eq_main, 20)[, c("No","Title","Applicants","Publication number",
+                                    "Earliest priority","IPC","country")]
+    names(df) <- c("#","Title","Applicant","Publ. no.","Priority","IPC","Country")
+    DT::datatable(df,
+                  options = list(pageLength = 20, dom = "t", ordering = FALSE,
+                                 columnDefs = list(list(className = "dt-left", targets = "_all"))),
+                  rownames = FALSE, class = "stripe hover")
+  })
+
+  output$table_eq_holo <- DT::renderDT({
+    df <- df_eq_holo[, c("No","Title","Applicants","Publication number",
+                         "Earliest priority","IPC","country")]
+    names(df) <- c("#","Title","Applicant","Publ. no.","Priority","IPC","Country")
+    DT::datatable(df,
+                  options = list(pageLength = 10, dom = "tp", ordering = FALSE,
+                                 columnDefs = list(list(className = "dt-left", targets = "_all"))),
+                  rownames = FALSE, class = "stripe hover")
+  })
+
+  # ── UI ─────────────────────────────────────────────────────────────────────
+  output$tab_errequadro <- renderUI({
+
+    # Helper per i task header
+    task_hdr <- function(num, title, subtitle = NULL) {
+      tags$div(
+        style = paste0("margin-top:34px; margin-bottom:14px; display:flex; gap:14px; align-items:center;"),
+        tags$div(style = paste0(
+          "flex:0 0 auto; width:42px; height:42px; border-radius:50%;",
+          "background:", col$accent, "; color:#0f1724; font-weight:900; font-size:16px;",
+          "display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono';"
+        ), paste0("T", num)),
+        tags$div(
+          tags$div(style = "font-size:18px; font-weight:800; color:var(--text);", title),
+          if (!is.null(subtitle))
+            tags$div(style = "font-size:12px; color:var(--dim); margin-top:2px;", subtitle)
+        )
+      )
+    }
+
+    # Helper: token (chip) per la decomposizione query
+    chip <- function(text, color) {
+      tags$span(style = paste0(
+        "display:inline-block; padding:3px 10px; margin:2px 3px;",
+        "background:", color, "20; color:", color, "; border:1px solid ", color, "40;",
+        "border-radius:14px; font-size:11px; font-weight:600; font-family:'JetBrains Mono';"
+      ), text)
+    }
+
+    tagList(
+      section_hdr(
+        "Erre Quadro Lab — Smart Glasses Exercise",
+        HTML(paste0(
+          "Full replication of the <strong>Erre Quadro – Smart Glasses Exercise</strong> ",
+          "(7 tasks) conducted on <strong>Espacenet</strong> on 2026-05-20. ",
+          "Main dataset: <strong>10,644 patents</strong> retrieved with the optimized query; ",
+          "<strong>60 patents</strong> for the holographic query (prior art assessment)."
+        ))
+      ),
+
+      # Methodology banner
+      tags$div(
+        class = "methodology-banner",
+        style = paste0(
+          "margin-bottom:20px; padding:18px 22px; border-radius:14px;",
+          "background:", pastel_bg(col$accent), "; border-left:4px solid ", col$accent, ";"
+        ),
+        tags$div(style = paste0("font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:", col$accent, ";"),
+                 "Methodology"),
+        tags$p(style = paste0("font-size:13px; color:", pastel_text(col$accent), "; line-height:1.6; margin:6px 0 0;"),
+               HTML(paste0(
+                 "<strong>Task 1-3</strong>: query design decomposed into core/synonyms/related tech/application/IPC/NOT, ",
+                 "visualized as an AND/OR/NOT logic graph, and optimized. ",
+                 "<strong>Task 4</strong>: extraction of top-20 patents (out of 10,644 total). ",
+                 "<strong>Task 5</strong>: separate query on <em>holographic smart glasses</em> for prior art. ",
+                 "<strong>Task 6</strong>: domain classification tree. ",
+                 "<strong>Task 7</strong>: aggregate statistics (applicants, countries, priority year, IPC, inventors) ",
+                 "extracted from <code>Filters → Charts/Graphs overview</code> and computed on the <strong>full 10,644-patent dataset</strong>."
+               )))
+      ),
+
+      # ────────────────────────────── T1 ──────────────────────────────
+      task_hdr("1", "Build a Research Query",
+               "Structured decomposition into Core / Synonyms / Related / Application / IPC / NOT"),
+
+      tags$div(class = "sci-card",
+        tags$h4(style = "color:var(--text); margin-top:0; font-weight:800; font-size:14px;",
+                "Espacenet query (decomposed)"),
+
+        tags$div(style = "margin-bottom:10px;",
+          tags$div(style = paste0("font-size:11px; font-weight:700; text-transform:uppercase; color:", col$accent, "; margin-bottom:4px;"), "Core keywords"),
+          chip('"smart glasses"', col$accent), chip('"smart eyewear"', col$accent),
+          chip('"audio glasses"', col$accent), chip('"hearing glasses"', col$accent)
+        ),
+        tags$div(style = "margin-bottom:10px;",
+          tags$div(style = paste0("font-size:11px; font-weight:700; text-transform:uppercase; color:", col$blue, "; margin-bottom:4px;"), "Synonyms"),
+          chip('"intelligent eyewear"', col$blue), chip('"AR glasses"', col$blue),
+          chip('"augmented reality glasses"', col$blue), chip('"head mounted display"', col$blue)
+        ),
+        tags$div(style = "margin-bottom:10px;",
+          tags$div(style = paste0("font-size:11px; font-weight:700; text-transform:uppercase; color:", col$purple, "; margin-bottom:4px;"), "Related technologies"),
+          chip('"augmented reality"', col$purple), chip('"mixed reality"', col$purple),
+          chip('"display"', col$purple), chip('"sensor"', col$purple),
+          chip('"connectivity"', col$purple), chip('"heads-up"', col$purple),
+          chip('"hands-free"', col$purple), chip('"beamforming"', col$purple)
+        ),
+        tags$div(style = "margin-bottom:10px;",
+          tags$div(style = paste0("font-size:11px; font-weight:700; text-transform:uppercase; color:", col$orange, "; margin-bottom:4px;"), "Application fields"),
+          chip('"wearable"', col$orange)
+        ),
+        tags$div(style = "margin-bottom:10px;",
+          tags$div(style = paste0("font-size:11px; font-weight:700; text-transform:uppercase; color:", col$cyan, "; margin-bottom:4px;"), "IPC classes (top 5)"),
+          chip("G02B27 — Optical systems", col$cyan),
+          chip("G06F3 — I/O arrangements", col$cyan),
+          chip("H04N5 — Pictorial TV", col$cyan),
+          chip("G09G5 — Display indicators", col$cyan),
+          chip("G06T19 — 3D image manipulation", col$cyan)
+        ),
+        tags$div(style = "margin-bottom:14px;",
+          tags$div(style = paste0("font-size:11px; font-weight:700; text-transform:uppercase; color:", col$red, "; margin-bottom:4px;"), "Exclusions (NOT)"),
+          chip('"contact lens"', col$red), chip('"VR headset"', col$red),
+          chip('"virtual reality headset"', col$red)
+        ),
+
+        tags$div(style = "font-size:11px; font-weight:700; text-transform:uppercase; color:var(--dim); margin-bottom:6px;",
+                 "Full Espacenet query"),
+        tags$pre(class = "query-code-light", style = "margin:0;",
+                 HTML(paste0(
+                   '(<span style="color:#00c98b">ti=</span>"smart glasses" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"smart eyewear" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"audio glasses" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"hearing glasses" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"AR glasses" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"augmented reality glasses" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"intelligent eyewear" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"head mounted display")',
+                   '\n  <span style="color:#7c3aed">AND</span> (<span style="color:#00c98b">txt=</span>"wearable" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">txt=</span>"augmented reality" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">txt=</span>"mixed reality" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">txt=</span>"display" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">txt=</span>"sensor" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">txt=</span>"connectivity" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">txt=</span>"heads-up" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">txt=</span>"hands-free" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">txt=</span>"beamforming")',
+                   '\n  <span style="color:#dc2626">NOT</span> (<span style="color:#00c98b">ti=</span>"contact lens" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"VR headset" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"virtual reality headset")'
+                 )))
+      ),
+
+      # ────────────────────────────── T2 ──────────────────────────────
+      task_hdr("2", "Visualize AND / OR Logic",
+               "Venn diagram: intersection between Core/Synonyms (title) and Related/Application (text), with NOT as exclusion"),
+
+      tags$div(class = "sci-card",
+        tags$div(style = "position:relative; width:100%; height:360px; background:#f1f5f9; border-radius:10px;",
+          # Venn diagram - 3 circles + NOT zone
+          tags$div(style = paste0(
+            "position:absolute; left:13%; top:18%; width:38%; height:64%; border-radius:50%;",
+            "background:", col$accent, "30; border:2px solid ", col$accent, "; ",
+            "display:flex; align-items:center; justify-content:center;"),
+            tags$div(style = "text-align:center;",
+              tags$div(style = paste0("font-size:11px; font-weight:800; color:", col$accent, "; text-transform:uppercase; letter-spacing:1px;"), "TITLE"),
+              tags$div(style = "font-size:13px; font-weight:700; color:#0f1724; margin-top:4px;", "Core + Synonyms"),
+              tags$div(style = "font-size:10px; color:#475569; margin-top:2px; max-width:140px;", "smart glasses, smart eyewear, AR glasses, HMD…")
+            )
+          ),
+          tags$div(style = paste0(
+            "position:absolute; left:42%; top:18%; width:38%; height:64%; border-radius:50%;",
+            "background:", col$purple, "30; border:2px solid ", col$purple, "; ",
+            "display:flex; align-items:center; justify-content:center;"),
+            tags$div(style = "text-align:center; margin-left:35%;",
+              tags$div(style = paste0("font-size:11px; font-weight:800; color:", col$purple, "; text-transform:uppercase; letter-spacing:1px;"), "TEXT"),
+              tags$div(style = "font-size:13px; font-weight:700; color:#0f1724; margin-top:4px;", "Related + Application"),
+              tags$div(style = "font-size:10px; color:#475569; margin-top:2px; max-width:140px;", "wearable, AR, MR, display, sensor…")
+            )
+          ),
+          # NOT badge
+          tags$div(style = paste0(
+            "position:absolute; right:3%; top:5%; padding:8px 14px;",
+            "background:", col$red, "; color:#fff; border-radius:8px; font-weight:800;",
+            "box-shadow:0 4px 12px rgba(0,0,0,0.15);"
+          ),
+            tags$i(class = "fas fa-ban"), " NOT ",
+            tags$span(style = "font-weight:500; font-size:11px;", "contact lens · VR headset")
+          ),
+          # AND label
+          tags$div(style = paste0(
+            "position:absolute; left:46%; top:46%; padding:6px 14px;",
+            "background:#fff; color:#0f1724; border:2px solid #0f1724; border-radius:8px;",
+            "font-weight:900; font-family:'JetBrains Mono'; font-size:14px;"
+          ), "AND")
+        ),
+        tags$p(style = "font-size:12px; color:var(--dim); margin-top:14px; line-height:1.6;",
+               HTML(paste0(
+                 "<strong>Logic</strong>: the intersection (AND) between Title (Core + Synonyms) and Text ",
+                 "(Related + Application) selects patents that <em>truly address</em> smart glasses ",
+                 "(not merely those that mention the term generically). NOT removes known false positives (contact lens, VR headset)."
+               )))
+      ),
+
+      # ────────────────────────────── T3 ──────────────────────────────
+      task_hdr("3", "Optimize the Query",
+               "From a broad initial query (~60k results) to the optimized query (10,644 patents)"),
+
+      fluidRow(
+        column(6, tags$div(class = "sci-card", style = paste0("border-left:4px solid ", col$red, ";"),
+          tags$div(style = paste0("font-size:11px; font-weight:800; text-transform:uppercase; color:", col$red, "; letter-spacing:2px;"),
+                   "Before — too broad"),
+          tags$pre(class = "query-code-light", style = "margin:8px 0 0 0; font-size:11px;",
+                   'ti="smart glasses" OR ti="smart eyewear"\n  OR ti="AR glasses"'),
+          tags$div(style = "margin-top:10px;",
+            sci_badge("~60k results", col$red),
+            sci_badge("noisy / over-broad", col$red)
+          ),
+          tags$p(style = "font-size:11px; color:var(--dim); margin-top:10px; line-height:1.55;",
+                 "Title only, no thematic filter, no NOT: includes patents for corrective lenses, generic VR, sunglasses with sensors.")
+        )),
+        column(6, tags$div(class = "sci-card", style = paste0("border-left:4px solid ", col$accent, ";"),
+          tags$div(style = paste0("font-size:11px; font-weight:800; text-transform:uppercase; color:", col$accent, "; letter-spacing:2px;"),
+                   "After — optimized"),
+          tags$pre(class = "query-code-light", style = "margin:8px 0 0 0; font-size:11px;",
+                   '(ti=core_terms) AND (txt=tech_application)\n  NOT (ti=exclusions)'),
+          tags$div(style = "margin-top:10px;",
+            sci_badge("10.644 results", col$accent),
+            sci_badge("higher precision", col$accent),
+            sci_badge("usable for top-20", col$accent)
+          ),
+          tags$p(style = "font-size:11px; color:var(--dim); margin-top:10px; line-height:1.55;",
+                 "Added title × text intersection to ensure thematic relevance + NOT to eliminate known false positives.")
+        ))
+      ),
+
+      # ────────────────────────────── T4 ──────────────────────────────
+      task_hdr("4", "Espacenet Results — Top 20 Patents",
+               "Out of 10,644 total patents, first 500 downloaded sorted by relevance; top 20 shown here as a sample"),
+
+      tags$div(class = "row-stats",
+               tags$div(stat_block("Total patents", "10 644", "Espacenet (2026-05-20)", col$accent)),
+               tags$div(stat_block("Downloaded", "500", "CSV (Espacenet limit)", col$blue)),
+               tags$div(stat_block("Top displayed", "20", "Sample for analysis", col$orange)),
+               tags$div(stat_block("Priority span", "1972–2026", "44 years coverage", col$purple))
+      ),
+      tags$div(class = "sci-card", DT::DTOutput("table_eq_top20")),
+
+      # ────────────────────────────── T5 ──────────────────────────────
+      task_hdr("5", "Holographic Smart Glasses — Prior Art Search",
+               "Focused query on 'holographic' for prior art product existence assessment"),
+
+      tags$div(class = "sci-card",
+        tags$div(style = "font-size:11px; font-weight:700; text-transform:uppercase; color:var(--dim); margin-bottom:6px;",
+                 "Holographic prior art query"),
+        tags$pre(class = "query-code-light", style = "margin:0;",
+                 HTML(paste0(
+                   '(<span style="color:#00c98b">ti=</span>"holographic" <span style="color:#7c3aed">AND</span> ',
+                   '(<span style="color:#00c98b">ti=</span>"smart glasses" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"smart eyewear" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"head mounted display" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"AR glasses" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"augmented reality glasses"))',
+                   '\n  <span style="color:#d97706">OR</span> (<span style="color:#00c98b">ti=</span>"holographic glasses" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"holographic eyewear" <span style="color:#d97706">OR</span> ',
+                   '<span style="color:#00c98b">ti=</span>"holographic HMD")'
+                 )))
+      ),
+
+      tags$div(class = "row-stats",
+               tags$div(stat_block("Holographic patents", "60", "Out of 10.644 main", col$cyan)),
+               tags$div(stat_block("Ratio", "0.56%", "Sub-1% = prior art gap", col$pink)),
+               tags$div(stat_block("First filing", min(as.integer(df_eq_holo$priority_year), na.rm = TRUE),
+                                   "Mature concept", col$orange)),
+               tags$div(stat_block("Latest filing", max(as.integer(df_eq_holo$priority_year), na.rm = TRUE),
+                                   "Still active", col$accent))
+      ),
+
+      fluidRow(
+        column(6, tags$div(class = "sci-card",
+          tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
+                   "Holographic filings by priority year"),
+          plotlyOutput("plot_eq_holo_timeline", height = "260px")
+        )),
+        column(6, tags$div(class = "sci-card",
+          tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
+                   "Holographic filings by country"),
+          plotlyOutput("plot_eq_holo_countries", height = "260px")
+        ))
+      ),
+
+      insight_box(
+        "Strategic Reading — Prior Art Assessment",
+        paste0(
+          "Of the 10,644 smart-glasses patents identified, only <strong style='font-weight:800'>60 (0.56%)</strong> ",
+          "explicitly address <strong>holographic display</strong>. The sub-1% ratio confirms that ",
+          "<em>integration of holographic displays in smart glasses is still a research niche</em>, ",
+          "not a mature product. For Nuance Audio this means: <strong>(1)</strong> no technological lock-in ",
+          "in the market; <strong>(2)</strong> open space to position as 'hearing-first' without competing ",
+          "head-on with AR/VR display roadmaps; <strong>(3)</strong> an opportunity to monitor the 60 patent holders ",
+          "(mostly universities and hardware startups) as an <em>early signal</em> for KIT 2 (early warnings)."
+        ),
+        col$cyan, "lightbulb"
+      ),
+
+      tags$div(class = "sci-card", DT::DTOutput("table_eq_holo")),
+
+      # ────────────────────────────── T6 ──────────────────────────────
+      task_hdr("6", "Classification Tree",
+               "Domain decomposition of Smart Glasses by Components / Problems / Functionalities"),
+
+      tags$div(class = "sci-card",
+        fluidRow(
+          # Components
+          column(4,
+            tags$div(style = paste0("padding:14px; border-radius:12px; background:", pastel_bg(col$blue), "; border-left:4px solid ", col$blue, ";"),
+              tags$div(style = paste0("font-size:13px; font-weight:800; color:", pastel_text(col$blue), "; margin-bottom:10px;"),
+                       tags$i(class = "fas fa-microchip"), " Components"),
+              tags$ul(style = paste0("margin:0; padding-left:18px; color:", pastel_text(col$blue), "; font-size:12px; line-height:1.8;"),
+                tags$li(tags$strong("Optical:"), " waveguide, micro-display, projector, lens, beam-splitter"),
+                tags$li(tags$strong("Audio:"), " open-ear speaker, bone conduction, microphone array, beamforming chip"),
+                tags$li(tags$strong("Sensors:"), " IMU, camera, ambient light, EMG, eye-tracking"),
+                tags$li(tags$strong("Compute:"), " low-power SoC, edge AI accelerator, NPU"),
+                tags$li(tags$strong("Connectivity:"), " BLE, Wi-Fi 6/7, UWB"),
+                tags$li(tags$strong("Power:"), " micro-battery, energy harvesting"),
+                tags$li(tags$strong("Frame:"), " lightweight composite, hinge, nose-pad")
+              )
+            )
+          ),
+          # Problems
+          column(4,
+            tags$div(style = paste0("padding:14px; border-radius:12px; background:", pastel_bg(col$red), "; border-left:4px solid ", col$red, ";"),
+              tags$div(style = paste0("font-size:13px; font-weight:800; color:", pastel_text(col$red), "; margin-bottom:10px;"),
+                       tags$i(class = "fas fa-triangle-exclamation"), " Problems to Solve"),
+              tags$ul(style = paste0("margin:0; padding-left:18px; color:", pastel_text(col$red), "; font-size:12px; line-height:1.8;"),
+                tags$li(tags$strong("Power:"), " battery life vs weight trade-off"),
+                tags$li(tags$strong("Heat:"), " thermal management on temple"),
+                tags$li(tags$strong("Display:"), " brightness outdoor, FOV, vergence-accommodation"),
+                tags$li(tags$strong("Audio:"), " SNR, directional pickup, leakage"),
+                tags$li(tags$strong("Privacy:"), " camera/mic always-on social acceptance"),
+                tags$li(tags$strong("Comfort:"), " weight, fit, prescription compatibility"),
+                tags$li(tags$strong("Stigma:"), " visibility of \"medical\" device"),
+                tags$li(tags$strong("Cost:"), " BoM vs consumer price point")
+              )
+            )
+          ),
+          # Functionalities
+          column(4,
+            tags$div(style = paste0("padding:14px; border-radius:12px; background:", pastel_bg(col$accent), "; border-left:4px solid ", col$accent, ";"),
+              tags$div(style = paste0("font-size:13px; font-weight:800; color:", pastel_text(col$accent), "; margin-bottom:10px;"),
+                       tags$i(class = "fas fa-bolt"), " Functionalities"),
+              tags$ul(style = paste0("margin:0; padding-left:18px; color:", pastel_text(col$accent), "; font-size:12px; line-height:1.8;"),
+                tags$li(tags$strong("Hearing:"), " speech enhancement, beamforming, OTC hearing aid"),
+                tags$li(tags$strong("Vision:"), " AR overlay, captioning, translation"),
+                tags$li(tags$strong("Capture:"), " photo/video, lifelog, POV streaming"),
+                tags$li(tags$strong("Navigation:"), " turn-by-turn, indoor wayfinding"),
+                tags$li(tags$strong("Assistant:"), " voice AI, contextual prompts, dictation"),
+                tags$li(tags$strong("Health:"), " heart rate, posture, fall detection"),
+                tags$li(tags$strong("Productivity:"), " hands-free workflow, remote assist"),
+                tags$li(tags$strong("Entertainment:"), " music, podcasts, gaming")
+              )
+            )
+          )
+        )
+      ),
+
+      insight_box(
+        "Strategic Reading — Classification Tree",
+        paste0(
+          "Nuance Audio's positioning on the tree: <strong style='font-weight:800'>Hearing (functionality) + ",
+          "Beamforming chip + Open-ear speaker + Microphone array (components)</strong>. ",
+          "The <em>highest-impact problems</em> for go-to-market are <strong>Stigma</strong> ",
+          "(differentiation vs traditional glasses) and <strong>Cost</strong> (the $1,200 vs $250 AirPods Pro gap). ",
+          "<em>Adjacent functionalities easy to add</em> in future versions: speech captioning (AR overlay), ",
+          "voice assistant, fall detection — already technologically covered by key player patents (Snap, Meta, Goertek)."
+        ),
+        col$accent, "sitemap"
+      ),
+
+      # ────────────────────────────── T7 ──────────────────────────────
+      task_hdr("7", "Statistics on Full Dataset (10.644 patent)",
+               HTML("Extracted from <code>Filters → View charts/graphs overview</code> in Espacenet. ",
+                    "Exact figures on the full dataset (not just the 500 downloaded).")),
+
+      # Stats row
+      tags$div(class = "row-stats",
+               tags$div(stat_block("Top applicant", "Goertek Tech",
+                                   paste0(format(df_eq_applicants$count[1], big.mark=" "), " patents"), col$accent)),
+               tags$div(stat_block("Top country (app.)", df_eq_app_country$country_name[1],
+                                   paste0(format(df_eq_app_country$count[1], big.mark=" "), " patents"), col$orange)),
+               tags$div(stat_block("Peak priority year",
+                                   df_eq_priority_year$year[which.max(df_eq_priority_year$count)],
+                                   paste0(max(df_eq_priority_year$count), " filings"), col$purple)),
+               tags$div(stat_block("Top IPC", df_eq_ipc$ipc[1],
+                                   paste0(format(df_eq_ipc$count[1], big.mark=" "), " — ", df_eq_ipc$label[1]), col$pink)),
+               tags$div(stat_block("Top inventor", df_eq_inventors$name[1],
+                                   paste0(df_eq_inventors$count[1], " patents"), col$blue))
+      ),
+
+      # Priority year
+      section_hdr("Priority year distribution",
+                  "Temporal dynamics of IP filings (2000–2025)"),
+      tags$div(class = "sci-card", plotlyOutput("plot_eq_priority_year", height = "300px")),
+
+      # 2x2 grid
+      fluidRow(
+        column(6, tags$div(class = "sci-card",
+          tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
+                   "Top 15 Applicants"),
+          plotlyOutput("plot_eq_applicants", height = "400px")
+        )),
+        column(6, tags$div(class = "sci-card",
+          tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
+                   "Top 15 Inventors"),
+          plotlyOutput("plot_eq_inventors", height = "400px")
+        ))
+      ),
+      fluidRow(
+        column(6, tags$div(class = "sci-card",
+          tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
+                   "Top 15 Countries (applicants)"),
+          plotlyOutput("plot_eq_countries", height = "380px")
+        )),
+        column(6, tags$div(class = "sci-card",
+          tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
+                   "Top 15 IPC classes"),
+          plotlyOutput("plot_eq_ipc", height = "380px")
+        ))
+      ),
+
+      insight_box(
+        "Strategic Reading — Patent Landscape",
+        paste0(
+          "The 10,644-patent dataset confirms what was already highlighted in the Patent Analysis tab, but at a larger scale: ",
+          "<strong style='font-weight:800'>Goertek (China, 447+307+259 = 1,013 patents across its 3 entities)</strong> ",
+          "is the <em>true IP leader</em>, followed by Seiko Epson (374) and HTC (217). ",
+          "Nationally, <strong>US (3,218), JP (2,590), KR (1,975), CN (1,395)</strong> dominate: ",
+          "Europe is marginal (DE 290, GB 101, FR 59), confirming the asymmetric competitive risk for EssilorLuxottica. ",
+          "The <strong>2021 peak (74 priority filings)</strong> coincides with the Ray-Ban Stories launch: post-pandemic, ",
+          "the entire ecosystem accelerated. <strong>G02B27 (Optical systems, 7,760 patents — 73% of the total)</strong> is the ",
+          "technologically dominant class: the true battleground is the <em>optical stack</em>, not audio."
+        ),
+        col$accent, "chart-pie"
+      )
+    )
+  })
+
+  # ════════════════════════════════════════════════════════════════════════════
   # TAB 9: STRATEGIC STORYBOARD (DATA VIZ LAB FINAL — RIFORMULATA)
-  # ═══════════════════════════════════════════════════════════════════════════════
+  # ════════════════════════════════════════════════════════════════════════════
   si_box <- function(text, color) {
     tags$div(
       style = paste0("margin-top:14px; padding:10px 14px; border-radius:8px; border-left:3px solid ", color, "; background:", color, "12;"),

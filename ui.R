@@ -36,17 +36,17 @@ ui <- page_fillable(
           tags$div(style = paste0("font-size:12px; color:", col$accent, "; font-weight:500; margin-bottom:1px;"), "Competitive Intelligence")
         ),
         tags$div(
-          style = paste0("background:", col$card, "; overflow:hidden; height:130px;"),
+          style = paste0("background:", col$card, "; overflow:hidden; height:80px;"),
           tags$video(
             src = "sidebar_video.mp4", type = "video/mp4",
             autoplay = NA, loop = NA, muted = NA, playsinline = NA,
             style = "width:100%; height:100%; object-fit:cover; object-position:center; display:block; filter:invert(1) brightness(0.85); mix-blend-mode:screen;"
           )
         ),
-        tags$hr(style = "border-color:var(--border); margin:1px 0 3px;"),
+        tags$hr(style = "border-color:var(--border); margin:0 0 2px;"),
         # ── Nav nello stesso contenitore per eliminare il gap bslib ──
         tags$div(
-          style = "overflow-y:auto; max-height:calc(100vh - 500px); padding-right:2px;",
+          style = "overflow-y:visible; padding-right:2px;",
           uiOutput("custom_nav")
         )
       ),
@@ -62,7 +62,10 @@ ui <- page_fillable(
           nav_panel(title = "Query Design",         value = "queries",      icon = icon("search")),
           nav_panel(title = "GenAI for CI",         value = "genai",        icon = icon("robot")),
           nav_panel(title = "Text Analysis",        value = "textanalysis", icon = icon("file-lines")),
+          nav_panel(title = "Co-word Networks",     value = "cowords",      icon = icon("diagram-project")),
+          nav_panel(title = "BERTopic Maps",        value = "bertopicmaps", icon = icon("sitemap")),
           nav_panel(title = "Patent Analysis",      value = "patents",      icon = icon("certificate")),
+          nav_panel(title = "Erre Quadro Lab",      value = "errequadro",   icon = icon("flask")),
           nav_panel(title = "Data Visualization",         value = "storyboard",   icon = icon("chart-pie"))
         )
       ),
@@ -94,9 +97,12 @@ ui <- page_fillable(
                nav_panel(title = "", value = "queries",      uiOutput("tab_queries")),
                nav_panel(title = "", value = "genai",        uiOutput("tab_genai")),
                nav_panel(title = "", value = "textanalysis", uiOutput("tab_textanalysis")),
-               
+               nav_panel(title = "", value = "cowords",      uiOutput("tab_cowords")),
+               nav_panel(title = "", value = "bertopicmaps", uiOutput("tab_bertopicmaps")),
+
                # AGGIUNTI PER GLI ULTIMI LABORATORI
                nav_panel(title = "", value = "patents",      uiOutput("tab_patents")),
+               nav_panel(title = "", value = "errequadro",   uiOutput("tab_errequadro")),
                nav_panel(title = "", value = "storyboard",   uiOutput("tab_storyboard"))
              )
     )
