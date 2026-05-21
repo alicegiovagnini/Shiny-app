@@ -391,8 +391,74 @@ table.dataTable.display tbody tr:hover > td { background-color: #e2e8f0; }
   color: #1e293b;
   border-radius: 6px;
 }
-.paginate_button { color: #475569 !important; }
-.paginate_button.current { color: #00c98b !important; font-weight: 700; }
+.dataTables_wrapper .dataTables_paginate { padding-top: 6px; }
+
+/* Bottone esterno (li wrapper Bootstrap o a classico) */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  background: #f1f5f9 !important;
+  background-color: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 6px !important;
+  margin: 0 2px !important;
+  box-shadow: none !important;
+  transition: all 0.15s !important;
+}
+/* Elemento interno (a o .page-link): nessun bordo proprio */
+.dataTables_wrapper .dataTables_paginate .paginate_button a,
+.dataTables_wrapper .dataTables_paginate .paginate_button .page-link {
+  color: #475569 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 4px 12px !important;
+  display: block !important;
+  border-radius: 5px !important;
+}
+/* Hover */
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: #dcfce7 !important;
+  background-color: #dcfce7 !important;
+  border-color: #86efac !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover a,
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover .page-link {
+  color: #00b37e !important;
+  background: transparent !important;
+  border: none !important;
+}
+/* Pagina attiva */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  background: #6ee7b7 !important;
+  background-color: #6ee7b7 !important;
+  border-color: #34d399 !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current a,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current .page-link,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover a {
+  color: #065f46 !important;
+  font-weight: 700 !important;
+  background: transparent !important;
+  border: none !important;
+}
+/* Disabilitato */
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+  background: #f8fafc !important;
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  opacity: 0.6 !important;
+  cursor: default !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled a,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled .page-link {
+  color: #94a3b8 !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: default !important;
+}
 
 /* ── VUCA / KIT interactive buttons ── */
 .vuca-btn, .kit-btn {
@@ -830,7 +896,8 @@ df_eval <- data.frame(
 # ── Annual scientific production (Lab 5 — bibliometrix) ─────────────────────
 # DATI REALI generati da text_analysis_nuance.R
 df_lab5_annual <- read.csv("output/tables/docs_per_year.csv") %>%
-  rename(year = Year, articles = Documents)
+  rename(year = Year, articles = Documents) %>%
+  filter(year <= 2025)
 
 # ── Top countries (most productive) ─────────────────────────────────────────
 # DATI REALI generati da text_analysis_nuance.R

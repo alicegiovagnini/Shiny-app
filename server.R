@@ -59,7 +59,7 @@ server <- function(input, output, session) {
         btn_item("cowords",     "Co-word Networks",   "diagram-project",  col$blue),
         btn_item("bertopicmaps","BERTopic Maps",      "sitemap",          col$blue),
         btn_item("patents",     "Patent Analysis",    "certificate",      col$blue),
-        btn_item("errequadro",  "Erre Quadro Lab",    "flask",            col$blue)
+        btn_item("errequadro",  "Erre Quadro",        "flask",            col$blue)
       ),
 
       tags$div(style = "height:1px; background:var(--border); margin:4px 2px;"),
@@ -247,32 +247,37 @@ server <- function(input, output, session) {
 
       # 4. Application Guide (README style)
       section_hdr("Navigation Guide", "What you will find in the different sections of the Dashboard"),
-      fluidRow(
-        column(6,
-               info_card("1. Strategic Frameworks", c(
-                 "<strong>Porter's Five Forces:</strong> Assessment of the competitive environment and industry structure (threat of substitutes, rivalry, etc.).",
-                 "<strong>VUCA Analysis:</strong> Interactive map of strategic challenges categorized by Volatility, Uncertainty, Complexity, and Ambiguity."
-               ), col$accent)
-        ),
-        column(6,
-               info_card("2. Intelligence Methodology", c(
-                 "<strong>Scope & KITs/KIQs:</strong> Defining intelligence objectives using the SMART approach and the Rumsfeld matrix.",
-                 "<strong>Query Design:</strong> How search queries were structured to map the technological and competitive landscape."
-               ), col$blue)
-        )
-      ),
-      fluidRow(
-        column(6,
-               info_card("3. Analysis & Data", c(
-                 "<strong>GenAI for CI:</strong> Evaluation of the use of Generative Artificial Intelligence (CREATE Framework) to support investigations.",
-                 "<strong>Text Analysis:</strong> Bibliometric analysis and topic modeling (BERTopic) on the paper corpus extracted from Scopus."
-               ), col$purple)
-        ),
-        column(6,
-               info_card("4. Decision Synthesis", c(
-                 "<strong>Data Visualization:</strong> The concluding storyboard that links analysis to visual data to define strategic positioning."
-               ), col$orange)
-        )
+      tags$div(
+        style = "display:grid; grid-template-columns:repeat(3,1fr); gap:14px;",
+        # Card 1
+        tags$div(style = "min-height:210px;", info_card("1. Strategic Frameworks", c(
+          "<strong>Porter's Five Forces:</strong> Assessment of the competitive environment and industry structure.",
+          "<strong>VUCA Analysis:</strong> Interactive map of strategic challenges by Volatility, Uncertainty, Complexity, and Ambiguity."
+        ), col$accent)),
+        # Card 2
+        tags$div(style = "min-height:210px;", info_card("2. Intelligence Methodology", c(
+          "<strong>Scope & KITs/KIQs:</strong> Defining intelligence objectives using the SMART approach and the Rumsfeld matrix.",
+          "<strong>Query Design:</strong> How search queries were structured to map the technological and competitive landscape."
+        ), col$blue)),
+        # Card 3
+        tags$div(style = "min-height:210px;", info_card("3. AI-Assisted Analysis", c(
+          "<strong>GenAI for CI:</strong> Evaluation of Generative AI (CREATE Framework) to support intelligence investigations.",
+          "<strong>Text Analysis:</strong> Bibliometric analysis and topic modeling (BERTopic) on the Scopus corpus."
+        ), col$purple)),
+        # Card 4
+        tags$div(style = "min-height:210px;", info_card("4. Bibliometric Networks", c(
+          "<strong>Co-word Networks:</strong> Conceptual structure and keyword co-occurrence via bibliometrix (MDS + clustering).",
+          "<strong>BERTopic Maps:</strong> Topic distance map, top-words chart, similarity heatmap and hierarchy dendrogram."
+        ), col$cyan)),
+        # Card 5
+        tags$div(style = "min-height:210px;", info_card("5. Patent Intelligence", c(
+          "<strong>Patent Analysis:</strong> IP landscape on smart glasses & hearing technologies via Espacenet.",
+          "<strong>Erre Quadro:</strong> Full 7-task exercise on 10,644 patents — applicants, IPC classes, holographic prior art."
+        ), col$orange)),
+        # Card 6
+        tags$div(style = "min-height:210px;", info_card("6. Decision Synthesis", c(
+          "<strong>Data Visualization:</strong> Strategic storyboard connecting KIQs to analytical charts derived from real data."
+        ), col$red))
       )
     )
   })
@@ -695,8 +700,10 @@ server <- function(input, output, session) {
         column(4, tags$div(style = paste0(
           "background:#d1fae5; border:1px solid ", col$accent, "50; border-top:3px solid ", col$accent, ";",
           "border-radius:14px; padding:24px; margin-bottom:18px; min-height:230px;",
-          "transition:transform 0.22s, box-shadow 0.22s;"
+          "transition:transform 0.22s, box-shadow 0.22s; cursor:default;"
         ),
+          onmouseover = "this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 32px rgba(0,229,160,0.18)';",
+          onmouseout  = "this.style.transform=''; this.style.boxShadow='';",
           tags$div(style = paste0("width:35px; height:35px; border-radius:8px; background:", col$accent, "30; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#065f46; margin-bottom:12px;"), "1"),
           tags$h4(style = "font-size:14px; font-weight:700; color:#065f46; margin:0 0 8px;", "Integrated Ecosystem"),
           tags$p(style = "font-size:12px; color:#065f4699; line-height:1.6;",
@@ -705,8 +712,10 @@ server <- function(input, output, session) {
         column(4, tags$div(style = paste0(
           "background:#dbeafe; border:1px solid ", col$blue, "50; border-top:3px solid ", col$blue, ";",
           "border-radius:14px; padding:24px; margin-bottom:18px; min-height:230px;",
-          "transition:transform 0.22s, box-shadow 0.22s;"
+          "transition:transform 0.22s, box-shadow 0.22s; cursor:default;"
         ),
+          onmouseover = "this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 32px rgba(79,172,254,0.18)';",
+          onmouseout  = "this.style.transform=''; this.style.boxShadow='';",
           tags$div(style = paste0("width:35px; height:35px; border-radius:8px; background:", col$blue, "30; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#1e3a8a; margin-bottom:12px;"), "2"),
           tags$h4(style = "font-size:14px; font-weight:700; color:#1e3a8a; margin:0 0 8px;", "Software & AI Flywheel"),
           tags$p(style = "font-size:12px; color:#1e3a8a99; line-height:1.6;",
@@ -715,8 +724,10 @@ server <- function(input, output, session) {
         column(4, tags$div(style = paste0(
           "background:#ffedd5; border:1px solid ", col$orange, "50; border-top:3px solid ", col$orange, ";",
           "border-radius:14px; padding:24px; margin-bottom:18px; min-height:230px;",
-          "transition:transform 0.22s, box-shadow 0.22s;"
+          "transition:transform 0.22s, box-shadow 0.22s; cursor:default;"
         ),
+          onmouseover = "this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 32px rgba(255,159,67,0.18)';",
+          onmouseout  = "this.style.transform=''; this.style.boxShadow='';",
           tags$div(style = paste0("width:35px; height:35px; border-radius:8px; background:", col$orange, "30; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#9a3412; margin-bottom:12px;"), "3"),
           tags$h4(style = "font-size:14px; font-weight:700; color:#9a3412; margin:0 0 8px;", "Lifestyle Moats"),
           tags$p(style = "font-size:12px; color:#9a341299; line-height:1.6;",
@@ -1090,13 +1101,13 @@ server <- function(input, output, session) {
         )
       ),
       
-      # 2. IL NUOVO SCOPE STATEMENT (Sfondo verdolino pastello)
+      # 2. IL NUOVO SCOPE STATEMENT
       tags$div(
         class = "scope-statement-box",
-        style = "background-color: #e6f7ef; padding: 24px; border-radius: 12px; margin-bottom: 24px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05);",
-        tags$h4(style = "font-size:16px; font-weight:800; color: #008f63; margin:0 0 10px; display:flex; align-items:center; gap:6px;", 
+        style = "background-color: #ffffff; padding: 24px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.06);",
+        tags$h4(style = "font-size:16px; font-weight:800; color: #1e293b; margin:0 0 10px; display:flex; align-items:center; gap:6px;",
                 "Scope Statement"),
-        tags$p(style = "font-size:14px; color: #1e293b; line-height:1.75; margin:0; font-style:italic;",
+        tags$p(style = "font-size:14px; color: #475569; line-height:1.75; margin:0; font-style:italic;",
                "“To what extent is EssilorLuxottica’s Nuance Audio capable of creating a new market category (‘hearing glasses’) that overcomes traditional hearing aid adoption barriers, and which competitive, technological, and regulatory factors will determine its success in the European and American markets over the next 12–24 months?”"
         )
       ),
@@ -1575,7 +1586,7 @@ server <- function(input, output, session) {
         "Text Analysis on the Scientific Literature",
         HTML(paste0(
           "Bibliometric analysis (<em>bibliometrix</em>, <em>tidytext</em>) and topic modelling ",
-          "(<em>BERTopic</em>) on the Scopus corpus retrieved with the validated Lab&nbsp;5 query. ",
+          "(<em>BERTopic</em>) on the Scopus corpus retrieved with the validated query. ",
           "The literature directly answers our KIT/KIQ on emerging technologies, ",
           "key players and adoption barriers."
         ))
@@ -1596,7 +1607,7 @@ server <- function(input, output, session) {
         "background:", pastel_bg(col$accent), ";"
       ),
       tags$h4(style = paste0("font-size:15px; font-weight:700; color:", pastel_text(col$accent), "; margin:0 0 14px;"),
-              "Methodology — Lab 5 (Text Analysis)"),
+              "Methodology — Text Analysis"),
                tags$pre(class = "query-code-light", style = "margin-bottom:14px;",
                         hl_query(paste0(
                           'TITLE-ABS-KEY("smart glasses" OR "hearing glasses" OR "audio glasses"\n',
@@ -1695,7 +1706,7 @@ server <- function(input, output, session) {
   
   # ── A) Annual production ─────────────────────────────────────────────────
   output$plot_lab5_annual <- renderPlotly({
-    plot_ly(df_lab5_annual, x = ~year, y = ~articles, type = "bar",
+    plot_ly(df_lab5_annual[df_lab5_annual$year <= 2025, ], x = ~year, y = ~articles, type = "bar",
             marker = list(color = col$accent, line = list(width = 0)),
             text = ~articles, textposition = "outside",
             textfont = list(color = col$dim, size = 10),
@@ -1703,6 +1714,10 @@ server <- function(input, output, session) {
       plotly_layout_dark(
         xaxis = list(title = "", dtick = 1),
         yaxis = list(title = "Articles")
+      ) %>%
+      layout(
+        yaxis  = list(range = c(0, 255)),
+        margin = list(l = 50, r = 20, t = 28, b = 40)
       )
   })
   
@@ -2012,74 +2027,100 @@ server <- function(input, output, session) {
                )))
       ),
 
-      # 1) Conceptual Structure Map — full corpus
+      # 1) Conceptual Structure Map — full corpus + insight box affiancati
       section_hdr("Conceptual Structure Map — Full corpus (MDS)",
                   HTML("Co-word analysis on <em>Author Keywords</em> via Multi-Dimensional Scaling. Unsupervised thematic clusters organizing the smart-glasses research landscape.")),
-      tags$div(class = "sci-card",
-               tags$img(src = "bibliometrix/05_conceptual_structure_MDS.png",
-                        style = "width:100%; height:auto; border-radius:10px; display:block;",
-                        alt = "Conceptual Structure MDS - full corpus")),
-
-      insight_box(
-        "Strategic Reading — Full MDS",
-        paste0(
-          "The <strong style='font-weight:800'>central blue cluster</strong> (smart-glasses, computer vision, wearable computing, AR, ",
-          "user experience) is the <em>technological core</em> where Nuance Audio is positioned: convergence between eyewear and wearable AI. ",
-          "The <strong style='font-weight:800'>upper green cluster</strong> (text-to-speech, object recognition, ultrasonic sensors, obstacle detection) ",
-          "covers <em>assistive</em> applications for visual impairment — a thematically adjacent narrative for an accessibility-first positioning. ",
-          "The <strong style='font-weight:800'>lower yellow cluster</strong> (IoT, IMU, signal processing, heart rate, affective computing) ",
-          "points toward the <em>medical-wearable</em> trajectory: KIT 2 (early warnings) must monitor this pole as big-tech may converge here. ",
-          "The <strong style='font-weight:800'>isolated pink AR/HMD cluster</strong> on the right shows that the literature treats AR-headsets as a separate category: ",
-          "Nuance Audio can claim a new 'hearing glasses' category without directly competing with AR/VR."
-        ),
-        col$blue, "diagram-project"
+      tags$div(style = "margin-bottom: 28px;",
+        fluidRow(
+          column(7,
+            tags$img(src = "bibliometrix/05_conceptual_structure_MDS.png",
+                     style = "width:100%; height:auto; border-radius:10px; display:block;",
+                     alt = "Conceptual Structure MDS - full corpus")
+          ),
+          column(5,
+            insight_box(
+              "Strategic Reading — Full MDS",
+              paste0(
+                "The <strong style='font-weight:800'>central blue cluster</strong> (smart-glasses, computer vision, wearable computing, AR, ",
+                "user experience) is the <em>technological core</em> where Nuance Audio is positioned. ",
+                "The <strong style='font-weight:800'>upper green cluster</strong> (TTS, object recognition, ultrasonic) ",
+                "covers <em>assistive</em> applications for visual impairment. ",
+                "The <strong style='font-weight:800'>lower yellow cluster</strong> (IoT, IMU, heart rate) ",
+                "points toward the <em>medical-wearable</em> trajectory: KIT 2 must monitor this pole. ",
+                "The <strong style='font-weight:800'>isolated pink AR/HMD cluster</strong> confirms that AR-headsets are a separate category: ",
+                "Nuance Audio can claim 'hearing glasses' without competing with AR/VR."
+              ),
+              col$blue, "diagram-project"
+            )
+          )
+        )
       ),
 
-      # 2) Keyword co-occurrence network — full corpus
+      # 2) Keyword co-occurrence network — full corpus (centrata, larghezza ridotta)
       section_hdr("Keyword Co-occurrence Network — Full corpus",
                   HTML("Output of <code>biblioNetwork(network=\"keywords\")</code>: co-occurrence clusters among Author Keywords. The stronger the link, the more frequent the co-occurrence.")),
-      tags$div(class = "sci-card",
-               tags$img(src = "bibliometrix/06_keyword_cooccurrence_network.png",
-                        style = "width:100%; height:auto; border-radius:10px; display:block;",
-                        alt = "Keyword co-occurrence network - full corpus")),
-
-      # 3) Conceptual Structure — AUDIO sub-corpus
-      section_hdr("Conceptual Structure Map — AUDIO/Hearing sub-corpus (MDS)",
-                  HTML("The same <code>conceptualStructure</code> applied to the subset filtered on hearing/audio/assistive: the exact niche in which Nuance Audio operates.")),
-      tags$div(class = "sci-card",
-               tags$img(src = "bibliometrix/09_conceptual_structure_AUDIO.png",
-                        style = "width:100%; height:auto; border-radius:10px; display:block;",
-                        alt = "Conceptual Structure MDS - AUDIO sub-corpus")),
-
-      insight_box(
-        "Strategic Reading — AUDIO MDS",
-        paste0(
-          "The AUDIO sub-corpus reveals much more vertical clusters: ",
-          "<strong style='font-weight:800'>purple</strong> (wearable technology + image processing + ultrasonic + object detection + visual impairment) ",
-          "= integrated assistive products, the <em>application context</em> of Nuance Audio. ",
-          "<strong style='font-weight:800'>green</strong> (TTS, OCR, YOLO) = AI/perception capabilities often paired with wearable devices. ",
-          "<strong style='font-weight:800'>red</strong> (esp32-cam, microcontroller, raspberry pi) = low-cost hardware prototyping (signal: R&amp;D barriers are lower than they appear). ",
-          "<strong style='font-weight:800'>teal</strong> (audio/visual prompting, dementia, transfer learning, indoor localization) = ",
-          "medical-cognitive applications in vulnerable populations — a concrete market trajectory for KIT 1."
-        ),
-        col$accent, "headphones"
+      tags$div(style = "max-width:78%; margin: 0 auto 32px;",
+        tags$img(src = "bibliometrix/06_keyword_cooccurrence_network.png",
+                 style = "width:100%; height:auto; border-radius:10px; display:block;",
+                 alt = "Keyword co-occurrence network - full corpus")
       ),
 
-      # 4) Keyword network — AUDIO
-      section_hdr("Keyword Co-occurrence Network — AUDIO/Hearing sub-corpus",
-                  HTML("<code>biblioNetwork</code> sul sub-corpus audio: due community ben separate rivelano sotto-conversazioni distinte nella stessa nicchia.")),
-      tags$div(class = "sci-card",
-               tags$img(src = "bibliometrix/08_keyword_network_AUDIO.png",
-                        style = "width:100%; height:auto; border-radius:10px; display:block;",
-                        alt = "Keyword co-occurrence network - audio")),
+      # 3) Conceptual Structure — AUDIO sub-corpus + insight box affiancati
+      section_hdr("Conceptual Structure Map — AUDIO/Hearing sub-corpus (MDS)",
+                  HTML("The same <code>conceptualStructure</code> applied to the subset filtered on hearing/audio/assistive: the exact niche in which Nuance Audio operates.")),
+      tags$div(style = "margin-bottom: 28px;",
+        fluidRow(
+          column(7,
+            tags$img(src = "bibliometrix/09_conceptual_structure_AUDIO.png",
+                     style = "width:100%; height:auto; border-radius:10px; display:block;",
+                     alt = "Conceptual Structure MDS - AUDIO sub-corpus")
+          ),
+          column(5,
+            insight_box(
+              "Strategic Reading — AUDIO MDS",
+              paste0(
+                "The AUDIO sub-corpus reveals vertical clusters: ",
+                "<strong style='font-weight:800'>purple</strong> (wearable + ultrasonic + visual impairment) ",
+                "= integrated assistive products, the <em>application context</em> of Nuance Audio. ",
+                "<strong style='font-weight:800'>green</strong> (TTS, OCR, YOLO) = AI/perception capabilities. ",
+                "<strong style='font-weight:800'>red</strong> (esp32-cam, microcontroller) = low-cost prototyping (R&amp;D barriers are lower than they appear). ",
+                "<strong style='font-weight:800'>teal</strong> (dementia, transfer learning, indoor localization) = ",
+                "medical-cognitive applications — a market trajectory for KIT 1."
+              ),
+              col$accent, "headphones"
+            )
+          )
+        )
+      ),
 
-      # 5) Pairwise network — AUDIO (widyr::pairwise_count)
-      section_hdr("Pairwise Co-occurrence Network — Abstract terms (AUDIO)",
-                  HTML("<code>widyr::pairwise_count</code> on significant abstract words from the AUDIO sub-corpus: semantic hubs such as \"audio—visually—impaired—real-time\" are the narrative hooks for Nuance Audio's positioning.")),
-      tags$div(class = "sci-card",
-               tags$img(src = "bibliometrix/11_pairwise_network_AUDIO.png",
-                        style = "width:100%; height:auto; border-radius:10px; display:block;",
-                        alt = "Pairwise word network - audio"))
+      # 4+5) Keyword network AUDIO + Pairwise network — affiancati
+      section_hdr("Co-occurrence & Pairwise Networks — AUDIO/Hearing sub-corpus",
+                  HTML("<code>biblioNetwork</code> keyword network and <code>widyr::pairwise_count</code> abstract-term network for the AUDIO sub-corpus.")),
+      tags$div(style = "margin-bottom: 16px;",
+        fluidRow(
+          column(6,
+            tags$div(style = "margin-bottom: 8px;",
+              tags$span(style = "font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px;",
+                        "Keyword Co-occurrence Network")
+            ),
+            tags$img(src = "bibliometrix/08_keyword_network_AUDIO.png",
+                     style = "width:100%; height:460px; object-fit:contain; border-radius:10px; display:block; background:#fff;",
+                     alt = "Keyword co-occurrence network - audio")
+          ),
+          column(6,
+            tags$div(style = "margin-bottom: 8px;",
+              tags$span(style = "font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px;",
+                        "Pairwise Co-occurrence Network")
+            ),
+            tags$div(
+              style = "background:#f1f5f9; border-radius:10px; height:460px; display:flex; align-items:center; justify-content:center; overflow:hidden;",
+              tags$img(src = "bibliometrix/11_pairwise_network_AUDIO.png",
+                       style = "width:100%; height:100%; object-fit:contain; display:block;",
+                       alt = "Pairwise word network - audio")
+            )
+          )
+        )
+      )
     )
   })
 
@@ -2123,51 +2164,59 @@ server <- function(input, output, session) {
       # 1) Intertopic Distance Map
       section_hdr("Intertopic Distance Map — MDS",
                   HTML("Replica of <code>topic_model.visualize_topics()</code>: each bubble is a topic, size = number of documents, distance ≈ lexical dissimilarity (Jaccard on top-words).")),
-      tags$div(class = "sci-card", plotlyOutput("plot_lab5_topics_map", height = "440px")),
-
-      insight_box(
-        "Strategic Reading — Topic Map",
-        paste0(
-          "Topics <strong style='font-weight:800'>T0 (Open-ear audio)</strong>, ",
-          "<strong style='font-weight:800'>T2 (Hearing-aid + beamforming)</strong> and ",
-          "<strong style='font-weight:800'>T4 (Deep learning for speech)</strong> tend to cluster closely: ",
-          "they represent the <em>technological core</em> where Nuance Audio competes head-on (KIT 2). ",
-          "<strong style='font-weight:800'>T1 (AR + AI captioning)</strong> stands apart: it is the disruption vector ",
-          "driven by Meta/Apple — KIT 2 (early warnings). ",
-          "<strong style='font-weight:800'>T3 (acceptance/stigma)</strong> and <strong style='font-weight:800'>T6 (eyewear UX)</strong> ",
-          "define the <em>consumer adoption</em> landscape (KIT 1). ",
-          "<strong style='font-weight:800'>T5 (bone-conduction)</strong> is isolated: a marginal technological alternative, worth monitoring but not a priority."
-        ),
-        col$blue, "diagram-project"
+      tags$div(class = "sci-card", style = "margin-bottom: 12px;",
+               plotlyOutput("plot_lab5_topics_map", height = "440px")),
+      tags$div(style = "margin-bottom: 28px;",
+        insight_box(
+          "Strategic Reading — Topic Map",
+          paste0(
+            "Topics <strong style='font-weight:800'>T0 (Open-ear audio)</strong>, ",
+            "<strong style='font-weight:800'>T2 (Hearing-aid + beamforming)</strong> and ",
+            "<strong style='font-weight:800'>T4 (Deep learning for speech)</strong> tend to cluster closely: ",
+            "they represent the <em>technological core</em> where Nuance Audio competes head-on (KIT 2). ",
+            "<strong style='font-weight:800'>T1 (AR + AI captioning)</strong> stands apart: it is the disruption vector ",
+            "driven by Meta/Apple — KIT 2 (early warnings). ",
+            "<strong style='font-weight:800'>T3 (acceptance/stigma)</strong> and <strong style='font-weight:800'>T6 (eyewear UX)</strong> ",
+            "define the <em>consumer adoption</em> landscape (KIT 1). ",
+            "<strong style='font-weight:800'>T5 (bone-conduction)</strong> is isolated: a marginal technological alternative, worth monitoring but not a priority."
+          ),
+          col$blue, "diagram-project"
+        )
       ),
 
       # 2) Top words per topic (c-TF-IDF style)
       section_hdr("Top words per topic — c-TF-IDF",
                   HTML("Replica of <code>topic_model.visualize_barchart()</code>: for each topic, the most distinctive words with their c-TF-IDF score (descending pseudo-score).")),
-      tags$div(class = "sci-card", plotlyOutput("plot_lab5_topics_words", height = "600px")),
+      tags$div(class = "sci-card", style = "margin-bottom: 28px;",
+               plotlyOutput("plot_lab5_topics_words", height = "600px")),
 
       # 3) Topic Similarity Heatmap
       section_hdr("Topic Similarity Heatmap",
                   HTML("Replica of <code>topic_model.visualize_heatmap()</code>: Jaccard similarity matrix between topics; higher values = semantically closer topics.")),
-      tags$div(class = "sci-card", plotlyOutput("plot_lab5_topics_heatmap", height = "420px")),
+      tags$div(class = "sci-card", style = "margin-bottom: 28px;",
+               plotlyOutput("plot_lab5_topics_heatmap", height = "420px")),
 
       # 4) Topic Hierarchy Dendrogram
       section_hdr("Topic Hierarchy Dendrogram",
                   HTML("Replica of <code>topic_model.visualize_hierarchy()</code> / <code>get_topic_tree()</code>: hierarchical clustering (<em>average linkage</em>) on the 1−Jaccard distance.")),
-      tags$div(class = "sci-card", plotOutput("plot_lab5_topics_dendro", height = "420px")),
-
-      insight_box(
-        "Strategic Reading — Hierarchy",
-        paste0(
-          "The hierarchy confirms two macro-branches: ",
-          "<strong style='font-weight:800'>(1) hearing-tech core</strong> (T0, T2, T4) — this is Nuance Audio's product perimeter, ",
-          "where competition is vertical and patent-driven (KIT 2); ",
-          "<strong style='font-weight:800'>(2) consumer/AR layer</strong> (T1, T3, T6) — this is where the ",
-          "<em>category creation</em> of 'hearing glasses' and the go-to-market play out (KIT 1, KIT 3). ",
-          "The isolation of T5 (bone-conduction) suggests it is not currently a direct substitution threat, but ",
-          "an adjacent technological niche."
-        ),
-        col$purple, "sitemap"
+      tags$div(
+        style = "border-radius: 12px; overflow: hidden; margin-bottom: 12px;",
+        plotOutput("plot_lab5_topics_dendro", height = "420px")
+      ),
+      tags$div(style = "margin-bottom: 16px;",
+        insight_box(
+          "Strategic Reading — Hierarchy",
+          paste0(
+            "The hierarchy confirms two macro-branches: ",
+            "<strong style='font-weight:800'>(1) hearing-tech core</strong> (T0, T2, T4) — this is Nuance Audio's product perimeter, ",
+            "where competition is vertical and patent-driven (KIT 2); ",
+            "<strong style='font-weight:800'>(2) consumer/AR layer</strong> (T1, T3, T6) — this is where the ",
+            "<em>category creation</em> of 'hearing glasses' and the go-to-market play out (KIT 1, KIT 3). ",
+            "The isolation of T5 (bone-conduction) suggests it is not currently a direct substitution threat, but ",
+            "an adjacent technological niche."
+          ),
+          col$purple, "sitemap"
+        )
       )
     )
   })
@@ -2194,7 +2243,7 @@ server <- function(input, output, session) {
   
   output$tab_patents <- renderUI({
     tagList(
-      section_hdr("Patent Data Analysis", "IP Landscape on Smart Glasses & Hearing Technologies (Espacenet - Lab Erre Quadro)"),
+      section_hdr("Patent Data Analysis", "IP Landscape on Smart Glasses & Hearing Technologies (Espacenet)"),
       
       tags$div(class = "sci-card", style = paste0(
         "border-left:5px solid ", col$accent, ";",
@@ -2260,7 +2309,7 @@ server <- function(input, output, session) {
     plot_ly(df, x = ~Count, y = ~factor(Assignee, levels = Assignee), type = "bar", orientation = "h",
             marker = list(color = col$accent, line = list(width = 0)),
             text = ~Count, textposition = "outside", textfont = list(color = col$dim, size = 11)) %>%
-      plotly_layout_dark(xaxis = list(title = "Number of Patents"), yaxis = list(title = ""), margin = list(l = 120))
+      plotly_layout_dark(xaxis = list(title = "Number of Patents"), yaxis = list(title = ""), margin = list(l = 120, r = 60))
   })
   
   # ── BLOCCO BLINDATO PER IL GRAFICO DELLE CLASSI IPC ──
@@ -2295,9 +2344,10 @@ server <- function(input, output, session) {
 
     # 5. Aggiungiamo i layout
     p <- layout(p,
-                xaxis = list(title = "Number of Patents", gridcolor = "#e2e8f0", tickfont = list(color="#1e293b"), titlefont=list(color="#1e293b")),
+                xaxis = list(title = "Number of Patents", range = c(0, 430),
+                             gridcolor = "#e2e8f0", tickfont = list(color="#1e293b"), titlefont=list(color="#1e293b")),
                 yaxis = list(title = "", tickfont = list(color="#1e293b")),
-                margin = list(l = 200, r = 40, t = 10, b = 40),
+                margin = list(l = 200, r = 20, t = 10, b = 40),
                 paper_bgcolor = "rgba(0,0,0,0)",
                 plot_bgcolor = "rgba(0,0,0,0)"
     )
@@ -2345,7 +2395,7 @@ server <- function(input, output, session) {
       plotly_layout_dark(
         xaxis = list(title = "Patents"),
         yaxis = list(title = ""),
-        margin = list(l = 250, r = 50, t = 20, b = 40)
+        margin = list(l = 250, r = 80, t = 20, b = 40)
       )
   })
 
@@ -2397,7 +2447,7 @@ server <- function(input, output, session) {
       plotly_layout_dark(
         xaxis = list(title = "Patents"),
         yaxis = list(title = ""),
-        margin = list(l = 280, r = 50, t = 20, b = 40)
+        margin = list(l = 280, r = 100, t = 20, b = 40)
       )
   })
 
@@ -2407,6 +2457,7 @@ server <- function(input, output, session) {
     names(df) <- c("year", "count")
     df <- df[df$year != "" & !is.na(df$year), ]
     df$year <- as.integer(df$year)
+    df <- df[!is.na(df$year) & df$year <= 2025, ]
     df <- df[order(df$year), ]
     plot_ly(df, x = ~year, y = ~count, type = "bar",
             marker = list(color = col$cyan, opacity = 0.92,
@@ -2493,9 +2544,9 @@ server <- function(input, output, session) {
 
     tagList(
       section_hdr(
-        "Erre Quadro Lab — Smart Glasses Exercise",
+        "Erre Quadro — Smart Glasses Exercise",
         HTML(paste0(
-          "Full replication of the <strong>Erre Quadro – Smart Glasses Exercise</strong> ",
+          "Full replication of the <strong>Erre Quadro — Smart Glasses Exercise</strong> ",
           "(7 tasks) conducted on <strong>Espacenet</strong> on 2026-05-20. ",
           "Main dataset: <strong>10,644 patents</strong> retrieved with the optimized query; ",
           "<strong>60 patents</strong> for the holographic query (prior art assessment)."
@@ -2597,7 +2648,7 @@ server <- function(input, output, session) {
       task_hdr("2", "Visualize AND / OR Logic",
                "Venn diagram: intersection between Core/Synonyms (title) and Related/Application (text), with NOT as exclusion"),
 
-      tags$div(class = "sci-card",
+      tags$div(
         tags$div(style = "position:relative; width:100%; height:360px; background:#f1f5f9; border-radius:10px;",
           # Venn diagram - 3 circles + NOT zone
           tags$div(style = paste0(
@@ -2631,7 +2682,7 @@ server <- function(input, output, session) {
           ),
           # AND label
           tags$div(style = paste0(
-            "position:absolute; left:46%; top:46%; padding:6px 14px;",
+            "position:absolute; left:47%; top:46%; transform:translateX(-50%); padding:6px 14px;",
             "background:#fff; color:#0f1724; border:2px solid #0f1724; border-radius:8px;",
             "font-weight:900; font-family:'JetBrains Mono'; font-size:14px;"
           ), "AND")
@@ -2911,10 +2962,12 @@ server <- function(input, output, session) {
       "))),
       section_hdr("Data Visualization", "Strategic Storytelling & Visual Communication Map"),
       
-      tags$div(class = "sci-card",
-               style = paste0("border-left:5px solid ", col$accent, "; background:linear-gradient(135deg,rgba(0,229,160,.05) 0%,rgba(0,0,0,0) 100%); margin-bottom:20px;"),
-               tags$h4(style = "color:white; margin-top:0; font-weight:800;", "Narrative Path: The Nuance Audio Positioning Moat"),
-               tags$p(style = "color:var(--dim); line-height:1.6; font-size:14px; margin:0;",
+      tags$div(
+               style = paste0("border-left:5px solid ", col$accent, "; background:#ffffff;",
+                              " border-radius:12px; padding:18px 22px; margin-bottom:20px;",
+                              " border:1px solid #e2e8f0; box-shadow:0 2px 8px rgba(0,0,0,0.06);"),
+               tags$h4(style = "color:#1e293b; margin-top:0; font-weight:800;", "Narrative Path: The Nuance Audio Positioning Moat"),
+               tags$p(style = "color:#475569; line-height:1.6; font-size:14px; margin:0;",
                       "This module fulfills the deliverable requirements for Data Visualization 5, explicitly connecting business Key Intelligence Questions (KIQs) to analytical charts derived from real data.")
       ),
       
@@ -3067,6 +3120,6 @@ server <- function(input, output, session) {
   output$plot_kiq3_b <- renderPlotly({
     df <- df_pat_assignee[order(df_pat_assignee$Count), ]
     plot_ly(df, x = ~Count, y = ~factor(Assignee, levels = Assignee), type = "bar", orientation = "h", marker = list(color = col$orange), text = ~Count, textposition = "outside") %>%
-      plotly_layout_dark(xaxis = list(title = "Patents", tickfont = list(size = 10)), yaxis = list(title = "", tickfont = list(size = 10)), margin = list(l = 150, r = 40, t = 10, b = 30))
+      plotly_layout_dark(xaxis = list(title = "Patents", tickfont = list(size = 10)), yaxis = list(title = "", tickfont = list(size = 10)), margin = list(l = 150, r = 65, t = 10, b = 30))
   })
 } # <--- FINE DEL FILE SERVER.R (CHIUSURA PERFETTA E CORRETTA)
