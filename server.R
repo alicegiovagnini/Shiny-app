@@ -643,7 +643,7 @@ server <- function(input, output, session) {
                  tags$div(class = "vuca-drop",
                           style = paste0("background:", col$orange, "18; border-top: 2px solid ", col$orange, ";"),
                           tags$p(style = "font-size:11px; color:#334155; line-height:1.5; margin:0;",
-                                 tags$strong("Characteristics: "), "Basic cause and effect are known, but lack of information on competitor moves muddies the future."),
+                                 tags$strong("Characteristics: "), "Basic cause and effect are known, but lack of information on competitor moves introduces uncertainty into the future outlook."),
                           tags$p(style = "font-size:11px; color:#334155; line-height:1.5; margin:8px 0 0;",
                                  tags$strong("Example: "), "Potential entry of Apple or Meta into the medical-grade hearing space could disrupt the adoption curve."),
                           tags$p(style = "font-size:11px; color:#334155; line-height:1.5; margin:8px 0 0;",
@@ -887,13 +887,13 @@ server <- function(input, output, session) {
                   kiqs = list(
                     list(type = "Polar", q = HTML("Is the OTC price of $1,200 competitive compared to the average of OTC hearing aids on the US market as of<br>Q2 2025?"),
                          indicators = "OTC prices; e-commerce, FDA listing; web scraping", analysis = "Descriptive",
-                         smart = list(S="Nuance price vs OTC average", M="numerical comparison", A="public data", R="pricing = key adoption barrier", T="Q2 2025")),
+                         smart = list(S="Nuance price vs OTC average", M="Numerical comparison", A="Public data", R="Pricing is key factor to adoption barrier", T="Q2 2025")),
                     list(type = "Alternative", q = HTML("Should distribution prioritize proprietary optical channels (LensCrafters) or independent audiology channels<br>for EU penetration?"),
                          indicators = "Store count, % coverage; annual reports; geospatial analysis", analysis = "Exploratory",
-                         smart = list(S="two defined channels", M="sales volume per channel", A="distribution data", R="go-to-market strategy", T="EU launch 2025")),
+                         smart = list(S="Two defined channels", M="Sales volume per channel", A="Distribution data", R="Go-to-market strategy", T="EU launch 2025")),
                     list(type = "Q-word", q = "How is Nuance Audio perceived by adults 50+ regarding stigma, comfort, and usefulness vs. traditional hearing aids within 6 months of US launch?",
                          indicators = "Sentiment score, keyword freq; social media, forums; NLP", analysis = "Descriptive + Exploratory",
-                         smart = list(S="defined target, defined variables", M="sentiment analysis, surveys", A="social data, reviews", R="adoption", T="6 months from launch"))
+                         smart = list(S="Defined target, defined variables", M="Sentiment analysis, surveys", A="Social data, reviews", R="Adoption", T="6 months from launch"))
                   )),
       KIT2 = list(title = "Early Warnings", color = col$orange,
                   pastel_hi = "#ffedd5", pastel_lo = "#fff7ed", title_dark = "#9a3412",
@@ -901,13 +901,13 @@ server <- function(input, output, session) {
                   kiqs = list(
                     list(type = "Polar", q = HTML("Has Apple filed patents related to hearing aid functionality integrated into eyewear devices in the last<br>24 months?"),
                          indicators = "Patent count, IPC class; Google Patents, USPTO", analysis = "Descriptive + Predictive",
-                         smart = list(S="Apple, eyewear patents", M="yes/no with count", A="public patent databases", R="threat assessment", T="24 months")),
+                         smart = list(S="Apple, eyewear patents", M="Yes/no with count", A="Public patent databases", R="Threat assessment", T="24 months")),
                     list(type = "Alternative", q = HTML("Most imminent threat: big tech entry (Apple, Google) or traditional hearing aid manufacturers (Phonak,<br>Oticon) with eyewear solutions?"),
                          indicators = "Signals per category; press releases, job postings, M&A", analysis = "Exploratory",
-                         smart = list(S="two competitor categories", M="patent activity, partnerships, announcements", A="OSINT data", R="early warning", T="12-24 months", m_wide = TRUE)),
+                         smart = list(S="Two competitor categories", M="Patent activity, partnerships, announcements", A="OSINT data", R="Early warning", T="12-24 months", m_wide = TRUE)),
                     list(type = "Q-word", q = HTML("What emerging technologies (bone conduction, AI audio, biometric sensors) are competitors developing that<br>could offer superior advantage by 2027?"),
                          indicators = "Publication/patent frequency; Scopus, patents, tech media", analysis = "Descriptive + Predictive",
-                         smart = list(S="defined technologies, competitors", M="patents, papers, product announcements", A="public sources", R="technological disruption", T="by 2027", m_wide = TRUE))
+                         smart = list(S="Defined technologies, competitors", M="Patents, papers, product announcements", A="Public sources", R="Technological disruption", T="By 2027", m_wide = TRUE))
                   )),
       KIT3 = list(title = "Key Players & Positioning", color = col$blue,
                   pastel_hi = "#dbeafe", pastel_lo = "#eff6ff", title_dark = "#1e3a8a",
@@ -918,10 +918,10 @@ server <- function(input, output, session) {
                          smart = list(S="Specific variables", M="Measurable metrics", A="Achievable data", R="Relevant partnerships", T="April 2026")),
                     list(type = "Alternative", q = "In smart audio glasses, who holds larger share as of Q4 2025: Ray-Ban Meta or Nuance Audio?",
                          indicators = "Estimated units; analyst reports (IDC, Counterpoint)", analysis = "Descriptive + Inferential",
-                         smart = list(S="direct comparison", M="estimated units sold", A="analyst reports", R="positioning", T="Q4 2025")),
+                         smart = list(S="Direct comparison", M="Estimated units sold", A="Analyst reports", R="Positioning", T="Q4 2025")),
                     list(type = "Q-word", q = "Who are emerging startups in hearing glasses/audio wearables with >$5M funding in the last 18 months?",
                          indicators = "Startup count, funding; Crunchbase, PitchBook", analysis = "Exploratory + Predictive",
-                         smart = list(S="startups, funding threshold", M="Crunchbase/PitchBook data", A="Achievable public data", R="Relevant competition", T="18 months"))
+                         smart = list(S="Startups, funding threshold", M="Crunchbase/PitchBook data", A="Achievable public data", R="Relevant competition", T="18 months"))
                   ))
     )
     
@@ -1044,7 +1044,7 @@ server <- function(input, output, session) {
             tags$div(class = "rumsfeld-drop",
               tags$hr(style = "border:none; border-top:1px solid #cbd5e1; margin:0 0 10px;"),
               tags$p(style = "margin:0; color:#334155; font-size:12.5px; line-height:1.6;",
-                "Nuance Audio is an EssilorLuxottica product born from the 2023 acquisition of Nuance Hearing (Israeli startup). It combines corrective eyewear and open-ear hearing amplification in a single OTC device for adults 18+ with mild-to-moderate hearing loss. Price: ~$1,200. FDA-approved (US) and CE-marked (EU). US launch: April 2025 via LensCrafters, Target Optical, Pearle Vision. EU launch: starting from Italy in Q1 2025, then France, Germany, UK. Direct competitors: Ray-Ban Meta, AirPods Pro 2 (hearing aid feature), Eargo, Jabra Enhance.")
+                "Nuance Audio is an EssilorLuxottica product born from the 2023 acquisition of Nuance Hearing. It combines corrective eyewear and open-ear hearing amplification in a single OTC device for adults 18+ with mild-to-moderate hearing loss. Price: ~$1,200. FDA-approved (US) and CE-marked (EU). US launch: April 2025 via LensCrafters, Target Optical, Pearle Vision. EU launch: starting from Italy in Q1 2025, then France, Germany, UK. Direct competitors: Ray-Ban Meta, AirPods Pro 2 (hearing aid feature), Eargo, Jabra Enhance.")
             )
           ),
 
@@ -1457,7 +1457,7 @@ server <- function(input, output, session) {
         onmouseout  = "this.style.transform=''; this.style.boxShadow='';",
         tags$div(style = "font-size:10px; color:#475569; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-bottom:10px;", "Composite Prompt Preview"),
         tags$p(style = "font-size:12px; color:#334155; line-height:1.65; margin:0; font-family:'JetBrains Mono',monospace;",
-               paste0("Act as a ", create_data$C$desc, " ", create_data$R$desc, " ", create_data$E$desc, " ", create_data$A$desc, " ", create_data$T$desc, " ", create_data$E2$desc))
+               paste0("", create_data$C$desc, " ", create_data$R$desc, " ", create_data$E$desc, " ", create_data$A$desc, " ", create_data$T$desc, " ", create_data$E2$desc))
       ),
 
       # Evaluation chart
