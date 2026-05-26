@@ -14,6 +14,31 @@ library(scales)
 library(wordcloud2)
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PRELOAD HTMLWIDGET JS DEPENDENCIES
+# ═══════════════════════════════════════════════════════════════════════════════
+# Le schede sono generate dinamicamente via renderUI. Quando una scheda con molti
+# grafici/tabelle veniva aperta, le librerie JS dei widget (plotly.js, DataTables,
+# ECharts, wordcloud2) venivano iniettate in modo asincrono: i widget in cima al
+# DOM venivano "bound" prima che la libreria fosse caricata e restavano vuoti
+# (solo gli ultimi nel DOM si disegnavano). Precaricando qui le dipendenze
+# nell'<head> all'avvio, le librerie sono già disponibili quando la scheda viene
+# mostrata e TUTTI i widget si disegnano in modo affidabile.
+widget_deps <- local({
+  safe_deps <- function(expr) tryCatch(
+    htmltools::findDependencies(expr),
+    error = function(e) list()
+  )
+  suppressWarnings(suppressMessages(
+    htmltools::resolveDependencies(c(
+      safe_deps(plotly::plot_ly()),
+      safe_deps(DT::datatable(data.frame(x = 1))),
+      safe_deps(wordcloud2::wordcloud2(data.frame(word = "a", freq = 1))),
+      safe_deps(echarts4r::e_charts(data.frame(x = 1, y = 2), x))
+    ))
+  ))
+})
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # COLOUR PALETTE & THEME
 # ═══════════════════════════════════════════════════════════════════════════════
 col <- list(

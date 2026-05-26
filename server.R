@@ -7,6 +7,9 @@ server <- function(input, output, session) {
   # ── Sincronizza la sidebar con l'area principale ──
   observeEvent(input$main_nav, {
     nav_select("main_content", selected = input$main_nav)
+    if (!is.null(input$main_nav)) {
+      session$sendCustomMessage("triggerPlotlyResize", list())
+    }
   })
 
   # ── Navigazione custom ad albero (fissa, sempre aperta) ──
@@ -431,16 +434,18 @@ server <- function(input, output, session) {
 
         # ── RIGHT: product panel — fixed heights calibrated per section ──
         local({
-          second_h <- if (is_process) "350px" else "168px"
+          second_h   <- if (is_process) "290px" else "134px"
+          second_pos <- if (is_process) "50% 60%" else "center"
+          second_src <- if (is_process) "nuance_table.png" else "nuance_results.png"
           tags$div(
             style = "display:flex; flex-direction:column; gap:10px;",
             tags$img(
               src = "nuance_box.png",
-              style = "width:100%; border-radius:12px; object-fit:cover; height:160px; display:block;"
+              style = "width:100%; border-radius:12px; object-fit:cover; height:187px; display:block;"
             ),
             tags$img(
-              src = "nuance_table.png",
-              style = paste0("width:100%; border-radius:12px; object-fit:cover; height:", second_h, "; object-position:50% 60%; display:block;")
+              src = second_src,
+              style = paste0("width:100%; border-radius:12px; object-fit:cover; height:", second_h, "; object-position:", second_pos, "; display:block;")
             )
           )
         })
@@ -496,7 +501,7 @@ server <- function(input, output, session) {
                         )
                ),
                tags$p(style = "font-size:14px; color:var(--dim); line-height:1.75; margin:0; max-width:820px;", HTML(
-                 "Nuance Audio sits at the intersection of <strong style='font-weight:800'>eyewear</strong>, <strong style='font-weight:800'>hearing aids</strong>, and <strong style='font-weight:800'>wearable technology</strong>. As the first FDA-cleared hearing glasses, it targets the <strong style='font-weight:800'>1.5 billion</strong> people worldwide affected by hearing loss, where the adoption rate remains at only 17%. This app synthesizes market intelligence, competitive analysis, and strategic frameworks to support decision-making."
+                 "Nuance Audio sits at the intersection of eyewear, hearing aids, and wearable technology. As the first FDA-cleared hearing glasses, it targets the <strong style='font-weight:800'>1.5 billion</strong> people worldwide affected by hearing loss, where the adoption rate remains at only 17%. This app synthesizes market intelligence, competitive analysis, and strategic frameworks to support decision-making."
                ))
       ),
       
@@ -648,19 +653,19 @@ server <- function(input, output, session) {
         "<strong style='font-weight:800'>Decreasing:</strong> EssilorLuxottica's scale (\u20AC25B+ revenue) and vertical integration; Nuance Hearing IP acquisition (2023) reduces external dependency"
       ), "#eab308"),
       info_card("Competitive Rivalry, MEDIUM", c(
-        "<strong style='font-weight:800'>No established brand loyalty</strong> in the emerging \"hearing glasses\" category, first-mover advantage still up for grabs",
-        "Competition plays out on <strong style='font-weight:800'>design, AI features, price, and optical distribution</strong> rather than clinical performance alone",
+        "No established brand loyalty in the emerging \"hearing glasses\" category, first-mover advantage still up for grabs",
+        "Competition plays out on design, AI features, price, and optical distribution rather than clinical performance alone",
         "Traditional HA incumbents (Sonova/Phonak, Demant/Oticon, WS Audiology) dominate clinical channels but have not yet entered the eyewear-hybrid segment"
       ), "#eab308"),
       info_card("Bargaining Power of Buyers, LOW / MEDIUM", c(
-        "<strong style='font-weight:800'>High-end niche</strong>: few comparable bundles combining corrective eyewear + hearing amplification in one device",
-        "<strong style='font-weight:800'>Optical distribution</strong> (LensCrafters, Pearle Vision) limits direct price-comparison shopping",
-        "<strong style='font-weight:800'>Pressure rising</strong>: early-stage OTC market and $250 AirPods Pro 2 alternative are increasing price sensitivity"
+        "High-end niche: few comparable bundles combining corrective eyewear + hearing amplification in one device",
+        "Optical distribution (LensCrafters, Pearle Vision) limits direct price-comparison shopping",
+        "Pressure rising: early-stage OTC market and $250 AirPods Pro 2 alternative are increasing price sensitivity"
       ), col$accent),
       info_card("Threat of Substitutes, HIGH", c(
-        "<strong style='font-weight:800'>AirPods Pro 2</strong> (~$250, FDA-cleared hearing aid feature) leveraging Apple's massive installed base",
-        "<strong style='font-weight:800'>Traditional hearing aids + glasses combo</strong> ($1K–$6K), superior audiological performance through clinical channels",
-        "<strong style='font-weight:800'>Discreet OTC aids</strong> and <strong style='font-weight:800'>captioning glasses</strong> address the same need with different form factors"
+        "AirPods Pro 2 (~$250, FDA-cleared hearing aid feature) leveraging Apple's massive installed base",
+        "Traditional hearing aids + glasses combo ($1K–$6K), superior audiological performance through clinical channels",
+        "Discreet OTC aids and captioning glasses address the same need with different form factors"
       ), col$red)
     )
   })
@@ -1829,7 +1834,7 @@ server <- function(input, output, session) {
       # CEO Recommendation
       insight_box(
         "CEO Recommendation",
-        "Use LLMs as an <strong style='font-weight:800'>acceleration and support tool</strong> for strategic decisions, but <strong style='font-weight:800'>never as a sole source</strong>. LLMs excel at initial landscape mapping (delivering in minutes what takes days manually), generating alternative scenarios, and identifying hidden assumptions. However, quantitative data must always be verified against primary sources. The primary risk is <strong style='color:#ff9f43'>overconfidence</strong>: LLMs present information authoritatively, masking genuine uncertainty. Recommendation: systematically integrate LLMs into the CI process within a framework of human validation, source triangulation, and critical review, <em>'AI is an accelerator, not a substitute for critical thinking.'</em>",
+        "Use LLMs as an acceleration and support tool for strategic decisions, but <strong style='font-weight:800'>never as a sole source</strong>. LLMs excel at initial landscape mapping (delivering in minutes what takes days manually), generating alternative scenarios, and identifying hidden assumptions. However, quantitative data must always be verified against primary sources. The primary risk is <span style='color:#ff9f43'>overconfidence</span>: LLMs present information authoritatively, masking genuine uncertainty. Recommendation: systematically integrate LLMs into the CI process within a framework of human validation, source triangulation, and critical review, <em>'AI is an accelerator, not a substitute for critical thinking.'</em>",
         col$purple, "lightbulb"
       )
     )
@@ -2031,6 +2036,7 @@ server <- function(input, output, session) {
   
   # ── A) Annual production ─────────────────────────────────────────────────
   output$plot_lab5_annual <- renderPlotly({
+    input$nav_redraw
     plot_ly(df_lab5_annual[df_lab5_annual$year <= 2025, ], x = ~year, y = ~articles, type = "bar",
             marker = list(color = col$accent, line = list(width = 0)),
             text = ~articles, textposition = "outside",
@@ -2065,6 +2071,7 @@ server <- function(input, output, session) {
   
   # ── B2) Top sources ──────────────────────────────────────────────────────
   output$plot_lab5_sources <- renderPlotly({
+    input$nav_redraw
     df <- df_lab5_sources[order(df_lab5_sources$articles), ]
     plot_ly(df,
             x = ~articles, y = ~factor(source, levels = source),
@@ -2082,6 +2089,7 @@ server <- function(input, output, session) {
   
   # ── C) Top keywords ──────────────────────────────────────────────────────
   output$plot_lab5_keywords <- renderPlotly({
+    input$nav_redraw
     df <- head(df_lab5_keywords[order(-df_lab5_keywords$n), ], 25)
     df <- df[order(df$n), ]
     plot_ly(df,
@@ -2100,6 +2108,7 @@ server <- function(input, output, session) {
   
   # ── D) Top bigrams ───────────────────────────────────────────────────────
   output$plot_lab5_bigrams <- renderPlotly({
+    input$nav_redraw
     df <- df_lab5_bigrams[order(df_lab5_bigrams$n), ]
     plot_ly(df,
             x = ~n, y = ~factor(pair, levels = pair),
@@ -2117,6 +2126,7 @@ server <- function(input, output, session) {
   
   # ── E) Topic distribution ────────────────────────────────────────────────
   output$plot_lab5_topics_bar <- renderPlotly({
+    input$nav_redraw
     df <- df_lab5_topics[order(-df_lab5_topics$count), ]
     df$short_label <- paste0("T", df$topic, " — ",
                              substr(df$label, 1, 40),
@@ -2138,6 +2148,7 @@ server <- function(input, output, session) {
   
   # ── F) Topics over time (multi-line) ─────────────────────────────────────
   output$plot_lab5_topics_time <- renderPlotly({
+    input$nav_redraw
     palette_topics <- c(col$accent, col$blue, col$orange,
                         col$purple, col$cyan, col$pink, col$red)
     p <- plot_ly()
@@ -2292,6 +2303,7 @@ server <- function(input, output, session) {
 
   # ── G) Topic table ───────────────────────────────────────────────────────
   output$table_lab5_topics <- DT::renderDT({
+    input$nav_redraw
     df <- df_lab5_topics
     df$topic <- paste0("T", df$topic)
     DT::datatable(
@@ -2305,6 +2317,7 @@ server <- function(input, output, session) {
   
   # ── H) Most cited papers ─────────────────────────────────────────────────
   output$table_lab5_top_cited <- DT::renderDT({
+    input$nav_redraw
     DT::datatable(
       df_lab5_top_cited,
       colnames = c("Title", "Year", "Citations", "KIT"),
@@ -2891,13 +2904,23 @@ server <- function(input, output, session) {
   })
 
   # ── Tables ────────────────────────────────────────────────────────────────
+  no_scroll_cb <- DT::JS("
+    var scrollPos;
+    table.on('page.dt', function() {
+      scrollPos = $(window).scrollTop();
+    }).on('draw.dt', function() {
+      $(window).scrollTop(scrollPos);
+    });
+  ")
+
   output$table_eq_top20 <- DT::renderDT({
     df <- head(df_eq_main, 20)[, c("No","Title","Applicants","Publication number",
                                     "Earliest priority","IPC","country")]
     names(df) <- c("#","Title","Applicant","Publ. no.","Priority","IPC","Country")
     DT::datatable(df,
-                  options = list(pageLength = 20, dom = "t", ordering = FALSE,
+                  options = list(pageLength = 5, dom = "tp", ordering = FALSE,
                                  columnDefs = list(list(className = "dt-left", targets = "_all"))),
+                  callback = no_scroll_cb,
                   rownames = FALSE, class = "stripe hover")
   })
 
@@ -2906,8 +2929,9 @@ server <- function(input, output, session) {
                          "Earliest priority","IPC","country")]
     names(df) <- c("#","Title","Applicant","Publ. no.","Priority","IPC","Country")
     DT::datatable(df,
-                  options = list(pageLength = 10, dom = "tp", ordering = FALSE,
+                  options = list(pageLength = 5, dom = "tp", ordering = FALSE,
                                  columnDefs = list(list(className = "dt-left", targets = "_all"))),
+                  callback = no_scroll_cb,
                   rownames = FALSE, class = "stripe hover")
   })
 
@@ -3087,7 +3111,7 @@ server <- function(input, output, session) {
         ),
         tags$p(style = "font-size:12px; color:var(--dim); margin-top:14px; line-height:1.6;",
                HTML(paste0(
-                 "<strong>Logic</strong>: the intersection (AND) between Title (Core + Synonyms) and Text ",
+                 "Logic: the intersection (AND) between Title (Core + Synonyms) and Text ",
                  "(Related + Application) selects patents that <em>truly address</em> smart glasses ",
                  "(not merely those that mention the term generically). NOT removes known false positives (contact lens, VR headset)."
                )))
@@ -3200,8 +3224,7 @@ server <- function(input, output, session) {
       task_hdr("6", "Classification Tree",
                "Domain decomposition of Smart Glasses by Components / Problems / Functionalities"),
 
-      tags$div(class = "sci-card",
-        fluidRow(
+      fluidRow(style = "margin-bottom:16px;",
           # Components
           column(4,
             tags$div(style = paste0("padding:14px; border-radius:12px; background:", pastel_bg(col$blue), "; border-left:4px solid ", col$blue, ";"),
@@ -3252,7 +3275,6 @@ server <- function(input, output, session) {
               )
             )
           )
-        )
       ),
 
       insight_box(
@@ -3261,7 +3283,7 @@ server <- function(input, output, session) {
           "Nuance Audio's positioning on the tree: <strong style='font-weight:800'>Hearing (functionality) + ",
           "Beamforming chip + Open-ear speaker + Microphone array (components)</strong>. ",
           "The <em>highest-impact problems</em> for go-to-market are <strong>Stigma</strong> ",
-          "(differentiation vs traditional glasses) and <strong>Cost</strong> (the $1,200 vs $250 AirPods Pro gap). ",
+          "(differentiation vs traditional glasses) and <strong>Cost</strong> (the ~$1,000 vs $250 AirPods Pro gap). ",
           "<em>Adjacent functionalities easy to add</em> in future versions: speech captioning (AR overlay), ",
           "voice assistant, fall detection, already technologically covered by key player patents (Snap, Meta, Goertek)."
         ),

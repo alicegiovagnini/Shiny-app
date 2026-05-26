@@ -11,7 +11,52 @@ ui <- page_fillable(
     base_font = font_google("Outfit"),
     code_font = font_google("JetBrains Mono")
   ),
-  tags$head(tags$style(HTML(app_css))),
+  tags$head(
+    # Precarica le librerie JS dei widget (plotly, DataTables, ECharts, wordcloud2)
+    # così sono già disponibili quando le schede vengono generate via renderUI.
+    widget_deps,
+    tags$style(HTML(app_css)),
+    tags$script(HTML("
+      // Le schede sono pannelli di un navset_hidden: a differenza di un tabset
+      // normale, cambiando pannello NON viene emesso l'evento 'shown.bs.tab' che
+      // Shiny usa per ricalcolare la visibilità degli output. Senza quel segnale
+      // molti output restavano 'sospesi' e non ricevevano mai il loro valore,
+      // apparendo come riquadri vuoti. Qui, ad ogni cambio scheda, emettiamo noi
+      // un evento 'shown' (che risale fino a document.body, dove Shiny ascolta):
+      // Shiny riattiva gli output ora visibili -> il server invia i valori ->
+      // i grafici/tabelle si disegnano. Poi forziamo il redraw alla dimensione
+      // reale di plotly e degli altri htmlwidget.
+      Shiny.addCustomMessageHandler('triggerPlotlyResize', function(msg) {
+        // Una volta sola: segnala al server che la scheda è renderizzata e i suoi
+        // output sono ormai 'bound' lato client, così il server può ri-inviare i
+        // valori dei widget. Senza questo, i valori calcolati troppo presto
+        // (prima che i div fossero bound) venivano scartati e i grafici/tabelle
+        // restavano vuoti.
+        setTimeout(function() {
+          if (window.Shiny) {
+            Shiny.setInputValue('nav_redraw', Date.now(), {priority: 'event'});
+          }
+        }, 300);
+        // Più volte: ridisegna gli htmlwidget visibili alla dimensione reale.
+        [60, 350, 700, 1100].forEach(function(delay) {
+          setTimeout(function() {
+            if (window.jQuery) {
+              jQuery('#main_content').trigger('shown');
+              jQuery('.tab-pane.active, .tab-content > .active').trigger('shown');
+            }
+            window.dispatchEvent(new Event('resize'));
+            if (typeof Plotly !== 'undefined') {
+              document.querySelectorAll('.plotly.html-widget').forEach(function(el) {
+                if (el.offsetParent !== null && el._fullLayout) {
+                  Plotly.Plots.resize(el);
+                }
+              });
+            }
+          }, delay);
+        });
+      });
+    "))
+  ),
   
   layout_sidebar(
     fillable = TRUE,
