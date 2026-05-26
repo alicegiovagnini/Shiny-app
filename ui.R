@@ -66,7 +66,8 @@ ui <- page_fillable(
           nav_panel(title = "BERTopic Maps",        value = "bertopicmaps", icon = icon("sitemap")),
           nav_panel(title = "Patent Analysis",      value = "patents",      icon = icon("certificate")),
           nav_panel(title = "Erre Quadro Lab",      value = "errequadro",   icon = icon("flask")),
-          nav_panel(title = "Data Visualization",         value = "storyboard",   icon = icon("chart-pie"))
+          nav_panel(title = "Data Visualization",         value = "storyboard",   icon = icon("chart-pie")),
+          nav_panel(title = "Executive Summary",          value = "executive",    icon = icon("flag"))
         )
       ),
       tags$div(
@@ -103,7 +104,9 @@ ui <- page_fillable(
                # AGGIUNTI PER GLI ULTIMI LABORATORI
                nav_panel(title = "", value = "patents",      uiOutput("tab_patents")),
                nav_panel(title = "", value = "errequadro",   uiOutput("tab_errequadro")),
-               nav_panel(title = "", value = "storyboard",   uiOutput("tab_storyboard"))
+               nav_panel(title = "", value = "storyboard",   uiOutput("tab_storyboard")),
+               nav_panel(title = "", value = "executive",    uiOutput("tab_executive")),
+               nav_panel(title = "", value = "guide",        uiOutput("tab_guide"))
              )
     )
   )

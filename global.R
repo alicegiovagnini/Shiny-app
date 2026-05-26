@@ -10,6 +10,8 @@ library(DT)
 library(htmltools)
 library(shinyWidgets)
 library(openxlsx)
+library(scales)
+library(wordcloud2)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # COLOUR PALETTE & THEME
@@ -236,9 +238,30 @@ body, .bslib-page-fill {
   margin: 4px 0 2px;
   user-select: none;
 }
-.nav-folder-hdr:hover { background: rgba(255,255,255,0.03); }
+.nav-folder-hdr:hover { background: rgba(255,255,255,0.06); }
 
-.nav-folder-children { overflow: hidden; }
+.nav-folder-group { position: relative; }
+.nav-folder-children {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.28s ease;
+}
+.nav-folder-group.has-active:not(.is-suppressed) .nav-folder-children,
+.nav-folder-group.is-open .nav-folder-children {
+  max-height: 400px;
+}
+.nav-folder-chevron {
+  font-size: 9px;
+  opacity: 0.45;
+  margin-left: auto;
+  transition: transform 0.22s ease, opacity 0.2s;
+  flex-shrink: 0;
+}
+.nav-folder-group.has-active:not(.is-suppressed) .nav-folder-chevron,
+.nav-folder-group.is-open .nav-folder-chevron {
+  transform: rotate(90deg);
+  opacity: 0.75;
+}
 
 .nav-btn-item {
   display: flex;
@@ -1053,6 +1076,58 @@ df_lab5_top_cited <- data.frame(
   KIT      = c("KIT3","KIT3","KIT2","KIT2","KIT1","KIT2","KIT2","KIT1","KIT1","KIT2"),
   stringsAsFactors = FALSE
 )
+
+# ── Word Cloud — author keywords frequency (Scopus full corpus) ─────────────
+df_wordcloud <- read.csv("output/tables/wordcloud_keywords.csv",
+                         stringsAsFactors = FALSE)
+set.seed(42)
+n_wc <- nrow(df_wordcloud)
+# Archimedes spiral placement: inner words are most frequent
+theta_wc <- seq(0.4, 6.5 * pi, length.out = n_wc)
+r_wc     <- seq(0.05, 1, length.out = n_wc)
+df_wordcloud$x <- r_wc * cos(theta_wc) * (1 + runif(n_wc, -0.18, 0.18))
+df_wordcloud$y <- r_wc * sin(theta_wc) * (0.7 + runif(n_wc, -0.18, 0.18))
+df_wordcloud$size <- scales::rescale(sqrt(df_wordcloud$freq), to = c(9, 36))
+df_wordcloud$tier <- cut(df_wordcloud$freq,
+                         breaks = c(0, 5, 15, 40, Inf),
+                         labels = c("low", "mid", "high", "top"))
+
+# ── Topic cluster map — MDS from Jaccard similarity ─────────────────────────
+.jac_mat <- matrix(0, nrow = 7, ncol = 7)
+for (i in seq_len(nrow(df_lab5_topics_sim))) {
+  a <- as.integer(sub("T", "", df_lab5_topics_sim$topic_a[i])) + 1
+  b <- as.integer(sub("T", "", df_lab5_topics_sim$topic_b[i])) + 1
+  .jac_mat[a, b] <- df_lab5_topics_sim$similarity[i]
+  .jac_mat[b, a] <- df_lab5_topics_sim$similarity[i]
+}
+diag(.jac_mat) <- 1
+.dist_mat <- as.dist(1 - .jac_mat)
+.mds <- cmdscale(.dist_mat, k = 2)
+df_topic_cluster <- data.frame(
+  topic     = paste0("T", df_lab5_topics$topic),
+  label     = df_lab5_topics$label,
+  count     = df_lab5_topics$count,
+  top_words = df_lab5_topics$top_words,
+  x         = .mds[, 1],
+  y         = .mds[, 2],
+  stringsAsFactors = FALSE
+)
+
+# Document-level scatter: simulate N points around each topic centroid
+set.seed(42)
+.palette_topics <- c("#00e5a0","#4facfe","#ff9f43","#a78bfa","#22d3ee","#f472b6","#ff5757")
+df_cluster_docs <- do.call(rbind, lapply(seq_len(nrow(df_topic_cluster)), function(i) {
+  n   <- df_topic_cluster$count[i]
+  spr <- max(0.04, sqrt(n) * 0.013)
+  data.frame(
+    topic = df_topic_cluster$topic[i],
+    label = df_topic_cluster$label[i],
+    color = .palette_topics[i],
+    x     = df_topic_cluster$x[i] + rnorm(n, 0, spr),
+    y     = df_topic_cluster$y[i] + rnorm(n, 0, spr * 0.85),
+    stringsAsFactors = FALSE
+  )
+}))
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # ERRE QUADRO LAB — Espacenet data on Smart Glasses
