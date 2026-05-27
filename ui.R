@@ -27,6 +27,33 @@ ui <- page_fillable(
       // i grafici/tabelle si disegnano. Poi forziamo il redraw alla dimensione
       // reale di plotly e degli altri htmlwidget.
       Shiny.addCustomMessageHandler('triggerPlotlyResize', function(msg) {
+        // Riporta in cima la pagina ad ogni cambio scheda.
+        // Azzera tutti i possibili container scrollabili: bslib può usare
+        // .bslib-main, .bslib-page-fill, .tab-content o un elemento overflow:auto
+        // a seconda della versione e del browser.
+        function scrollAllToTop() {
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+          var selectors = [
+            '.bslib-main', '.bslib-page-fill', '.tab-content',
+            '.bslib-sidebar-layout > :last-child',
+            '.bslib-gap-spacing', '.html-fill-container'
+          ];
+          selectors.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(el) {
+              el.scrollTop = 0;
+            });
+          });
+          // Fallback: qualunque elemento con scrollTop > 0
+          document.querySelectorAll('*').forEach(function(el) {
+            if (el.scrollTop > 0) el.scrollTop = 0;
+          });
+        }
+        scrollAllToTop();
+        setTimeout(scrollAllToTop, 80);
+        setTimeout(scrollAllToTop, 250);
+
         // Una volta sola: segnala al server che la scheda è renderizzata e i suoi
         // output sono ormai 'bound' lato client, così il server può ri-inviare i
         // valori dei widget. Senza questo, i valori calcolati troppo presto
@@ -110,7 +137,6 @@ ui <- page_fillable(
           nav_panel(title = "Co-word Networks",     value = "cowords",      icon = icon("diagram-project")),
           nav_panel(title = "BERTopic Maps",        value = "bertopicmaps", icon = icon("sitemap")),
           nav_panel(title = "Patent Analysis",      value = "patents",      icon = icon("certificate")),
-          nav_panel(title = "Erre Quadro Lab",      value = "errequadro",   icon = icon("flask")),
           nav_panel(title = "Data Visualization",         value = "storyboard",   icon = icon("chart-pie")),
           nav_panel(title = "Executive Summary",          value = "executive",    icon = icon("flag"))
         )
@@ -148,7 +174,6 @@ ui <- page_fillable(
 
                # AGGIUNTI PER GLI ULTIMI LABORATORI
                nav_panel(title = "", value = "patents",      uiOutput("tab_patents")),
-               nav_panel(title = "", value = "errequadro",   uiOutput("tab_errequadro")),
                nav_panel(title = "", value = "storyboard",   uiOutput("tab_storyboard")),
                nav_panel(title = "", value = "executive",    uiOutput("tab_executive")),
                nav_panel(title = "", value = "guide",        uiOutput("tab_guide"))

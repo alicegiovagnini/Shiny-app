@@ -12,6 +12,7 @@ library(shinyWidgets)
 library(openxlsx)
 library(scales)
 library(wordcloud2)
+library(htmlwidgets)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PRELOAD HTMLWIDGET JS DEPENDENCIES
@@ -79,12 +80,17 @@ app_css <- paste0("
 
 * { box-sizing: border-box; }
 
+html {
+  background: var(--bg) !important;
+  min-height: 100%;
+}
+
 body, .bslib-page-fill {
   background: var(--bg) !important;
   color: var(--text) !important;
   font-family: 'Outfit', sans-serif !important;
-  
-  min-width: 1200px !important; 
+  min-width: 1200px !important;
+  min-height: 100vh !important;
   overflow-x: auto !important;
 }
 
@@ -535,7 +541,8 @@ table.dataTable.display tbody tr:hover > td { background-color: #e2e8f0; }
 .js-plotly-plot .plotly .main-svg { background: transparent !important; }
 
 /* ── Tab Content Padding ── */
-.tab-content > .tab-pane { padding: 0; }
+.tab-content { background: var(--bg); min-height: 100vh; }
+.tab-content > .tab-pane { padding: 0; background: var(--bg); min-height: 100vh; }
 
 /* ── Responsive columns ── */
 .row-stats { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; }
@@ -904,8 +911,8 @@ df_subs <- data.frame(
 # Porter scores
 df_porter <- data.frame(
   Force     = c("New Entrants","Substitutes","Buyer Power","Supplier Power","Rivalry"),
-  Level     = c("LOW/MEDIUM", "HIGH", "LOW/MEDIUM", "MEDIUM/HIGH", "MEDIUM"),
-  Score     = c(40, 90, 40, 75, 50)
+  Level     = c("MEDIUM/HIGH", "HIGH", "LOW/MEDIUM", "MEDIUM", "MEDIUM"),
+  Score     = c(72, 85, 32, 60, 60)
 )
 
 # Rivalry map
