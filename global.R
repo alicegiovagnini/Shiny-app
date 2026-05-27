@@ -1124,6 +1124,37 @@ df_wordcloud$tier <- cut(df_wordcloud$freq,
                          breaks = c(0, 5, 15, 40, Inf),
                          labels = c("low", "mid", "high", "top"))
 
+# ── Patent keyword word cloud — from Espacenet patent titles (500 patents) ──
+# The Espacenet export has no keyword/abstract column, so keywords are derived
+# from the only free-text field available: the patent Title. We tokenize the
+# 500 downloaded titles, drop grammatical words and patent boilerplate
+# (method/apparatus/device/system…), count frequencies and keep the top 120.
+df_patent_wc <- local({
+  pat <- read.csv("Espacenet_search_result_20260520_1510.csv",
+                  sep = ";", skip = 7, header = TRUE, quote = "\"",
+                  fill = TRUE, stringsAsFactors = FALSE, encoding = "UTF-8")
+  titles <- pat$Title
+  titles <- titles[!is.na(titles) & nzchar(titles)]
+  toks   <- tolower(unlist(strsplit(paste(titles, collapse = " "), "[^a-zA-Z]+")))
+  toks   <- toks[nchar(toks) >= 3]
+  stop_pat <- c(
+    "the","and","for","with","using","use","used","based","said","via","into","onto",
+    "method","methods","apparatus","apparatuses","device","devices","system","systems",
+    "means","unit","units","plurality","having","comprising","wherein","thereof","same",
+    "one","two","three","first","second","third","from","that","this","these","those",
+    "which","are","can","its","such","may","not","per","providing","provided","includes",
+    "including","include","than","more","less","type","multi","program","data"
+  )
+  toks <- toks[!toks %in% stop_pat]
+  freq <- sort(table(toks), decreasing = TRUE)
+  d <- data.frame(word = names(freq), freq = as.integer(freq),
+                  stringsAsFactors = FALSE)
+  # Drop the most generic high-frequency terms (augmented, reality, glasses,
+  # display, head, mounted …) so the cloud surfaces the more specific concepts.
+  d <- d[d$freq < 200, ]
+  head(d, 120)
+})
+
 # ── Topic cluster map — MDS from Jaccard similarity ─────────────────────────
 .jac_mat <- matrix(0, nrow = 7, ncol = 7)
 for (i in seq_len(nrow(df_lab5_topics_sim))) {

@@ -137,7 +137,7 @@ ui <- page_fillable(
           nav_panel(title = "Co-word Networks",     value = "cowords",      icon = icon("diagram-project")),
           nav_panel(title = "BERTopic Maps",        value = "bertopicmaps", icon = icon("sitemap")),
           nav_panel(title = "Patent Analysis",      value = "patents",      icon = icon("certificate")),
-          nav_panel(title = "Data Visualization",         value = "storyboard",   icon = icon("chart-pie")),
+          nav_panel(title = "KIQs Visualization",         value = "storyboard",   icon = icon("chart-pie")),
           nav_panel(title = "Executive Summary",          value = "executive",    icon = icon("flag"))
         )
       ),

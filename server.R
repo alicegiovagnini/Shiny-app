@@ -129,7 +129,7 @@ server <- function(input, output, session) {
           class = "nav-folder-children",
           btn_item("porter",     "Porter's Five Forces", "shield-halved", col$accent),
           btn_item("vuca",       "VUCA Analysis",        "compass",       col$accent),
-          btn_item("storyboard", "Data Visualization",   "chart-pie",     col$accent),
+          btn_item("storyboard", "KIQs Visualization",   "chart-pie",     col$accent),
           btn_item("executive",  "Executive Summary",    "flag",          col$accent)
         )
       )
@@ -292,7 +292,7 @@ server <- function(input, output, session) {
               "The methodological workflow of the labs: KIT/KIQ, Query Design, GenAI Prompting, and Bibliometric Text Analysis.",
               col$blue, "rgba(79,172,254,0.18)", "rgba(79,172,254,0.35)", "process"),
             nav_card("chart-line", "Outcome",     "The Results",
-              "Strategic core deliverables: Porter's Five Forces, VUCA Analysis, Data Visualization, and Executive Summary.",
+              "Strategic core deliverables: Porter's Five Forces, VUCA Analysis, KIQs Visualization, and Executive Summary.",
               col$accent, "rgba(0,229,160,0.18)", "rgba(0,229,160,0.35)", "results")
           )
         )
@@ -374,7 +374,7 @@ server <- function(input, output, session) {
           arrow_link("vuca",   "VUCA Analysis",        col$accent)),
         gsec("lightbulb", "Decision Synthesis",
           "The final intelligence storyboard connecting empirical indicators to business actions and investment signals.",
-          col$accent, arrow_link("storyboard", "Data Visualization", col$accent)),
+          col$accent, arrow_link("storyboard", "KIQs Visualization", col$accent)),
         gsec("flag", "Executive Summary",
           "Key findings, strategic recommendations, and actionable next steps for the Nuance Audio product line.",
           col$accent, arrow_link("executive", "Executive Summary", col$accent))
@@ -1254,9 +1254,9 @@ server <- function(input, output, session) {
                     list(type = "Polar", q = HTML("Have Sonova and Demant announced partnerships with eyewear companies to develop hearing glasses by<br>April 2026?"),
                          indicators = "Yes/no + details; investor relations, industry press", analysis = "Descriptive",
                          smart = list(S="Specific variables", M="Measurable metrics", A="Achievable data", R="Relevant partnerships", T="April 2026")),
-                    list(type = "Alternative", q = "In smart audio glasses, who holds larger share as of Q4 2025: Ray-Ban Meta or Nuance Audio?",
-                         indicators = "Estimated units; analyst reports (IDC, Counterpoint)", analysis = "Descriptive + Inferential",
-                         smart = list(S="Direct comparison", M="Estimated units sold", A="Analyst reports", R="Positioning", T="Q4 2025")),
+                    list(type = "Alternative", q = "How are the industry's key players, EssilorLuxottica versus its Big Tech competitors, positioning themselves in eyewear-technology research, and which technologies are they patenting?",
+                         indicators = "Patents per assignee, IPC classes, keyword frequency; Espacenet (10,644 patents)", analysis = "Descriptive + Comparative",
+                         smart = list(S="EssilorLuxottica vs Big Tech competitors in eyewear-tech patents", M="Patents per assignee, IPC & keyword distribution", A="Espacenet dataset (already extracted)", R="Key players & technological positioning", T="2014–2024 filings")),
                     list(type = "Q-word", q = "Who are emerging startups in hearing glasses/audio wearables with >$5M funding in the last 18 months?",
                          indicators = "Startup count, funding; Crunchbase, PitchBook", analysis = "Exploratory + Predictive",
                          smart = list(S="Startups, funding threshold", M="Crunchbase/PitchBook data", A="Achievable public data", R="Relevant competition", T="18 months"))
@@ -2021,7 +2021,7 @@ server <- function(input, output, session) {
       
       # ── J) Word cloud + Topic cluster map ────────────────────────────────
       section_hdr("Keyword Landscape", "Word cloud of 150 most frequent author keywords from the Scopus corpus"),
-      tags$div(class = "sci-card", style = "padding:0; margin-bottom:16px; display:flex; justify-content:center; align-items:center;",
+      tags$div(class = "sci-card", style = paste0("padding:0; margin-bottom:16px; overflow:hidden; background:", pastel_bg(col$accent), "; border-color:", pastel_bg(col$accent), "; display:flex; justify-content:center; align-items:center;"),
         wordcloud2Output("plot_wordcloud", height = "420px", width = "100%")
       ),
       section_hdr("BERTopic Cluster Map", "2D topic map via MDS on Jaccard similarity — bubble size = number of papers per topic"),
@@ -3438,7 +3438,7 @@ server <- function(input, output, session) {
         #kiq_nav .nav-item:nth-child(3) .nav-link         { color:", col$blue, " !important; }
         #kiq_nav .nav-item:nth-child(3) .nav-link.active  { background:rgba(79,172,254,.12) !important; border-color:rgba(79,172,254,.25) !important; color:", col$blue, " !important; }
       "))),
-      section_hdr("Data Visualization", "Strategic Storytelling & Visual Communication Map"),
+      section_hdr("KIQs Visualization", "Strategic Storytelling & Visual Communication Map"),
       
       navset_pill(
         id = "kiq_nav",
@@ -3557,8 +3557,8 @@ server <- function(input, output, session) {
               column(6,
                 tags$div(class = "sci-card",
                   tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
-                           "T0 vs T1 Growth Trend (2022–2025)"),
-                  plotlyOutput("plot_kiq2new_b", height = "230px"), uiOutput("si_kiq2new_b")
+                           "BERTopic: Topics Dynamics (2018-2025)"),
+                  plotlyOutput("plot_kiq3_a", height = "230px"), uiOutput("si_kiq3_a")
                 )
               )
             )
@@ -3599,7 +3599,7 @@ server <- function(input, output, session) {
               tags$hr(style = paste0("border:none; border-top:1px solid ", col$blue, "25; margin:0 0 12px;")),
               tags$h5(style = paste0("color:", pastel_text(col$blue), "; font-weight:700; font-size:15px; margin:0 0 10px;"),
                       tags$i(class = "fas fa-circle-question", style = paste0("font-size:13px; color:", col$blue, "; margin-right:6px;")),
-                      "In smart audio glasses, who holds larger share as of Q4 2025: Ray-Ban Meta or Nuance Audio?"),
+                      "How are the industry's key players, EssilorLuxottica versus its Big Tech competitors, positioning themselves in eyewear-technology research, and which technologies are they patenting?"),
               tags$div(style = paste0("background:", col$blue, "15; padding:10px 14px; border-radius:6px; border-left:4px solid ", col$blue, ";"),
                 tags$span(style = paste0("font-size:10px; text-transform:uppercase; color:", pastel_text(col$blue), "80; font-weight:700;"),
                           tags$i(class = "fas fa-bolt", style = "margin-right:4px;"), "Potential Decision: "),
@@ -3609,17 +3609,20 @@ server <- function(input, output, session) {
             ),
             fluidRow(
               column(6,
-                tags$div(class = "sci-card",
+                tags$div(class = "sci-card", style = "background:#f1f5f9; border-color:#cbd5e1;",
                   tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
-                           "BERTopic: Topics Dynamics (2018-2025)"),
-                  plotlyOutput("plot_kiq3_a", height = "230px"), uiOutput("si_kiq3_a")
+                           "Patent Keyword Landscape (titles, 500 patents)"),
+                  tags$div(style = "border-radius:10px; overflow:hidden;",
+                           wordcloud2Output("plot_patent_wc", height = "230px")),
+                  si_box("Audio-specific concepts appear only at the margins, confirming that the broad smart-glasses IP landscape, owned mostly by Big Tech, is built around AR/display rather than hearing, the asymmetric threat Nuance Audio must navigate.", col$blue)
                 )
               ),
               column(6,
                 tags$div(class = "sci-card",
                   tags$div(style = "font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;",
                            "Espacenet: Top Corporate Patent Assignees"),
-                  plotlyOutput("plot_kiq3_b", height = "230px"), uiOutput("si_kiq3_b")
+                  plotlyOutput("plot_kiq3_b", height = "230px"),
+                  si_box("Espacenet data highlights a critical vulnerability: tech giants (Snap, Meta) completely dominate the IP landscape, while traditional optical leaders (EssilorLuxottica) lag significantly behind.", col$blue)
                 )
               )
             )
@@ -3633,8 +3636,60 @@ server <- function(input, output, session) {
   output$si_kiq2_b <- renderUI({ si_box("Longitudinal analysis shows that academic focus on user experience and social barriers has surged post-2022, perfectly aligning with the launch of lifestyle-oriented hybrid devices.", col$accent) })
   output$si_kiq2new_a <- renderUI({ si_box("The BERTopic cluster distribution highlights T0 (Open-ear Audio) and T1 (AR + AI Captioning) as the two key technological poles in the corpus. T1 is gaining weight relative to T0, signaling a shift in the dominant research paradigm.", col$orange) })
   output$si_kiq2new_b <- renderUI({ si_box("Between 2022 and 2025, T1 (AR + AI Captioning) exhibits a steeper growth trajectory than T0 (Open-ear Audio), confirming that AI captioning is becoming the dominant research paradigm — and a key competitive battleground for Nuance Audio.", col$orange) })
-  output$si_kiq3_a <- renderUI({ si_box("BERTopic monitoring reveals the explosion of AR and AI Captioning (Topic 1), the technological backbone of Big Tech, which is currently outpacing traditional open-ear audio research.", col$blue) })
-  output$si_kiq3_b <- renderUI({ si_box("Espacenet data highlights a critical vulnerability: tech giants (Snap, Meta) completely dominate the IP landscape, while traditional optical leaders (EssilorLuxottica) lag significantly behind.", col$blue) })
+  output$si_kiq3_a <- renderUI({ si_box("BERTopic monitoring reveals the explosion of AR and AI Captioning (Topic 1), the technological backbone of Big Tech, which is currently outpacing traditional open-ear audio research.", col$orange) })
+
+  output$plot_patent_wc <- renderWordcloud2({
+    df <- df_patent_wc[, c("word", "freq")]
+    n  <- nrow(df)
+    # Blue-toned palette aligned with the KIQ 3 theme (col$blue)
+    pal <- c(
+      rep(col$blue, 8),
+      rep("#7cc4fd", 12),
+      rep("#475569", 25),
+      rep("#94a3b8", max(0, n - 45))
+    )
+    wc <- wordcloud2(
+      data            = df,
+      size            = 0.34,
+      color           = pal,
+      backgroundColor = "#f1f5f9",
+      fontFamily      = "Outfit",
+      minRotation     = -pi/6,
+      maxRotation     =  pi/6,
+      rotateRatio     = 0.35,
+      gridSize        = 6,
+      ellipticity     = 0.7,
+      shape           = "circle"
+    )
+    onRender(wc, "
+      function(el, x) {
+        function suppressWC2HoverBox() {
+          if (!window._wc2HoverSuppressed) {
+            window._wc2HoverSuppressed = true;
+            var origStrokeRect = CanvasRenderingContext2D.prototype.strokeRect;
+            CanvasRenderingContext2D.prototype.strokeRect = function() {
+              if (this.canvas && (el.contains(this.canvas) || this.canvas === el)) return;
+              return origStrokeRect.apply(this, arguments);
+            };
+            var origStroke = CanvasRenderingContext2D.prototype.stroke;
+            CanvasRenderingContext2D.prototype.stroke = function() {
+              if (this.canvas && (el.contains(this.canvas) || this.canvas === el)) return;
+              return origStroke.apply(this, arguments);
+            };
+          }
+          el.querySelectorAll('canvas').forEach(function(canvas) {
+            var ctx = canvas.getContext('2d');
+            ctx.strokeRect = function() {};
+            ctx.stroke = function() {};
+          });
+        }
+        suppressWC2HoverBox();
+        [200, 600, 1200, 2500, 5000].forEach(function(d) {
+          setTimeout(suppressWC2HoverBox, d);
+        });
+      }
+    ")
+  })
   
   output$plot_kiq2_cluster_map <- renderPlotly({
     df_docs   <- df_cluster_docs
@@ -3734,9 +3789,11 @@ server <- function(input, output, session) {
             marker = list(color = col$accent, size = 6),
             fill   = "tozeroy", fillcolor = paste0(col$accent, "18"),
             hovertemplate = "%{x}: %{y} papers<extra></extra>") %>%
-      plotly_layout_dark(
-        xaxis = list(title = "", dtick = 2, tickfont = list(size = 10)),
-        yaxis = list(title = "Papers", tickfont = list(size = 10)),
+      plotly_layout_dark() %>%
+      layout(
+        xaxis  = list(title = "", dtick = 2, tickfont = list(size = 10),
+                      range = c(min(sub3$year) - 0.6, max(sub3$year) + 0.6)),
+        yaxis  = list(title = "", tickvals = c(5, 10), tickfont = list(size = 10)),
         margin = list(l = 40, r = 20, t = 10, b = 30)
       )
   })
@@ -3926,7 +3983,7 @@ server <- function(input, output, session) {
         column(4,
           kiq_card(
             "KIQ 3: Key Players & Positioning", "shield-alt",
-            "Who leads in smart audio glasses: Ray-Ban Meta or Nuance Audio?",
+            "How do EssilorLuxottica and Big Tech compare in eyewear-tech patents?",
             "Snap Inc. holds 128 patents; Meta Platforms 43 — Big Tech dominates the IP landscape",
             "Traditional optical and hearing companies are absent from the top patent assignees",
             "Verdict: Big Tech’s structural lead is already built — <strong>asymmetric threat is underway</strong>",
